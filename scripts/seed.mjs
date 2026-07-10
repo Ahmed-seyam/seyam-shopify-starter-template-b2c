@@ -8,7 +8,9 @@
  * Standalone on purpose — src/ code is server-only (Next.js runtime).
  */
 
-const domain = process.env.SHOPIFY_STORE_DOMAIN;
+// Tolerate a pasted URL — only the hostname is wanted.
+const domain = process.env.SHOPIFY_STORE_DOMAIN?.replace(/^https?:\/\//, "")
+  .replace(/\/.*$/, "");
 const token = process.env.SHOPIFY_ADMIN_TOKEN;
 const apiVersion = process.env.SHOPIFY_API_VERSION ?? "2025-07";
 
