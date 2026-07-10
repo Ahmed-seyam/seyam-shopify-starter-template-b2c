@@ -26,12 +26,18 @@ In the store admin:
 | `SHOPIFY_STORE_DOMAIN` | `your-store.myshopify.com` (no `https://`) |
 | `SHOPIFY_STOREFRONT_TOKEN` | API credentials → Storefront API access token |
 | `SHOPIFY_ADMIN_TOKEN` | API credentials → Admin API access token (shown **once**) |
-| `SHOPIFY_WEBHOOK_SECRET` | API credentials → API secret key |
+| `SHOPIFY_WEBHOOK_SECRET` | API credentials → **API secret key** (`shpss_…`, in the "API key and secret key" section — NOT the `shpat_` admin token). Shopify signs every webhook with it; the handler verifies the HMAC against it. Signatures only match if the webhooks were registered by this same app — which `npm run register-webhooks` guarantees. |
+
+One more secret doesn't come from Shopify — **you generate it yourself**:
+
+| `.env` variable | What it is |
+|---|---|
+| `REVALIDATION_SECRET` | Protects your own `POST /api/revalidate` escape hatch. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 
 ## 3. Configure and run
 
 ```bash
-cp .env.example .env    # paste the values above; set REVALIDATION_SECRET to any random string
+cp .env.example .env    # paste the values above
 npm install
 npm run seed            # 6 demo products + "Featured" collection, published
 npm run dev
