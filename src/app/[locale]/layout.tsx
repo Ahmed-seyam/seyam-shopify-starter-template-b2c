@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import { dirForLocale, routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -52,17 +53,21 @@ export default async function LocaleLayout({
       lang={locale}
       dir={dir}
       className={`${geistSans.variable} ${arabicSans.variable} h-full antialiased`}
+      // next-themes mutates the class on <html> before hydration.
+      suppressHydrationWarning
     >
       <body
         className={`flex min-h-full flex-col ${
           dir === "rtl" ? "font-[family-name:var(--font-arabic)]" : ""
         }`}
       >
-        <NextIntlClientProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </NextIntlClientProvider>
+        <ThemeProvider>
+          <NextIntlClientProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

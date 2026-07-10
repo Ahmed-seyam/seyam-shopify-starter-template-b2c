@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { CartBadge } from "./cart-badge";
 import { LocaleSwitcher } from "./locale-switcher";
 import { SearchForm } from "./search-form";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Header() {
   const t = useTranslations("layout");
@@ -18,6 +19,7 @@ export function Header() {
         </div>
         <div className="ms-auto flex items-center gap-2 sm:ms-0">
           <LocaleSwitcher />
+          <ThemeToggle />
           <CartBadge label={t("cart")} />
         </div>
       </div>

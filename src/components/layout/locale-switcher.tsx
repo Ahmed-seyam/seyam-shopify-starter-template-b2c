@@ -1,5 +1,6 @@
 "use client";
 
+import { GlobeIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Button } from "@/core/ui/button";
@@ -7,10 +8,11 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
 const LOCALE_LABELS: Record<string, string> = {
-  en: "EN",
-  ar: "ع",
+  en: "English",
+  ar: "العربية",
 };
 
+/** Toggles to the other locale, preserving the current path and query. */
 export function LocaleSwitcher() {
   const locale = useLocale();
   const router = useRouter();
@@ -24,6 +26,7 @@ export function LocaleSwitcher() {
     <Button
       variant="ghost"
       size="sm"
+      aria-label={`Switch language to ${LOCALE_LABELS[other] ?? other}`}
       onClick={() => {
         const query = searchParams.toString();
         router.replace(query ? `${pathname}?${query}` : pathname, {
@@ -31,6 +34,7 @@ export function LocaleSwitcher() {
         });
       }}
     >
+      <GlobeIcon className="size-4" />
       {LOCALE_LABELS[other] ?? other}
     </Button>
   );
