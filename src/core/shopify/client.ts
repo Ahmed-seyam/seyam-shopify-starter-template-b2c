@@ -1,5 +1,6 @@
 import "server-only";
 import { env } from "@/core/config/env";
+import { parseLocale } from "@/i18n/routing";
 import { LOCALE_TO_LANGUAGE } from "./types";
 
 export class ShopifyError extends Error {
@@ -23,9 +24,9 @@ type StorefrontFetchOptions = {
    */
   revalidate?: number | false;
   cache?: RequestCache;
-  /** App locale (en/ar) — mapped to @inContext language. */
+  /** App locale ("en-eg", "ar-us") — mapped to @inContext language + country. */
   locale?: string;
-  /** ISO country code for @inContext pricing/currency. */
+  /** Explicit ISO country code — overrides the locale's market. */
   country?: string;
 };
 
@@ -48,9 +49,11 @@ export async function storefrontFetch<T>(
   const config = env();
   const endpoint = `https://${config.SHOPIFY_STORE_DOMAIN}/api/${config.SHOPIFY_API_VERSION}/graphql.json`;
 
+  const parsed = locale ? parseLocale(locale) : undefined;
   const contextVariables = {
-    country: country ?? config.SHOPIFY_DEFAULT_COUNTRY,
-    language: locale ? (LOCALE_TO_LANGUAGE[locale] ?? "EN") : "EN",
+    country:
+      country ?? parsed?.country ?? config.SHOPIFY_DEFAULT_COUNTRY,
+    language: parsed ? (LOCALE_TO_LANGUAGE[parsed.language] ?? "EN") : "EN",
     ...variables,
   };
 

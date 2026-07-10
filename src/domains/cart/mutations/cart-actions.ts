@@ -6,7 +6,7 @@ import { CART_FRAGMENT, type RawCart } from "../queries/cart-fragment";
 import { CART_COOKIE } from "../queries/get-cart";
 
 const CART_CREATE_MUTATION = /* GraphQL */ `
-  mutation cartCreate($lines: [CartLineInput!]!) {
+  mutation cartCreate($lines: [CartLineInput!]!, $country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
     cartCreate(input: { lines: $lines }) {
       cart {
         ...CartFragment
@@ -21,7 +21,7 @@ const CART_CREATE_MUTATION = /* GraphQL */ `
 `;
 
 const CART_LINES_ADD_MUTATION = /* GraphQL */ `
-  mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+  mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!, $country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
     cartLinesAdd(cartId: $cartId, lines: $lines) {
       cart {
         ...CartFragment
@@ -36,7 +36,7 @@ const CART_LINES_ADD_MUTATION = /* GraphQL */ `
 `;
 
 const CART_LINES_UPDATE_MUTATION = /* GraphQL */ `
-  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!, $country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
     cartLinesUpdate(cartId: $cartId, lines: $lines) {
       cart {
         ...CartFragment
@@ -51,7 +51,7 @@ const CART_LINES_UPDATE_MUTATION = /* GraphQL */ `
 `;
 
 const CART_LINES_REMOVE_MUTATION = /* GraphQL */ `
-  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!, $country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         ...CartFragment
@@ -79,6 +79,7 @@ function assertNoUserErrors(result: CartMutationResult) {
 export async function addToCart(
   variantId: string,
   quantity: number = 1,
+  locale?: string,
 ): Promise<void> {
   const cookieStore = await cookies();
   const cartId = cookieStore.get(CART_COOKIE)?.value;
@@ -90,7 +91,7 @@ export async function addToCart(
     try {
       const data = await storefrontFetch<{ cartLinesAdd: CartMutationResult }>(
         CART_LINES_ADD_MUTATION,
-        { variables: { cartId, lines }, cache: "no-store" },
+        { variables: { cartId, lines }, locale, cache: "no-store" },
       );
       assertNoUserErrors(data.cartLinesAdd);
       if (data.cartLinesAdd.cart) return;
@@ -99,9 +100,10 @@ export async function addToCart(
     }
   }
 
+  // The cart's currency is fixed by the market at creation time.
   const data = await storefrontFetch<{ cartCreate: CartMutationResult }>(
     CART_CREATE_MUTATION,
-    { variables: { lines }, cache: "no-store" },
+    { variables: { lines }, locale, cache: "no-store" },
   );
   assertNoUserErrors(data.cartCreate);
 
@@ -120,8 +122,9 @@ export async function addToCart(
 export async function updateLineQuantity(
   lineId: string,
   quantity: number,
+  locale?: string,
 ): Promise<void> {
-  if (quantity <= 0) return removeLine(lineId);
+  if (quantity <= 0) return removeLine(lineId, locale);
 
   const cartId = (await cookies()).get(CART_COOKIE)?.value;
   if (!cartId) return;
@@ -130,19 +133,23 @@ export async function updateLineQuantity(
     CART_LINES_UPDATE_MUTATION,
     {
       variables: { cartId, lines: [{ id: lineId, quantity }] },
+      locale,
       cache: "no-store",
     },
   );
   assertNoUserErrors(data.cartLinesUpdate);
 }
 
-export async function removeLine(lineId: string): Promise<void> {
+export async function removeLine(
+  lineId: string,
+  locale?: string,
+): Promise<void> {
   const cartId = (await cookies()).get(CART_COOKIE)?.value;
   if (!cartId) return;
 
   const data = await storefrontFetch<{ cartLinesRemove: CartMutationResult }>(
     CART_LINES_REMOVE_MUTATION,
-    { variables: { cartId, lineIds: [lineId] }, cache: "no-store" },
+    { variables: { cartId, lineIds: [lineId] }, locale, cache: "no-store" },
   );
   assertNoUserErrors(data.cartLinesRemove);
 }

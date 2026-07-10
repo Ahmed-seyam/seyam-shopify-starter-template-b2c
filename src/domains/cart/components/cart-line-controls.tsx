@@ -1,6 +1,7 @@
 "use client";
 
 import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { useLocale } from "next-intl";
 import { useTransition } from "react";
 import { Button } from "@/core/ui/button";
 // Direct import from the 'use server' file — see add-to-cart-button.tsx.
@@ -18,6 +19,7 @@ export function CartLineControls({
   quantity: number;
   removeLabel: string;
 }) {
+  const locale = useLocale();
   const [pending, startTransition] = useTransition();
 
   function run(action: () => Promise<void>) {
@@ -33,7 +35,9 @@ export function CartLineControls({
         variant="outline"
         size="icon-sm"
         disabled={pending}
-        onClick={() => run(() => updateLineQuantity(lineId, quantity - 1))}
+        onClick={() =>
+          run(() => updateLineQuantity(lineId, quantity - 1, locale))
+        }
       >
         <MinusIcon />
       </Button>
@@ -42,7 +46,9 @@ export function CartLineControls({
         variant="outline"
         size="icon-sm"
         disabled={pending}
-        onClick={() => run(() => updateLineQuantity(lineId, quantity + 1))}
+        onClick={() =>
+          run(() => updateLineQuantity(lineId, quantity + 1, locale))
+        }
       >
         <PlusIcon />
       </Button>
@@ -51,7 +57,7 @@ export function CartLineControls({
         size="icon-sm"
         disabled={pending}
         aria-label={removeLabel}
-        onClick={() => run(() => removeLine(lineId))}
+        onClick={() => run(() => removeLine(lineId, locale))}
       >
         <Trash2Icon />
       </Button>

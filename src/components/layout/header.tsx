@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CartBadge } from "./cart-badge";
+import { CountrySwitcher } from "./country-switcher";
 import { LocaleSwitcher } from "./locale-switcher";
 import { SearchForm } from "./search-form";
 import { ThemeToggle } from "./theme-toggle";
@@ -18,6 +19,7 @@ export function Header() {
           <SearchForm placeholder={t("searchPlaceholder")} />
         </div>
         <div className="ms-auto flex items-center gap-2 sm:ms-0">
+          <CountrySwitcher />
           <LocaleSwitcher />
           <ThemeToggle />
           <CartBadge label={t("cart")} />
