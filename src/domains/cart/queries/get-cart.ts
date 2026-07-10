@@ -35,14 +35,19 @@ export async function getCart(locale: string): Promise<Cart | null> {
   const cartId = (await cookies()).get(CART_COOKIE)?.value;
   if (!cartId) return null;
 
-  const data = await storefrontFetch<{ cart: RawCart | null }>(
-    GET_CART_QUERY,
-    {
-      variables: { cartId },
-      locale,
-      cache: "no-store",
-    },
-  );
-
-  return data.cart ? reshapeCart(data.cart) : null;
+  try {
+    const data = await storefrontFetch<{ cart: RawCart | null }>(
+      GET_CART_QUERY,
+      {
+        variables: { cartId },
+        locale,
+        cache: "no-store",
+      },
+    );
+    return data.cart ? reshapeCart(data.cart) : null;
+  } catch {
+    // Stale/invalid cookie must not 500 the page — treat as empty cart;
+    // the next addToCart replaces the cookie with a fresh cart.
+    return null;
+  }
 }

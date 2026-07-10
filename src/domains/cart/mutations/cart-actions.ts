@@ -85,13 +85,18 @@ export async function addToCart(
   const lines = [{ merchandiseId: variantId, quantity }];
 
   if (cartId) {
-    const data = await storefrontFetch<{ cartLinesAdd: CartMutationResult }>(
-      CART_LINES_ADD_MUTATION,
-      { variables: { cartId, lines }, cache: "no-store" },
-    );
-    assertNoUserErrors(data.cartLinesAdd);
-    if (data.cartLinesAdd.cart) return;
-    // Cart expired on Shopify's side — fall through and create a new one.
+    // Self-heal: a stale/invalid cookie (expired cart, store switch) must
+    // not break add-to-cart — fall through and create a fresh cart.
+    try {
+      const data = await storefrontFetch<{ cartLinesAdd: CartMutationResult }>(
+        CART_LINES_ADD_MUTATION,
+        { variables: { cartId, lines }, cache: "no-store" },
+      );
+      assertNoUserErrors(data.cartLinesAdd);
+      if (data.cartLinesAdd.cart) return;
+    } catch (error) {
+      console.warn("[cart] stored cart id rejected, creating a new cart", error);
+    }
   }
 
   const data = await storefrontFetch<{ cartCreate: CartMutationResult }>(
