@@ -77,6 +77,44 @@ const COLLECTION_CREATE_MUTATION = /* GraphQL */ `
   }
 `;
 
+const FIND_PRODUCT_QUERY = /* GraphQL */ `
+  query findProduct($query: String!) {
+    products(first: 1, query: $query) {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTION_ADD_MUTATION = /* GraphQL */ `
+  mutation collectionAddProducts($id: ID!, $productIds: [ID!]!) {
+    collectionAddProductsV2(id: $id, productIds: $productIds) {
+      job {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+const FIND_COLLECTION_QUERY = /* GraphQL */ `
+  query findCollection($query: String!) {
+    collections(first: 1, query: $query) {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+`;
+
 const PUBLICATIONS_QUERY = /* GraphQL */ `
   query publications {
     publications(first: 10) {
@@ -111,19 +149,34 @@ async function main() {
 
   const productIds = [];
   for (const demo of DEMO_PRODUCTS) {
-    const hasSizes = Boolean(demo.options);
+    const handle = demo.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+    // Idempotency: skip products that already exist (safe to re-run).
+    const existing = await adminFetch(FIND_PRODUCT_QUERY, {
+      query: `handle:${handle}`,
+    });
+    const existingProduct = existing.products.edges[0]?.node;
+    if (existingProduct) {
+      productIds.push(existingProduct.id);
+      console.log(`  – ${demo.title} already exists, skipping`);
+      continue;
+    }
+
+    // productSet requires productOptions whenever variants are given —
+    // single-variant products use Shopify's implicit Title/Default Title.
+    const options = demo.options ?? ["Default Title"];
+    const optionName = demo.options ? "Size" : "Title";
     const input = {
       title: demo.title,
+      handle,
       status: "ACTIVE",
-      productOptions: hasSizes
-        ? [{ name: "Size", values: demo.options.map((name) => ({ name })) }]
-        : undefined,
-      variants: hasSizes
-        ? demo.options.map((size) => ({
-            price: demo.price,
-            optionValues: [{ optionName: "Size", name: size }],
-          }))
-        : [{ price: demo.price, optionValues: [] }],
+      productOptions: [
+        { name: optionName, values: options.map((name) => ({ name })) },
+      ],
+      variants: options.map((value) => ({
+        price: demo.price,
+        optionValues: [{ optionName, name: value }],
+      })),
     };
 
     const data = await adminFetch(PRODUCT_SET_MUTATION, { input });
@@ -136,27 +189,46 @@ async function main() {
     console.log(`  ✓ ${demo.title} (${data.productSet.product.handle})`);
   }
 
-  const collectionData = await adminFetch(COLLECTION_CREATE_MUTATION, {
-    input: { title: "Featured", products: productIds },
+  // Get-or-create the "Featured" collection, then make sure every seeded
+  // product is in it (re-runs included).
+  const existingCollection = await adminFetch(FIND_COLLECTION_QUERY, {
+    query: "handle:featured",
   });
-  const collectionErrors = collectionData.collectionCreate.userErrors;
-  if (collectionErrors.length) {
-    console.warn(
-      `  ✗ Collection: ${collectionErrors.map((e) => e.message).join("; ")}`,
-    );
+  let collectionId = existingCollection.collections.edges[0]?.node.id;
+
+  if (collectionId) {
+    console.log(`  – Collection "Featured" already exists`);
+    const addData = await adminFetch(COLLECTION_ADD_MUTATION, {
+      id: collectionId,
+      productIds,
+    });
+    const addErrors = addData.collectionAddProductsV2.userErrors;
+    if (addErrors.length) {
+      console.warn(
+        `  ✗ add products: ${addErrors.map((e) => e.message).join("; ")}`,
+      );
+    }
   } else {
-    console.log(
-      `  ✓ Collection "Featured" (${collectionData.collectionCreate.collection.handle})`,
-    );
+    const collectionData = await adminFetch(COLLECTION_CREATE_MUTATION, {
+      input: { title: "Featured", products: productIds },
+    });
+    const collectionErrors = collectionData.collectionCreate.userErrors;
+    if (collectionErrors.length) {
+      console.warn(
+        `  ✗ Collection: ${collectionErrors.map((e) => e.message).join("; ")}`,
+      );
+    } else {
+      collectionId = collectionData.collectionCreate.collection.id;
+      console.log(
+        `  ✓ Collection "Featured" (${collectionData.collectionCreate.collection.handle})`,
+      );
+    }
   }
 
   // Publish everything to all sales channels (incl. Headless/Online Store)
   // so the Storefront API can see it.
   const publishInput = publicationIds.map((publicationId) => ({ publicationId }));
-  const toPublish = [
-    ...productIds,
-    collectionData.collectionCreate.collection?.id,
-  ].filter(Boolean);
+  const toPublish = [...productIds, collectionId].filter(Boolean);
 
   for (const id of toPublish) {
     const result = await adminFetch(PUBLISH_MUTATION, { id, input: publishInput });
