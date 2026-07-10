@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "node --env-file=.env scripts/seed.mjs",
+    "sync-locales": "node --env-file=.env scripts/sync-locales.mjs",
     "register-webhooks": "node --env-file=.env scripts/register-webhooks.mjs"
   },
   "dependencies": {

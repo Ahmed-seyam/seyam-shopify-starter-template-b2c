@@ -34,8 +34,11 @@ export function flattenConnection<T>(connection: Connection<T>): T[] {
   return connection.edges.map((edge) => edge.node);
 }
 
-/** Supported Storefront API language codes for this template's locales. */
-export const LOCALE_TO_LANGUAGE: Record<string, string> = {
-  en: "EN",
-  ar: "AR",
-};
+/**
+ * App language code → Storefront API LanguageCode enum value.
+ * Shopify's enum is the uppercased ISO code with "_" for regions
+ * (en → EN, ar → AR, pt-BR → PT_BR), so no lookup table is needed.
+ */
+export function toShopifyLanguage(language: string): string {
+  return language.toUpperCase().replace(/-/g, "_");
+}

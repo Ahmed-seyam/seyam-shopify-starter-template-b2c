@@ -11,8 +11,14 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Messages are per language — all markets of a language share them.
   const { language } = parseLocale(locale);
 
-  return {
-    locale,
-    messages: (await import(`../../messages/${language}.json`)).default,
-  };
+  // Languages come from Shopify (sync-locales); a language without its own
+  // messages/<code>.json falls back to English until one is added.
+  let messages;
+  try {
+    messages = (await import(`../../messages/${language}.json`)).default;
+  } catch {
+    messages = (await import(`../../messages/en.json`)).default;
+  }
+
+  return { locale, messages };
 });

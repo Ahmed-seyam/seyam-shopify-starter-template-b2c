@@ -40,8 +40,15 @@ One more secret doesn't come from Shopify — **you generate it yourself**:
 cp .env.example .env    # paste the values above
 npm install
 npm run seed            # 6 demo products + "Featured" collection, published
+npm run sync-locales    # pull languages + markets from the store into routing
 npm run dev
 ```
+
+`sync-locales` regenerates `src/i18n/locales.generated.ts` from the store's
+published languages (Settings → Languages) and markets (Settings → Markets) —
+the URL structure (`/en-eg/…`) and the header switchers follow it. Re-run it
+whenever those change. Each language needs a `messages/<code>.json`
+(missing ones fall back to English).
 
 Open http://localhost:3000/en — you should see the seeded products.
 Check: PDP loads, size selector works, add to cart updates the badge,

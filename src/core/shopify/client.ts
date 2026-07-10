@@ -1,7 +1,7 @@
 import "server-only";
 import { env } from "@/core/config/env";
 import { parseLocale } from "@/i18n/routing";
-import { LOCALE_TO_LANGUAGE } from "./types";
+import { toShopifyLanguage } from "./types";
 
 export class ShopifyError extends Error {
   constructor(
@@ -53,7 +53,7 @@ export async function storefrontFetch<T>(
   const contextVariables = {
     country:
       country ?? parsed?.country ?? config.SHOPIFY_DEFAULT_COUNTRY,
-    language: parsed ? (LOCALE_TO_LANGUAGE[parsed.language] ?? "EN") : "EN",
+    language: parsed ? toShopifyLanguage(parsed.language) : "EN",
     ...variables,
   };
 

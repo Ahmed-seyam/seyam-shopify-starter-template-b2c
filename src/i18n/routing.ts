@@ -1,39 +1,40 @@
 import { defineRouting } from "next-intl/routing";
+import { countries, languages } from "./locales.generated";
 
-export const languages = ["en", "ar"] as const;
+export { countries, languages };
 
 /**
- * Markets selectable from the UI. The country goes in the URL
- * (/en-eg/…) because pages are ISR-cached per URL — a cookie-based country
- * would serve one market's cached prices to another market's visitors.
- * Must match markets enabled in Shopify admin (Settings → Markets),
- * otherwise Shopify falls back to the default market's pricing.
+ * Locales are the language x market product (en-eg, ar-eg, …), synced from
+ * Shopify via `npm run sync-locales`. The country lives in the URL because
+ * pages are ISR-cached per URL — a cookie-based country would serve one
+ * market's cached prices to another market's visitors.
  */
-export const countries = [
-  { code: "eg", label: "Egypt (EGP)" },
-  { code: "us", label: "United States (USD)" },
-] as const;
-
 export const routing = defineRouting({
-  // Cartesian product: en-eg, ar-eg, en-us, ar-us …
   locales: languages.flatMap((language) =>
-    countries.map((country) => `${language}-${country.code}`),
+    countries.map((country) => `${language.code}-${country.code}`),
   ),
-  defaultLocale: "en-eg",
+  // First entries are the store's defaults (sync script puts them first).
+  defaultLocale: `${languages[0].code}-${countries[0].code}`,
 });
 
 export type Locale = (typeof routing.locales)[number];
 
 export function parseLocale(locale: string): {
   language: string;
-  /** ISO country code (uppercase), undefined when the locale has no region. */
+  /** ISO country code (uppercase), undefined when the locale has no market. */
   country: string | undefined;
 } {
-  const [language = "en", country] = locale.split("-");
-  return { language, country: country?.toUpperCase() };
+  // The market is always the LAST segment — language codes themselves can
+  // contain a region (pt-BR → locale "pt-br-eg").
+  const segments = locale.split("-");
+  const country = segments.length > 1 ? segments.pop() : undefined;
+  return {
+    language: segments.join("-") || "en",
+    country: country?.toUpperCase(),
+  };
 }
 
-const rtlLanguages: readonly string[] = ["ar"];
+const rtlLanguages: readonly string[] = ["ar", "he", "fa", "ur"];
 
 export function dirForLocale(locale: string): "ltr" | "rtl" {
   return rtlLanguages.includes(parseLocale(locale).language) ? "rtl" : "ltr";

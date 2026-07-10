@@ -1,46 +1,56 @@
 "use client";
 
-import { GlobeIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Button } from "@/core/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/core/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { countries, languages, parseLocale } from "@/i18n/routing";
 
-const LANGUAGE_LABELS: Record<string, string> = {
-  en: "English",
-  ar: "العربية",
-};
-
-/** Toggles the language, preserving the market, path and query. */
+/**
+ * Switches the language (synced from Shopify), preserving the market,
+ * path and query.
+ */
 export function LocaleSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const { language, country } = parseLocale(locale);
-  const otherLanguage = languages.find(
-    (candidate) => candidate !== language,
-  );
-  if (!otherLanguage) return null;
+  if (languages.length < 2) return null;
 
-  const other = `${otherLanguage}-${country?.toLowerCase() ?? countries[0].code}`;
+  const { language, country } = parseLocale(locale);
+  const market = country?.toLowerCase() ?? countries[0].code;
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      aria-label={`Switch language to ${LANGUAGE_LABELS[otherLanguage] ?? otherLanguage}`}
-      onClick={() => {
+    <Select
+      value={language}
+      onValueChange={(code) => {
         const query = searchParams.toString();
         router.replace(query ? `${pathname}?${query}` : pathname, {
-          locale: other,
+          locale: `${code}-${market}`,
         });
       }}
     >
-      <GlobeIcon className="size-4" />
-      {LANGUAGE_LABELS[otherLanguage] ?? otherLanguage}
-    </Button>
+      <SelectTrigger
+        size="sm"
+        className="w-auto gap-1 border-none shadow-none"
+        aria-label="Select language"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent align="end">
+        {languages.map(({ code, label }) => (
+          <SelectItem key={code} value={code}>
+            {label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
