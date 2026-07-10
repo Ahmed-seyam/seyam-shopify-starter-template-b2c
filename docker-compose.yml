@@ -1,0 +1,21 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    # Put a reverse proxy (Caddy/nginx) in front for TLS in production.
+
+  # Optional: shared cache for multi-instance deployments. Single-instance
+  # setups don't need this — Next.js file/memory cache works out of the box.
+  # Wire it up with a custom cacheHandler (see README → Scaling).
+  # redis:
+  #   image: redis:7-alpine
+  #   restart: unless-stopped
+  #   volumes:
+  #     - redis-data:/data
+
+# volumes:
+#   redis-data:

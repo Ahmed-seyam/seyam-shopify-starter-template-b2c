@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# shopify-starter-b2c
 
-## Getting Started
+A production-shaped **B2C Shopify storefront starter** — Next.js 16 (App
+Router) + Tailwind v4 + shadcn/ui, organized as domain-driven vertical
+slices, with tag-based ISR caching invalidated by Shopify webhooks,
+Arabic/English with RTL, and pluggable search.
 
-First, run the development server:
+## Quick start
 
 ```bash
+cp .env.example .env        # fill in your store domain + tokens
+npm install
+npm run seed                # demo products + collection (needs Admin token)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 — you'll be redirected to `/en` (or `/ar`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### What you need from Shopify
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. A store (a free [Partner development store](https://partners.shopify.com) works).
+2. A **custom app** (Settings → Apps → Develop apps) with:
+   - Storefront API enabled → `SHOPIFY_STOREFRONT_TOKEN`
+   - Admin API scopes `write_products`, `read_products` → `SHOPIFY_ADMIN_TOKEN`
+   - The app's **API secret key** → `SHOPIFY_WEBHOOK_SECRET`
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/                    # THIN route adapters — no business logic
+    [locale]/…            # en/ar routes (next-intl, RTL-ready)
+    api/webhooks/shopify/ # HMAC-verified cache invalidation + search sync
+    api/revalidate/       # manual escape hatch (Bearer REVALIDATION_SECRET)
+  core/
+    shopify/              # server-only Storefront + Admin clients
+    cache/                # tag vocabulary + webhook topic → tag map
+    security/             # HMAC verification
+    ui/                   # shadcn/ui components (owned, restylable)
+  domains/                # vertical slices — pages compose these
+    product/    queries/ · components/ · types/
+    collection/ cart/     (mutations/ = Server Actions)
+    search/               # SearchProvider port + native adapter
+    search-algolia/       # Algolia adapter behind the same port
+    customer/ content/    # reserved (see their READMEs)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Rules that keep it clean:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Pages are adapters; they import from a domain's `index.ts` only.
+- `queries/` are server-only reads (`import "server-only"`) that map raw
+  Shopify shapes to domain types — components never see Storefront API types.
+- `mutations/` are Server Actions (`"use server"`). Client components import
+  them from the actions file directly (never through the barrel).
+- The browser makes **zero direct calls to Shopify**; all tokens are plain
+  env vars (no `NEXT_PUBLIC_`), enforced by `server-only`.
 
-## Deploy on Vercel
+## Caching & invalidation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Product/collection/home pages are static (ISR) with **tagged fetches**:
+  `products`, `product:<handle>`, `collections`, `collection:<handle>`.
+- `POST /api/webhooks/shopify` verifies the HMAC against the raw body,
+  dedupes by webhook ID, maps the topic to tags, and calls `revalidateTag`.
+  Register the webhooks with `npm run register-webhooks` (SITE_URL must be
+  publicly reachable — use a tunnel locally).
+- Cart/search are runtime data (`no-store`) — never statically cached.
+- Time-based revalidation (24 h) is the safety net for missed webhooks;
+  `POST /api/revalidate` is the manual escape hatch.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Search
+
+`SEARCH_PROVIDER=shopify` (default) uses the native Storefront
+search/predictive-search — zero dependencies. `SEARCH_PROVIDER=algolia`
+switches to the Algolia adapter (REST, no SDK); the webhook pipeline then
+also upserts/deletes index records, so cache and index stay consistent.
+
+## i18n
+
+`next-intl` with `en` and `ar` (RTL). Locale-aware routes (`/en/…`, `/ar/…`),
+`@inContext(country, language)` on every Storefront query for Shopify
+Markets translations and currency. Add locales in `src/i18n/routing.ts` +
+`messages/`.
+
+## Deployment
+
+**Vercel:** import the repo, set the env vars, done.
+
+**Docker:**
+
+```bash
+docker compose up --build
+```
+
+The image is **store-independent** — no Shopify access at build time; all
+config is runtime env vars, pages fill in via ISR on first request. Put a
+reverse proxy in front for TLS.
+
+### Scaling past one container
+
+`revalidateTag` works out of the box on a single instance. For multiple
+instances behind a load balancer, wire a shared cache handler (Redis) via
+`cacheHandler` in `next.config.ts` and uncomment the `redis` service in
+`docker-compose.yml`. See the Next.js self-hosting guide.
+
+## Related templates
+
+- `shopify-starter-b2b` — locked storefront, company accounts, contextual
+  pricing (requires Shopify Plus in production; free on dev stores).
+- `shopify-starter-b2b-b2c` — hybrid: guest B2C + B2B pricing on login.
