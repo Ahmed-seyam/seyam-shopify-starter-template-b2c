@@ -5,7 +5,10 @@ const envSchema = z.object({
   SHOPIFY_STORE_DOMAIN: z
     .string()
     .min(1, "SHOPIFY_STORE_DOMAIN is required, e.g. your-store.myshopify.com")
-    .regex(/^[^/]+$/, "Domain only — no protocol or path"),
+    // Tolerate a pasted URL — reduce to the bare hostname.
+    .transform((value) =>
+      value.replace(/^https?:\/\//, "").replace(/\/.*$/, ""),
+    ),
   SHOPIFY_STOREFRONT_TOKEN: z.string().min(1),
   SHOPIFY_ADMIN_TOKEN: z.string().optional(),
   SHOPIFY_API_VERSION: z.string().default("2025-07"),
