@@ -15,8 +15,9 @@ In the store admin:
 
 1. **Settings → Apps and sales channels → Develop apps → Create an app** (enable custom app development if prompted).
 2. **Configuration → Storefront API** → enable. Check the scopes:
-   `unauthenticated_read_product_listings`, `unauthenticated_read_collection_listings`,
-   `unauthenticated_write_checkouts`, `unauthenticated_read_content`.
+   - `unauthenticated_read_product_listings` (covers products, variants and collections)
+   - `unauthenticated_write_checkouts` (cart mutations — under "Checkouts")
+   - `unauthenticated_read_metaobjects` (optional — for the future content domain)
 3. **Configuration → Admin API** → check scopes: `read_products`, `write_products`, `write_publications`.
 4. **Install the app**, then collect from **API credentials**:
 
