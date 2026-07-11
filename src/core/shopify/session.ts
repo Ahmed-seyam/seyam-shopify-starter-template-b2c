@@ -21,11 +21,9 @@ type SessionEntry = {
 export const SESSION = {
   /** Shopify carts live ~10 days; keep the cookie in that window. */
   cart: { cookie: "cartId", maxAge: 60 * 60 * 24 * 10 },
-  /**
-   * Customer Account API tokens, encrypted as a JWE (core/shopify/
-   * customer-auth). Refresh tokens rotate on use — persist-what-returned.
-   */
-  customer: { cookie: "customerSession", maxAge: 60 * 60 * 24 * 30 },
+  // The customer session is not registered here: its classic access token is
+  // stored encrypted (JWE) with its own expiry by core/shopify/customer-session,
+  // not as a plaintext entity id like the cart.
 } as const satisfies Record<string, SessionEntry>;
 
 export type SessionKey = keyof typeof SESSION;

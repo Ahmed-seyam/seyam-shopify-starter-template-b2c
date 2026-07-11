@@ -6,6 +6,7 @@ import type { RawCart } from "../fragments";
 import { CART_BUYER_IDENTITY_UPDATE_MUTATION } from "../mutations/cart-buyer-identity-update";
 import { GET_CART_QUERY } from "../queries/get-cart";
 import type { Cart } from "../types";
+import { buildBuyerIdentity } from "./buyer-identity";
 import { CART_SESSION, reshapeCart, type CartPayload } from "./shared";
 
 type GetCartOptions = {
@@ -61,13 +62,16 @@ async function syncCartCountry(
   }
 
   try {
+    // Send the FULL identity (country + any customer token) — this mutation
+    // replaces buyerIdentity, so a country-only update would drop the customer
+    // link that ties the cart to a signed-in shopper's checkout.
     const payload = await storefrontMutation<CartPayload>(
       "cartBuyerIdentityUpdate",
       CART_BUYER_IDENTITY_UPDATE_MUTATION,
       {
         variables: {
           cartId: cart.id,
-          buyerIdentity: { countryCode: targetCountry },
+          buyerIdentity: await buildBuyerIdentity(locale),
         },
         locale,
         session: CART_SESSION,

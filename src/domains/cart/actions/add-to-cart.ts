@@ -4,6 +4,7 @@ import { storefrontMutation } from "@/core/shopify/client";
 import { getSession } from "@/core/shopify/session";
 import { CART_CREATE_MUTATION } from "../mutations/cart-create";
 import { CART_LINES_ADD_MUTATION } from "../mutations/cart-lines-add";
+import { buyerIdentityForNewCart } from "./buyer-identity";
 import { CART_SESSION, type CartPayload } from "./shared";
 
 export async function addToCart(
@@ -32,11 +33,14 @@ export async function addToCart(
     }
   }
 
-  // The cart's currency is fixed by the market at creation time.
+  // The cart's currency is fixed by the market at creation time. A signed-in
+  // shopper's new cart is linked to their customer account up front, so the
+  // Shopify checkout is attributed to them (guests pass no buyer identity).
+  const buyerIdentity = await buyerIdentityForNewCart(locale);
   const payload = await storefrontMutation<CartPayload>(
     "cartCreate",
     CART_CREATE_MUTATION,
-    { variables: { lines }, locale, session: CART_SESSION },
+    { variables: { lines, buyerIdentity }, locale, session: CART_SESSION },
   );
   if (!payload.cart) throw new Error("Failed to create cart");
 }

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAuthConfig } from "@/core/shopify/customer-auth";
+import { customerAccountsEnabled } from "@/core/shopify/customer-session";
 import { Button } from "@/core/ui/button";
 import { Separator } from "@/core/ui/separator";
+import { logout } from "@/domains/customer/actions/logout";
 import { getCustomer, getOrders, OrderList } from "@/domains/customer";
+import { Link } from "@/i18n/navigation";
 
 // Customer data reads the session cookie — always rendered per request.
 export const dynamic = "force-dynamic";
@@ -22,7 +24,7 @@ export default async function AccountPage({
   setRequestLocale(locale);
   const t = await getTranslations("account");
 
-  if (!customerAuthConfig()) {
+  if (!customerAccountsEnabled()) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
         <h1 className="mb-3 text-2xl font-bold">{t("title")}</h1>
@@ -31,21 +33,26 @@ export default async function AccountPage({
     );
   }
 
-  const customer = await getCustomer();
+  const customer = await getCustomer(locale);
 
   if (!customer) {
     return (
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 py-24 text-center">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <p className="text-muted-foreground">{t("signInHint")}</p>
-        <Button size="lg" asChild>
-          <a href={`/api/auth/login?locale=${locale}`}>{t("signIn")}</a>
-        </Button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Button size="lg" asChild>
+            <Link href="/account/login">{t("signIn")}</Link>
+          </Button>
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/account/register">{t("registerCta")}</Link>
+          </Button>
+        </div>
       </div>
     );
   }
 
-  const orders = await getOrders();
+  const orders = await getOrders({ locale });
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
@@ -57,9 +64,13 @@ export default async function AccountPage({
             {customer.email ? ` · ${customer.email}` : ""}
           </p>
         </div>
-        <Button variant="outline" asChild>
-          <a href={`/api/auth/logout?locale=${locale}`}>{t("signOut")}</a>
-        </Button>
+        {/* Sign-out is a state change → POST via Server Action, not a GET link. */}
+        <form action={logout}>
+          <input type="hidden" name="locale" value={locale} />
+          <Button type="submit" variant="outline">
+            {t("signOut")}
+          </Button>
+        </form>
       </div>
 
       <Separator className="my-6" />

@@ -13,10 +13,9 @@ const envSchema = z.object({
   SHOPIFY_ADMIN_TOKEN: z.string().optional(),
   SHOPIFY_API_VERSION: z.string().default("2025-07"),
   SHOPIFY_WEBHOOK_SECRET: z.string().optional(),
-  // Customer Account API (domains/customer). All three required to enable
-  // sign-in; absent → account UI degrades to a "not configured" notice.
-  SHOPIFY_SHOP_ID: z.string().optional(),
-  SHOPIFY_CUSTOMER_CLIENT_ID: z.string().optional(),
+  // Customer accounts (domains/customer) use the classic Storefront API, so no
+  // extra Shopify credentials are needed — only a secret to encrypt the session
+  // cookie. Absent → account UI degrades to a "not configured" notice.
   /** Encrypts the customer session cookie (jose JWE). Any long random string. */
   SESSION_SECRET: z.string().min(32).optional(),
   SHOPIFY_DEFAULT_COUNTRY: z.string().length(2).default("EG"),

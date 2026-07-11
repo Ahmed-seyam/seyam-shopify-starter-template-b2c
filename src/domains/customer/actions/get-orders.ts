@@ -1,23 +1,24 @@
 import "server-only";
-import {
-  CustomerAuthRequiredError,
-  customerAccountFetch,
-} from "@/core/shopify/customer-client";
+import { storefrontFetch } from "@/core/shopify/client";
+import { getCustomerToken } from "@/core/shopify/customer-session";
 import { flattenConnection, type Connection } from "@/core/shopify/types";
 import { GET_ORDERS_QUERY } from "../queries/get-orders";
 import type { CustomerOrder } from "../types";
 
 /** Empty when signed out — the account page gates on getCustomer first. */
 export async function getOrders(
-  { first = 10 }: { first?: number } = {},
+  { first = 10, locale }: { first?: number; locale?: string } = {},
 ): Promise<CustomerOrder[]> {
-  try {
-    const data = await customerAccountFetch<{
-      customer: { orders: Connection<CustomerOrder> };
-    }>(GET_ORDERS_QUERY, { first });
-    return flattenConnection(data.customer.orders);
-  } catch (error) {
-    if (error instanceof CustomerAuthRequiredError) return [];
-    throw error;
-  }
+  const token = await getCustomerToken();
+  if (!token) return [];
+
+  const data = await storefrontFetch<{
+    customer: { orders: Connection<CustomerOrder> } | null;
+  }>(GET_ORDERS_QUERY, {
+    variables: { customerAccessToken: token, first },
+    cache: "no-store",
+    locale,
+  });
+
+  return data.customer ? flattenConnection(data.customer.orders) : [];
 }

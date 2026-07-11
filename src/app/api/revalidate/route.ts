@@ -1,7 +1,16 @@
+import { timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { env } from "@/core/config/env";
+
+/** Constant-time bearer-token check — avoids leaking the secret via timing. */
+function bearerMatches(authorization: string | null, secret: string): boolean {
+  const expected = `Bearer ${secret}`;
+  const a = Buffer.from(authorization ?? "");
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not configured" }, { status: 500 });
   }
 
-  const authorization = request.headers.get("authorization");
-  if (authorization !== `Bearer ${secret}`) {
+  if (!bearerMatches(request.headers.get("authorization"), secret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
