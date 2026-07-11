@@ -7,6 +7,7 @@ import { CountrySwitcher } from "./country-switcher";
 import { LocaleSwitcher } from "./locale-switcher";
 import { SearchForm } from "./search-form";
 import { ThemeToggle } from "./theme-toggle";
+import { Suspense } from "react";
 
 export function Header() {
   const t = useTranslations("layout");
@@ -21,8 +22,12 @@ export function Header() {
           <SearchForm placeholder={t("searchPlaceholder")} />
         </div>
         <div className="ms-auto flex items-center gap-2 sm:ms-0">
-          <CountrySwitcher />
-          <LocaleSwitcher />
+          <Suspense>
+            <CountrySwitcher />
+          </Suspense>
+          <Suspense>
+            <LocaleSwitcher />
+          </Suspense>
           <ThemeToggle />
           <Button variant="ghost" size="sm" asChild>
             {/* Static-safe: session is only read on the account page itself. */}

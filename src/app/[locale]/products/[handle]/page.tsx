@@ -9,6 +9,7 @@ import {
   ProductGallery,
   VariantSelector,
 } from "@/domains/product";
+import { Suspense } from "react";
 
 type PageProps = {
   params: Promise<{ locale: string; handle: string }>;
@@ -62,12 +63,15 @@ export default async function ProductPage({ params }: PageProps) {
             />
           </div>
 
-          <VariantSelector
-            options={product.options}
-            variants={product.variants}
-          />
-
-          <AddToCartButton variants={product.variants} />
+          <Suspense>
+            <VariantSelector
+              options={product.options}
+              variants={product.variants}
+            />
+          </Suspense>
+          <Suspense>
+            <AddToCartButton variants={product.variants} />
+          </Suspense>
 
           {product.descriptionHtml && (
             <>
