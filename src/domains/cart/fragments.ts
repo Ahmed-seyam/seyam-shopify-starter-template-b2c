@@ -5,6 +5,9 @@ export const CART_FRAGMENT = /* GraphQL */ `
     id
     checkoutUrl
     totalQuantity
+    buyerIdentity {
+      countryCode
+    }
     cost {
       subtotalAmount {
         ...MoneyFragment
@@ -49,6 +52,7 @@ export type RawCart = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  buyerIdentity: { countryCode: string | null } | null;
   cost: {
     subtotalAmount: { amount: string; currencyCode: string };
     totalAmount: { amount: string; currencyCode: string };

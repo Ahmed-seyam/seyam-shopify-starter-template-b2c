@@ -19,7 +19,9 @@ export default async function CartPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const cart = await getCart(locale);
+  // syncBuyerCountry reprices the cart when the user switched markets since
+  // it was created (cart currency is pinned to its buyerIdentity).
+  const cart = await getCart(locale, { syncBuyerCountry: true });
 
   // CartView owns all cart state so line edits apply optimistically (no
   // full-page refresh) and reconcile with each mutation's returned cart.
