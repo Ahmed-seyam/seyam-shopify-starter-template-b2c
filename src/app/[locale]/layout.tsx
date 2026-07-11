@@ -53,7 +53,8 @@ export default async function LocaleLayout({
       lang={locale}
       dir={dir}
       className={`${geistSans.variable} ${arabicSans.variable} h-full antialiased`}
-      // next-themes mutates the class on <html> before hydration.
+      // ThemeProvider's pre-paint script mutates the class on <html> before
+      // hydration; suppress the resulting attribute mismatch warning.
       suppressHydrationWarning
     >
       <body

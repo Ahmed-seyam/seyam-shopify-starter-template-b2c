@@ -1,8 +1,8 @@
 "use client";
 
 import { MoonIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
 import { Button } from "@/core/ui/button";
+import { useTheme } from "@/components/layout/theme-provider";
 
 /**
  * Both icons are always rendered and CSS (`dark:` variant) picks the visible
