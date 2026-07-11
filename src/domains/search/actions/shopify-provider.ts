@@ -1,48 +1,13 @@
 import "server-only";
 import { storefrontFetch } from "@/core/shopify/client";
-import { PRODUCT_CARD_FRAGMENT } from "@/core/shopify/fragments";
 import { flattenConnection, type Connection } from "@/core/shopify/types";
 import {
   reshapeProductCard,
   type RawProductCard,
-} from "@/domains/product/queries/reshape";
+} from "@/domains/product/actions/reshape";
+import { PREDICTIVE_SEARCH_QUERY } from "../queries/predictive-search";
+import { SEARCH_QUERY } from "../queries/search-products";
 import type { SearchOptions, SearchProvider } from "../types";
-
-const SEARCH_QUERY = /* GraphQL */ `
-  query searchProducts(
-    $query: String!
-    $first: Int!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    search(query: $query, first: $first, types: [PRODUCT]) {
-      edges {
-        node {
-          ... on Product {
-            ...ProductCardFragment
-          }
-        }
-      }
-    }
-  }
-  ${PRODUCT_CARD_FRAGMENT}
-`;
-
-const PREDICTIVE_SEARCH_QUERY = /* GraphQL */ `
-  query predictiveSearch(
-    $query: String!
-    $limit: Int!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    predictiveSearch(query: $query, limit: $limit, types: [PRODUCT]) {
-      products {
-        ...ProductCardFragment
-      }
-    }
-  }
-  ${PRODUCT_CARD_FRAGMENT}
-`;
 
 export const shopifySearchProvider: SearchProvider = {
   async search(query: string, { locale, limit = 24 }: SearchOptions) {

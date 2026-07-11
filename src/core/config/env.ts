@@ -13,6 +13,12 @@ const envSchema = z.object({
   SHOPIFY_ADMIN_TOKEN: z.string().optional(),
   SHOPIFY_API_VERSION: z.string().default("2025-07"),
   SHOPIFY_WEBHOOK_SECRET: z.string().optional(),
+  // Customer Account API (domains/customer). All three required to enable
+  // sign-in; absent → account UI degrades to a "not configured" notice.
+  SHOPIFY_SHOP_ID: z.string().optional(),
+  SHOPIFY_CUSTOMER_CLIENT_ID: z.string().optional(),
+  /** Encrypts the customer session cookie (jose JWE). Any long random string. */
+  SESSION_SECRET: z.string().min(32).optional(),
   SHOPIFY_DEFAULT_COUNTRY: z.string().length(2).default("EG"),
   SITE_URL: z.url().default("http://localhost:3000"),
   REVALIDATION_SECRET: z.string().optional(),

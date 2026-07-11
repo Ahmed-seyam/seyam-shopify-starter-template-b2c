@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/core/ui/button";
 // Server Actions must be imported from the 'use server' file directly —
 // the domain barrel also re-exports server-only queries.
-import { addToCart } from "@/domains/cart/mutations/cart-actions";
+import { addToCart } from "@/domains/cart/actions/add-to-cart";
 import type { ProductVariant } from "../types";
 
 export function AddToCartButton({ variants }: { variants: ProductVariant[] }) {

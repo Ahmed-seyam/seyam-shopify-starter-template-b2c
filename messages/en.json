@@ -3,6 +3,7 @@
     "storeName": "Starter Store",
     "searchPlaceholder": "Search products…",
     "cart": "Cart",
+    "account": "Account",
     "allProducts": "All products",
     "footerNote": "Built with Next.js + Shopify Storefront API."
   },
@@ -28,7 +29,18 @@
     "checkout": "Checkout",
     "remove": "Remove",
     "quantity": "Quantity",
+    "increase": "Increase quantity",
+    "decrease": "Decrease quantity",
     "taxNote": "Taxes and shipping calculated at checkout."
+  },
+  "account": {
+    "title": "My account",
+    "signIn": "Sign in",
+    "signInHint": "Sign in with your Shopify customer account to see your profile and orders.",
+    "signOut": "Sign out",
+    "ordersTitle": "Recent orders",
+    "noOrders": "No orders yet.",
+    "notConfigured": "Customer accounts are not configured for this store yet. Set SHOPIFY_SHOP_ID, SHOPIFY_CUSTOMER_CLIENT_ID and SESSION_SECRET to enable sign-in."
   },
   "search": {
     "title": "Search",

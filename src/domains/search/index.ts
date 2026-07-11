@@ -1,7 +1,7 @@
 import "server-only";
 import { env } from "@/core/config/env";
 import { algoliaSearchProvider } from "@/domains/search-algolia";
-import { shopifySearchProvider } from "./queries/shopify-provider";
+import { shopifySearchProvider } from "./actions/shopify-provider";
 import type { SearchProvider } from "./types";
 
 export function getSearchProvider(): SearchProvider {

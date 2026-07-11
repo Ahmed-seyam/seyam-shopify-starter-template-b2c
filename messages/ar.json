@@ -3,6 +3,7 @@
     "storeName": "متجر البداية",
     "searchPlaceholder": "ابحث عن المنتجات…",
     "cart": "السلة",
+    "account": "الحساب",
     "allProducts": "كل المنتجات",
     "footerNote": "مبني بـ Next.js وواجهة Shopify Storefront API."
   },
@@ -28,7 +29,18 @@
     "checkout": "إتمام الشراء",
     "remove": "إزالة",
     "quantity": "الكمية",
+    "increase": "زيادة الكمية",
+    "decrease": "إنقاص الكمية",
     "taxNote": "تُحسب الضرائب والشحن عند إتمام الشراء."
+  },
+  "account": {
+    "title": "حسابي",
+    "signIn": "تسجيل الدخول",
+    "signInHint": "سجّل الدخول بحساب عميل Shopify لعرض ملفك الشخصي وطلباتك.",
+    "signOut": "تسجيل الخروج",
+    "ordersTitle": "الطلبات الأخيرة",
+    "noOrders": "لا توجد طلبات بعد.",
+    "notConfigured": "حسابات العملاء غير مفعّلة لهذا المتجر بعد. أضِف SHOPIFY_SHOP_ID و SHOPIFY_CUSTOMER_CLIENT_ID و SESSION_SECRET لتفعيل تسجيل الدخول."
   },
   "search": {
     "title": "البحث",

@@ -29,6 +29,13 @@ const TOPICS = [
   "COLLECTIONS_CREATE",
   "COLLECTIONS_UPDATE",
   "COLLECTIONS_DELETE",
+  // content domain (pages + metaobjects)
+  "PAGES_CREATE",
+  "PAGES_UPDATE",
+  "PAGES_DELETE",
+  "METAOBJECTS_CREATE",
+  "METAOBJECTS_UPDATE",
+  "METAOBJECTS_DELETE",
 ];
 
 const CREATE_MUTATION = /* GraphQL */ `

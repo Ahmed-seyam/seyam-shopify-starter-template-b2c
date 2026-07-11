@@ -1,5 +1,5 @@
-export { getProduct } from "./queries/get-product";
-export { getProducts } from "./queries/get-products";
+export { getProduct } from "./actions/get-product";
+export { getProducts } from "./actions/get-products";
 export { ProductCard } from "./components/product-card";
 export { ProductGallery } from "./components/product-gallery";
 export { VariantSelector } from "./components/variant-selector";

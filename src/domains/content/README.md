@@ -1,18 +1,20 @@
 # content domain
 
-Reserved for CMS-driven content via **Shopify metaobjects** (self-contained,
-no external CMS account needed). Planned shape:
+CMS-driven content via **Shopify pages + metaobjects** (self-contained, no
+external CMS account needed). Implemented:
 
 ```
 content/
-  queries/     get-page.ts, get-metaobject.ts   (server-only, tags: page:<handle>)
-  components/  rich-text.tsx, hero.tsx
-  types/
+  queries/     GraphQL query documents (get-page.ts, get-metaobject.ts)
+  actions/     get-page.ts, get-metaobject.ts (server-only, tag-cached)
+  types/       Page, Metaobject (fields keyed by field key)
 ```
 
-Notes for implementation:
-
-- Tag queries with `pageTag(handle)` from `core/cache/tags` and add the
-  `pages/update` + metaobject webhook topics to `core/cache/invalidation.ts`.
-- Design the query interface so Sanity (or any CMS) can slot in behind the
-  same functions — the rest of the app should not know the content source.
+- Route: `/[locale]/pages/[handle]` renders Shopify pages (ISR on first
+  hit; `pages/*` webhook topics invalidate `pages` + `page:<handle>` tags).
+- Metaobjects: `getMetaobject(type, handle, locale)` for structured blocks
+  (hero sections, banners, FAQ …); `metaobjects/*` webhook topics
+  invalidate `metaobjects` + `metaobject:<handle>`.
+- Both queries run through `@inContext` so Markets translations apply.
+- Swapping in Sanity (or any CMS) means re-implementing the two action
+  functions behind the same signatures — callers only see domain types.

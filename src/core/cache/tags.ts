@@ -6,8 +6,10 @@ export const TAGS = {
   products: "products",
   collections: "collections",
   pages: "pages",
+  metaobjects: "metaobjects",
 } as const;
 
 export const productTag = (handle: string) => `product:${handle}`;
 export const collectionTag = (handle: string) => `collection:${handle}`;
 export const pageTag = (handle: string) => `page:${handle}`;
+export const metaobjectTag = (handle: string) => `metaobject:${handle}`;

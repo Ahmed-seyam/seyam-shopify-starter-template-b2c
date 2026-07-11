@@ -1,11 +1,6 @@
-import "server-only";
-import { productTag, TAGS } from "@/core/cache/tags";
-import { storefrontFetch } from "@/core/shopify/client";
 import { IMAGE_FRAGMENT, MONEY_FRAGMENT } from "@/core/shopify/fragments";
-import type { Product } from "../types";
-import { reshapeProduct, type RawProduct } from "./reshape";
 
-const GET_PRODUCT_QUERY = /* GraphQL */ `
+export const GET_PRODUCT_QUERY = /* GraphQL */ `
   query getProduct(
     $handle: String!
     $country: CountryCode
@@ -76,19 +71,3 @@ const GET_PRODUCT_QUERY = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
   ${MONEY_FRAGMENT}
 `;
-
-export async function getProduct(
-  handle: string,
-  locale: string,
-): Promise<Product | null> {
-  const data = await storefrontFetch<{ product: RawProduct | null }>(
-    GET_PRODUCT_QUERY,
-    {
-      variables: { handle },
-      locale,
-      tags: [TAGS.products, productTag(handle)],
-    },
-  );
-
-  return data.product ? reshapeProduct(data.product) : null;
-}

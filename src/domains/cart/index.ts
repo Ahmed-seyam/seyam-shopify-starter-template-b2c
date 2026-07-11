@@ -1,7 +1,5 @@
-export { getCart } from "./queries/get-cart";
-export {
-  addToCart,
-  updateLineQuantity,
-  removeLine,
-} from "./mutations/cart-actions";
+export { getCart } from "./actions/get-cart";
+export { addToCart } from "./actions/add-to-cart";
+export { updateLineQuantity } from "./actions/update-line-quantity";
+export { removeLine } from "./actions/remove-line";
 export type * from "./types";

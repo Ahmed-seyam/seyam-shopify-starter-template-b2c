@@ -44,7 +44,7 @@ export const CART_FRAGMENT = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
 `;
 
-// Raw shape shared by cart queries and mutations.
+// Raw shape shared by cart queries and mutations — mirrors CartFragment.
 export type RawCart = {
   id: string;
   checkoutUrl: string;

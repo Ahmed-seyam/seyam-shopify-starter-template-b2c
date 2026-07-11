@@ -1,3 +1,3 @@
-export { getCollection } from "./queries/get-collection";
-export { getCollections } from "./queries/get-collections";
+export { getCollection } from "./actions/get-collection";
+export { getCollections } from "./actions/get-collections";
 export type * from "./types";

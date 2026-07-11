@@ -1,4 +1,6 @@
+import { UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/core/ui/button";
 import { Link } from "@/i18n/navigation";
 import { CartBadge } from "./cart-badge";
 import { CountrySwitcher } from "./country-switcher";
@@ -22,6 +24,12 @@ export function Header() {
           <CountrySwitcher />
           <LocaleSwitcher />
           <ThemeToggle />
+          <Button variant="ghost" size="sm" asChild>
+            {/* Static-safe: session is only read on the account page itself. */}
+            <Link href="/account" aria-label={t("account")}>
+              <UserIcon className="size-5" />
+            </Link>
+          </Button>
           <CartBadge label={t("cart")} />
         </div>
       </div>

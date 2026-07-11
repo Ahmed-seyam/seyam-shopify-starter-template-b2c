@@ -1,13 +1,6 @@
-import "server-only";
-import { cookies } from "next/headers";
-import { storefrontFetch } from "@/core/shopify/client";
-import { flattenConnection } from "@/core/shopify/types";
-import type { Cart } from "../types";
-import { CART_FRAGMENT, type RawCart } from "./cart-fragment";
+import { CART_FRAGMENT } from "../fragments";
 
-export const CART_COOKIE = "cartId";
-
-const GET_CART_QUERY = /* GraphQL */ `
+export const GET_CART_QUERY = /* GraphQL */ `
   query getCart(
     $cartId: ID!
     $country: CountryCode
@@ -19,35 +12,3 @@ const GET_CART_QUERY = /* GraphQL */ `
   }
   ${CART_FRAGMENT}
 `;
-
-export function reshapeCart(raw: RawCart): Cart {
-  return {
-    id: raw.id,
-    checkoutUrl: raw.checkoutUrl,
-    totalQuantity: raw.totalQuantity,
-    cost: raw.cost,
-    lines: flattenConnection(raw.lines),
-  };
-}
-
-/** Cart is per-user runtime data — never statically cached. */
-export async function getCart(locale: string): Promise<Cart | null> {
-  const cartId = (await cookies()).get(CART_COOKIE)?.value;
-  if (!cartId) return null;
-
-  try {
-    const data = await storefrontFetch<{ cart: RawCart | null }>(
-      GET_CART_QUERY,
-      {
-        variables: { cartId },
-        locale,
-        cache: "no-store",
-      },
-    );
-    return data.cart ? reshapeCart(data.cart) : null;
-  } catch {
-    // Stale/invalid cookie must not 500 the page — treat as empty cart;
-    // the next addToCart replaces the cookie with a fresh cart.
-    return null;
-  }
-}
