@@ -2,4 +2,3 @@
 // (No server-only fetchers live in the checkout domain: the checkoutUrl comes
 // from the cart domain, and payment/session state lives in Shopify's checkout.)
 export { CheckoutButton } from "./components/checkout-button";
-export type { CheckoutSnapshot, ShopifyCheckoutElement } from "./checkout-kit";

@@ -2,12 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
-import { Button } from "@/core/ui/button";
-import { useRouter } from "@/i18n/navigation";
 import type {
-  CheckoutSnapshot,
-  ShopifyCheckoutElement,
-} from "../checkout-kit";
+  ShopifyCheckout,
+  ShopifyCheckoutCompleteEvent,
+  ShopifyCheckoutErrorEvent,
+} from "@shopify/checkout-kit";
+import { Button } from "@/core/ui/button";
+// Import the Server Action from its 'use server' file directly — never via the
+// cart domain barrel, which re-exports server-only fetchers.
+import { clearCart } from "@/domains/cart/actions/clear-cart";
+import { useRouter } from "@/i18n/navigation";
 
 type CheckoutMode = "redirect" | "embedded";
 
@@ -46,7 +50,7 @@ function EmbeddedCheckout({
   checkoutUrl,
   label,
 }: Pick<Props, "checkoutUrl" | "label">) {
-  const ref = useRef<ShopifyCheckoutElement>(null);
+  const ref = useRef<ShopifyCheckout>(null);
   const router = useRouter();
   const locale = useLocale();
   // The custom element only exists after the SDK's side-effect import runs in
@@ -67,41 +71,41 @@ function EmbeddedCheckout({
     const el = ref.current;
     if (!el) return;
 
-    const onComplete = (event: Event) => {
-      const snapshot = (event as CustomEvent<{ checkout: CheckoutSnapshot }>)
-        .detail?.checkout;
-      const orderId = snapshot?.order?.id;
-      // Hand off to our own branded confirmation — never Shopify's page.
-      router.push(
-        `/checkout/thank-you${orderId ? `?order=${encodeURIComponent(orderId)}` : ""}`,
-        { locale },
-      );
+    // Real event names are `checkout:*` (the SDK's DOM events). The `ec.*`
+    // names in some docs are the internal ECP wire methods and never reach the
+    // DOM. Handlers are cast to EventListener because TS sees the custom
+    // element as a plain HTMLElement.
+    const onComplete = (event: ShopifyCheckoutCompleteEvent) => {
+      const orderId = event.detail?.order?.id;
+      // The order is placed — Shopify converted the cart, so forget our cart
+      // cookie and refresh the badge before leaving, otherwise the purchased
+      // items linger until a manual reload.
+      void clearCart().then(() => {
+        window.dispatchEvent(new Event("cart:updated"));
+        // Hand off to our own branded confirmation — never Shopify's page.
+        router.push(
+          `/checkout/thank-you${orderId ? `?order=${encodeURIComponent(orderId)}` : ""}`,
+          { locale },
+        );
+      });
     };
-    const onError = (event: Event) => {
-      console.error(
-        "checkout error",
-        (event as CustomEvent<{ error: unknown }>).detail?.error,
-      );
+    const onError = (event: ShopifyCheckoutErrorEvent) => {
+      console.error("checkout error", event.detail?.error);
     };
 
-    el.addEventListener("ec.complete", onComplete);
-    el.addEventListener("ec.error", onError);
-    return () => {
-      el.removeEventListener("ec.complete", onComplete);
-      el.removeEventListener("ec.error", onError);
-    };
+    // One AbortController removes every listener on cleanup.
+    const controller = new AbortController();
+    const { signal } = controller;
+    el.addEventListener("checkout:complete", onComplete as EventListener, {
+      signal,
+    });
+    el.addEventListener("checkout:error", onError as EventListener, { signal });
+    return () => controller.abort();
   }, [ready, router, locale]);
 
   return (
     <>
-      {ready && (
-        <shopify-checkout
-          ref={ref}
-          src={checkoutUrl}
-          target="popup"
-          appearance="storefront"
-        />
-      )}
+      {ready && <shopify-checkout ref={ref} src={checkoutUrl} target="popup" />}
       <Button
         size="lg"
         className="mt-6 w-full"

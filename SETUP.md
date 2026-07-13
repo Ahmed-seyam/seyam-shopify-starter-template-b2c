@@ -15,10 +15,12 @@ In the store admin:
 
 1. **Settings → Apps and sales channels → Develop apps → Create an app** (enable custom app development if prompted).
 2. **Configuration → Storefront API** → enable. Check the scopes:
-   - `unauthenticated_read_product_listings` (covers products, variants and collections)
-   - `unauthenticated_write_checkouts` (cart mutations — under "Checkouts")
-   - `unauthenticated_read_metaobjects` (optional — for the future content domain)
-3. **Configuration → Admin API** → check scopes: `read_products`, `write_products`, `write_publications`.
+   - `unauthenticated_read_product_listings` (products, variants, collections)
+   - `unauthenticated_read_checkouts` + `unauthenticated_write_checkouts` (cart mutations — under "Checkouts")
+   - `unauthenticated_read_customers` + `unauthenticated_write_customers` + `unauthenticated_read_customer_tags` (the `domains/customer` login/register/recover/reset flows)
+   - `unauthenticated_read_content` (the `domains/content` pages)
+   - `unauthenticated_read_metaobjects` (the metaobjects CMS)
+3. **Configuration → Admin API** → check scopes: `read_products`, `write_products`, `read_publications`, `write_publications` (seed + publish to channel). Add `read_metaobjects` **only if** you use the metaobjects CMS and want its webhooks — see the metaobjects note below. Note: online-store **Pages have no webhook topic** at all, so page edits are never webhook-invalidated (they rely on ISR TTL or `POST /api/revalidate`).
 4. **Install the app**, then collect from **API credentials**:
 
 | `.env` variable | Where it is |
@@ -139,6 +141,64 @@ Result: `…myshopify.com/products/…` → redirected to your Next.js site;
 `…myshopify.com/checkouts/…` (the `checkoutUrl`) → still works, since checkout
 isn't a theme template.
 
+## 7. Shopify admin checklist (everything that must be done in the dashboard)
+
+The code is store-agnostic — these are the settings that live only in the
+Shopify admin and that the app cannot create for you. Do them once per store.
+
+### Required for the app to load & sell
+
+- [ ] **Custom app created, installed, tokens copied** — §2 (Storefront + Admin
+      scopes above). Without this every page throws the Zod env error.
+- [ ] **Products exist and are published to the right channel.** `npm run seed`
+      creates 6 demo products; if you add your own, make sure they're published
+      to the sales channel your `SHOPIFY_STOREFRONT_TOKEN` reads (Online Store,
+      or the **Headless** channel if you added it — §6). Unpublished products are
+      invisible to the Storefront API *and* omitted from checkout.
+- [ ] **Payments enabled — required to complete a checkout.**
+      **Settings → Payments.** On a development store use **test mode**: either
+      turn on Shopify Payments *test mode*, or add the **(for testing) Bogus
+      Gateway**. Without a payment method the buyer can reach checkout but can't
+      place an order. Bogus Gateway test cards: card number `1` = success,
+      `2` = failure, `3` = exception.
+- [ ] **Shipping rates configured — checkout blocks without them.**
+      **Settings → Shipping and delivery.** The general profile needs at least
+      one zone with one rate (a free "Standard" rate is fine) covering the
+      countries in your markets, or checkout stops at the shipping step.
+
+### Required for i18n (locale = `language-market` in the URL)
+
+- [ ] **Markets** — **Settings → Markets.** Add the markets you want in the URL
+      (`/en-us`, `/en-sa`, …); each pins a currency/region. `npm run sync-locales`
+      reads these — the store's default market sorts first (`defaultLocale`).
+- [ ] **Languages** — **Settings → Languages.** Publish each language you want in
+      the URL. `sync-locales` reads these too; every published language needs a
+      matching `messages/<code>.json` (missing ones fall back to English).
+- Re-run `npm run sync-locales` after changing either.
+
+### Customer accounts (`domains/customer`)
+
+- [ ] This template uses the **classic Storefront API** customer flows
+      (`customerAccessTokenCreate`/`Create`/`Recover`/`Reset`), so it needs the
+      `unauthenticated_*_customers` scopes above and a generated `SESSION_SECRET`
+      in `.env` — **no** Customer Account API / OAuth app config. If unset, the
+      account UI degrades to a "not configured" notice.
+- [ ] **Settings → Notifications** — the password-reset email uses Shopify's
+      "Customer account password reset" template; customize branding there if you
+      want. Reset links land back on the app's `/account/reset/...` route.
+
+### Going headless (optional — §6)
+
+- [ ] Add the **Headless** sales channel (dedicated Storefront token + checkout).
+- [ ] Publish products to that channel.
+- [ ] Publish a **redirect theme** so the storefront bounces to your Next.js app.
+- [ ] **Do NOT** password-protect the store — it blocks checkout too.
+
+### Webhooks (cache invalidation — §4)
+
+- [ ] `SITE_URL` set to a publicly reachable URL, `npm run register-webhooks` run
+      once against it. Uses the **API secret key** (`shpss_…`) for HMAC — §2.
+
 ## Troubleshooting
 
 - **Zod error mentioning SHOPIFY_STORE_DOMAIN on first page load** — `.env`
@@ -150,3 +210,15 @@ isn't a theme template.
 - **Stale prices after edits** — webhooks not registered/reachable; use
   `POST /api/revalidate` with `Authorization: Bearer $REVALIDATION_SECRET`
   and body `{"tags":["products"]}` as a manual fallback.
+- **Checkout opens but I can't place the order / no shipping options** — the
+  store has no payment method or no shipping rate. Enable test payments and add
+  a shipping rate — §7 (Payments / Shipping).
+- **Metaobject webhooks won't register** — two gotchas, in order:
+  (1) *"You cannot create a webhook subscription with the specified topic"* → the
+  app lacks the Admin `read_metaobjects` scope (add it, reinstall).
+  (2) *"The specified filter is invalid…"* → metaobject webhooks can't be global;
+  each needs a `filter: "type:<definition_type>"`. Populate `METAOBJECT_TYPES`
+  in `scripts/register-webhooks.mjs` with your definition `type` handles — while
+  it's empty (default) the script skips them cleanly.
+- **`register-webhooks` and `PAGES_*`** — Shopify has no page webhook topic on
+  any store; these are intentionally absent from the script.
