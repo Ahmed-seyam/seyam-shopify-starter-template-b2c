@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { env } from "@/core/config/env";
 import { getCart } from "@/domains/cart";
 import { CartView } from "@/domains/cart/components/cart-view";
 
@@ -25,5 +26,7 @@ export default async function CartPage({
 
   // CartView owns all cart state so line edits apply optimistically (no
   // full-page refresh) and reconcile with each mutation's returned cart.
-  return <CartView initialCart={cart} />;
+  // checkoutMode is resolved server-side (env is server-only) and passed down
+  // so the checkout button can mount the embedded overlay or a plain link.
+  return <CartView initialCart={cart} checkoutMode={env().CHECKOUT_MODE} />;
 }

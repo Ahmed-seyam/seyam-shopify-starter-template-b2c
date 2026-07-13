@@ -74,6 +74,71 @@ on the storefront (watch the `[webhooks]` line in the dev console). In
 production, deploy first, set `SITE_URL` to the real domain, and run the
 same command once.
 
+## 5. Checkout mode (redirect vs. embedded)
+
+`CHECKOUT_MODE` in `.env` controls where checkout is shown:
+
+| Value | Behavior |
+|---|---|
+| `redirect` (default) | The Checkout button links to Shopify's hosted checkout (`cart.checkoutUrl`) — the buyer navigates to the `*.myshopify.com` checkout domain. |
+| `embedded` | `domains/checkout` mounts Shopify **Checkout Kit**'s `<shopify-checkout>` overlay with that same URL, so the buyer stays on-site (no redirect). On completion it routes to `/checkout/thank-you`. |
+
+Notes:
+- **Customer prefill/attribution is identical in both modes** — it comes from the
+  cart's `buyerIdentity.customerAccessToken`, not from the display mode. Signing
+  in headlessly does not sign the user into checkout; the cart's buyerIdentity is
+  the only channel that carries the customer into checkout.
+- Checkout Kit is installed at `@shopify/checkout-kit@next` (currently an
+  **alpha**). `redirect` is the safe default for client work; use `embedded` for
+  demos and once the SDK is GA.
+- Only `target="popup"` (on-page overlay), `_blank`, and `auto` exist — there is
+  **no inline/iframe target**, and a raw `<iframe src={checkoutUrl}>` is blocked
+  by Shopify's checkout `frame-ancestors` CSP. The overlay *is* the embed.
+- A **prefilled address for a brand-new account** with no saved address is
+  expected: Shopify's checkout remembers the last address typed **on that
+  browser** (stored on the `*.myshopify.com` domain, per-browser — not tied to
+  the account). Verify in an incognito window: the fields will be empty. Real
+  customers on their own device see empty fields.
+
+## 6. Lock the storefront to headless (disable the theme UI)
+
+Serve **only** checkout from the `*.myshopify.com` domain and bounce every other
+storefront URL to this Next.js app. Checkout is **not** rendered by the theme
+(it's Shopify's own checkout system), so you can neutralize the theme without
+breaking `checkoutUrl`.
+
+**Do NOT use "Password protect your store"** (Online Store → Preferences). It
+gates the *entire* online store **including checkout** — public buyers hit the
+password wall instead of paying. It's a pre-launch tool only.
+
+Instead:
+
+1. **Add the Headless sales channel** (Settings → Apps and sales channels →
+   Shopify App Store → "Headless"). It gives a first-class Storefront token +
+   checkout independent of the Online Store theme. Point
+   `SHOPIFY_STOREFRONT_TOKEN` at it if you use it.
+2. **Publish products to the channel your Storefront token reads.** Disabling the
+   theme is fine; *unpublishing products from the channel* is what would break
+   checkout (`cartCreate`/`checkoutUrl` would omit them).
+3. **Publish a redirect theme** as the live theme — either Shopify's official
+   **"Headless"** theme (Theme Store) or a minimal one whose `layout/theme.liquid`
+   redirects every request to your headless domain:
+
+   ```liquid
+   <!doctype html>
+   <html>
+     <head>
+       <meta http-equiv="refresh" content="0; url=https://your-headless-domain.com{{ request.path }}">
+       <script>location.replace("https://your-headless-domain.com" + location.pathname + location.search);</script>
+     </head>
+     <body></body>
+   </html>
+   ```
+
+Result: `…myshopify.com/products/…` → redirected to your Next.js site;
+`…myshopify.com/checkouts/…` (the `checkoutUrl`) → still works, since checkout
+isn't a theme template.
+
 ## Troubleshooting
 
 - **Zod error mentioning SHOPIFY_STORE_DOMAIN on first page load** — `.env`

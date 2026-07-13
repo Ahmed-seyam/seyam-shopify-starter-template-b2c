@@ -7,6 +7,7 @@ import { useOptimistic, useState, useTransition } from "react";
 import type { Money } from "@/core/shopify/types";
 import { Button } from "@/core/ui/button";
 import { Separator } from "@/core/ui/separator";
+import { CheckoutButton } from "@/domains/checkout";
 // Import the leaf module, not the domain barrel: the barrel re-exports
 // server-only queries that must not enter this client bundle.
 import { Price } from "@/domains/product/components/price";
@@ -80,7 +81,13 @@ function applyEvent(cart: Cart, event: OptimisticEvent): Cart {
   return recompute(cart, lines);
 }
 
-export function CartView({ initialCart }: { initialCart: Cart | null }) {
+export function CartView({
+  initialCart,
+  checkoutMode,
+}: {
+  initialCart: Cart | null;
+  checkoutMode: "redirect" | "embedded";
+}) {
   const locale = useLocale();
   const t = useTranslations("cart");
   const [cart, setCart] = useState<Cart>(initialCart ?? EMPTY_CART);
@@ -230,10 +237,13 @@ export function CartView({ initialCart }: { initialCart: Cart | null }) {
       </div>
       <p className="mt-1 text-sm text-muted-foreground">{t("taxNote")}</p>
 
-      <Button size="lg" className="mt-6 w-full" asChild>
-        {/* Checkout is always Shopify-hosted — payments never touch this app. */}
-        <a href={optimisticCart.checkoutUrl}>{t("checkout")}</a>
-      </Button>
+      {/* Redirect mode → link to Shopify's hosted checkout; embedded mode →
+          Checkout Kit overlay on this page. Same checkoutUrl either way. */}
+      <CheckoutButton
+        checkoutUrl={optimisticCart.checkoutUrl}
+        mode={checkoutMode}
+        label={t("checkout")}
+      />
     </div>
   );
 }

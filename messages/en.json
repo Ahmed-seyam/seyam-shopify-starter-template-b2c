@@ -33,6 +33,11 @@
     "decrease": "Decrease quantity",
     "taxNote": "Taxes and shipping calculated at checkout."
   },
+  "checkout": {
+    "thankYouTitle": "Thank you for your order",
+    "thankYouBody": "Your order has been placed. A confirmation email is on its way.",
+    "continueShopping": "Continue shopping"
+  },
   "account": {
     "title": "My account",
     "signIn": "Sign in",

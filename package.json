@@ -12,6 +12,7 @@
     "register-webhooks": "node --env-file=.env scripts/register-webhooks.mjs"
   },
   "dependencies": {
+    "@shopify/checkout-kit": "^4.0.0-alpha.2",
     "@tailwindcss/typography": "^0.5.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

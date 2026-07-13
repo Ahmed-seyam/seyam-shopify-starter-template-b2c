@@ -20,6 +20,12 @@ const envSchema = z.object({
   SESSION_SECRET: z.string().min(32).optional(),
   SHOPIFY_DEFAULT_COUNTRY: z.string().length(2).default("EG"),
   SITE_URL: z.url().default("http://localhost:3000"),
+  // "redirect" (default) navigates to Shopify's hosted checkout via
+  // cart.checkoutUrl. "embedded" keeps the buyer on-site: domains/checkout
+  // mounts Shopify Checkout Kit's <shopify-checkout> overlay with that same
+  // URL. Either way, buyerIdentity on the cart is what prefills/attributes the
+  // signed-in customer — the mode only changes where checkout is displayed.
+  CHECKOUT_MODE: z.enum(["redirect", "embedded"]).default("redirect"),
   REVALIDATION_SECRET: z.string().optional(),
   SEARCH_PROVIDER: z.enum(["shopify", "algolia"]).default("shopify"),
   ALGOLIA_APP_ID: z.string().optional(),
