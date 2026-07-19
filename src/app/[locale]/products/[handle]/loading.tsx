@@ -1,4 +1,4 @@
-import { Container, Skeleton } from "@/core/ui";
+import { Container, Skeleton } from "@/app/core/ui";
 
 export default function ProductLoading() {
   return (

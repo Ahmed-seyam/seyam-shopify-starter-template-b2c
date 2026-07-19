@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/core/shopify/customer-session";
-import { AuthLayout, RecoverForm } from "@/domains/customer";
+import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
+import { AuthLayout, RecoverForm } from "@/app/[locale]/account";
 import { Link } from "@/i18n/navigation";
 
 export const dynamic = "force-dynamic";

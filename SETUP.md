@@ -17,8 +17,8 @@ In the store admin:
 2. **Configuration → Storefront API** → enable. Check the scopes:
    - `unauthenticated_read_product_listings` (products, variants, collections)
    - `unauthenticated_read_checkouts` + `unauthenticated_write_checkouts` (cart mutations — under "Checkouts")
-   - `unauthenticated_read_customers` + `unauthenticated_write_customers` + `unauthenticated_read_customer_tags` (the `domains/customer` login/register/recover/reset flows)
-   - `unauthenticated_read_content` (the `domains/content` pages)
+   - `unauthenticated_read_customers` + `unauthenticated_write_customers` + `unauthenticated_read_customer_tags` (the `app/[locale]/account` login/register/recover/reset flows)
+   - `unauthenticated_read_content` (the `app/[locale]/pages` pages)
    - `unauthenticated_read_metaobjects` (the metaobjects CMS)
 3. **Configuration → Admin API** → check scopes: `read_products`, `write_products`, `read_publications`, `write_publications` (seed + publish to channel). Add `read_metaobjects` **only if** you use the metaobjects CMS and want its webhooks — see the metaobjects note below. Note: online-store **Pages have no webhook topic** at all, so page edits are never webhook-invalidated (they rely on ISR TTL or `POST /api/revalidate`).
 4. **Install the app**, then collect from **API credentials**:
@@ -83,7 +83,7 @@ same command once.
 | Value | Behavior |
 |---|---|
 | `redirect` (default) | The Checkout button links to Shopify's hosted checkout (`cart.checkoutUrl`) — the buyer navigates to the `*.myshopify.com` checkout domain. |
-| `embedded` | `domains/checkout` mounts Shopify **Checkout Kit**'s `<shopify-checkout>` overlay with that same URL, so the buyer stays on-site (no redirect). On completion it routes to `/checkout/thank-you`. |
+| `embedded` | `app/[locale]/checkout` mounts Shopify **Checkout Kit**'s `<shopify-checkout>` overlay with that same URL, so the buyer stays on-site (no redirect). On completion it routes to `/checkout/thank-you`. |
 
 Notes:
 - **Customer prefill/attribution is identical in both modes** — it comes from the
@@ -176,7 +176,7 @@ Shopify admin and that the app cannot create for you. Do them once per store.
       matching `messages/<code>.json` (missing ones fall back to English).
 - Re-run `npm run sync-locales` after changing either.
 
-### Customer accounts (`domains/customer`)
+### Customer accounts (`app/[locale]/account`)
 
 - [ ] This template uses the **classic Storefront API** customer flows
       (`customerAccessTokenCreate`/`Create`/`Recover`/`Reset`), so it needs the

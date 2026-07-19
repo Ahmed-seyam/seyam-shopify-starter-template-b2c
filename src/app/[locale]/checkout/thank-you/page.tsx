@@ -1,7 +1,7 @@
 import { CheckCircle2Icon } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Button, Container, Heading, Text } from "@/core/ui";
+import { Button, Container, Heading, Text } from "@/app/core/ui";
 import { Link } from "@/i18n/navigation";
 
 // Confirmation lands here after Checkout Kit's embedded checkout fires

@@ -10,9 +10,9 @@ import {
   Heading,
   ImageFrame,
   Text,
-} from "@/core/ui";
-import { GiftCardForm } from "@/components/gift-cards/gift-card-form";
-import { getProduct } from "@/domains/product/actions/get-product";
+} from "@/app/core/ui";
+import { GiftCardForm } from "@/app/components/gift-cards/gift-card-form";
+import { getProduct } from "@/app/[locale]/products/actions/get-product";
 
 // Shopify's built-in gift card product ships with this handle.
 const GIFT_CARD_HANDLE = "gift-card";

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/core/shopify/customer-session";
-import { AuthLayout, ResetForm } from "@/domains/customer";
+import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
+import { AuthLayout, ResetForm } from "@/app/[locale]/account";
 import { Link } from "@/i18n/navigation";
 
 // Reached from Shopify's password-reset email: /account/reset/{id}/{token}.

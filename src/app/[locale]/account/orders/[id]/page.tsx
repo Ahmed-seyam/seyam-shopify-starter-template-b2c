@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/core/shopify/customer-session";
+import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
 import {
   Card,
   CardContent,
@@ -10,10 +10,10 @@ import {
   ImageFrame,
   Separator,
   Text,
-} from "@/core/ui";
-import { getOrder } from "@/domains/customer/actions/get-order";
-import { AccountShell } from "@/domains/customer/components/account-shell";
-import { OrderStatusBadge } from "@/domains/customer/components/order-status-badge";
+} from "@/app/core/ui";
+import { getOrder } from "@/app/[locale]/account/actions/get-order";
+import { AccountShell } from "@/app/[locale]/account/components/account-shell";
+import { OrderStatusBadge } from "@/app/[locale]/account/components/order-status-badge";
 import { Link } from "@/i18n/navigation";
 
 export const dynamic = "force-dynamic";

@@ -3,8 +3,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   customerAccountsEnabled,
   getCustomerToken,
-} from "@/core/shopify/customer-session";
-import { AuthLayout, RegisterForm } from "@/domains/customer";
+} from "@/app/core/shopify/customer-session";
+import { AuthLayout, RegisterForm } from "@/app/[locale]/account";
 import { Link, redirect } from "@/i18n/navigation";
 
 export const dynamic = "force-dynamic";

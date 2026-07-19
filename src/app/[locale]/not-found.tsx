@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
-import { Button, Container, Heading, SearchInput, Text } from "@/core/ui";
-import { navItems } from "@/core/config/nav";
+import { Button, Container, Heading, SearchInput, Text } from "@/app/core/ui";
+import { navItems } from "@/app/core/config/nav";
 import { Link } from "@/i18n/navigation";
 
 export default function NotFound() {

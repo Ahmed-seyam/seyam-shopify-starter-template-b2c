@@ -28,26 +28,28 @@ Open http://localhost:3000 — you'll be redirected to `/en` (or `/ar`).
 
 ```
 src/
-  app/                    # THIN route adapters — no business logic
-    [locale]/…            # en/ar routes (next-intl, RTL-ready)
+  app/
+    [locale]/…            # en/ar routes (next-intl, RTL-ready); domain code
+                          # is co-located inside each route segment:
+      products/           #   page.tsx + queries/ · actions/ · components/ · types/
+      collections/ cart/  #   (mutations/ = Server Actions)
+      account/            #   customer auth + profile (wishlist/ nested inside)
+      pages/              #   Shopify content pages
+      search/             #   SearchProvider port + native adapter
+        algolia/          #   Algolia adapter behind the same port
     api/webhooks/shopify/ # HMAC-verified cache invalidation + search sync
     api/revalidate/       # manual escape hatch (Bearer REVALIDATION_SECRET)
-  core/
-    shopify/              # server-only Storefront + Admin clients
-    cache/                # tag vocabulary + webhook topic → tag map
-    security/             # HMAC verification
-    ui/                   # shadcn/ui components (owned, restylable)
-  domains/                # vertical slices — pages compose these
-    product/    queries/ · components/ · types/
-    collection/ cart/     (mutations/ = Server Actions)
-    search/               # SearchProvider port + native adapter
-    search-algolia/       # Algolia adapter behind the same port
-    customer/ content/    # reserved (see their READMEs)
+    core/
+      shopify/            # server-only Storefront + Admin clients
+      cache/              # tag vocabulary + webhook topic → tag map
+      security/           # HMAC verification
+      ui/                 # shadcn/ui components (owned, restylable)
+    components/           # shared cross-route components (catalog, home, layout)
 ```
 
 **Rules that keep it clean:**
 
-- Pages are adapters; they import from a domain's `index.ts` only.
+- Pages are adapters; they import from their segment's `index.ts` only.
 - `queries/` are server-only reads (`import "server-only"`) that map raw
   Shopify shapes to domain types — components never see Storefront API types.
 - `mutations/` are Server Actions (`"use server"`). Client components import

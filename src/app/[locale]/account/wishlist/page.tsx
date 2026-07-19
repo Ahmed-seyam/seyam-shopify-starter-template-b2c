@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/core/shopify/customer-session";
-import { Container, Heading } from "@/core/ui";
-import { getCustomer } from "@/domains/customer";
-import { AccountShell } from "@/domains/customer/components/account-shell";
-import { WishlistView } from "@/domains/wishlist";
+import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
+import { Container, Heading } from "@/app/core/ui";
+import { getCustomer } from "@/app/[locale]/account";
+import { AccountShell } from "@/app/[locale]/account/components/account-shell";
+import { WishlistView } from "@/app/[locale]/account/wishlist";
 
 // Guests keep their wishlist too (localStorage) — the page never requires
 // sign-in, but signed-in shoppers get the account chrome around it.

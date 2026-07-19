@@ -11,15 +11,15 @@ import {
   Container,
   Heading,
   Price,
-} from "@/core/ui";
+} from "@/app/core/ui";
 import {
   getProduct,
   ProductGallery,
   VariantSelector,
-} from "@/domains/product";
-import { PurchasePanel } from "@/domains/product/components/purchase-panel";
-import { RelatedProducts } from "@/domains/product/components/related-products";
-import { ReviewsSection } from "@/domains/product/components/reviews-section";
+} from "@/app/[locale]/products";
+import { PurchasePanel } from "@/app/[locale]/products/components/purchase-panel";
+import { RelatedProducts } from "@/app/[locale]/products/components/related-products";
+import { ReviewsSection } from "@/app/[locale]/products/components/reviews-section";
 
 type PageProps = {
   params: Promise<{ locale: string; handle: string }>;

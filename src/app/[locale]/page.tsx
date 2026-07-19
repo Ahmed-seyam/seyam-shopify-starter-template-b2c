@@ -1,12 +1,12 @@
 import { setRequestLocale } from "next-intl/server";
-import { BestSellers } from "@/components/home/best-sellers";
-import { CategoryGrid } from "@/components/home/category-grid";
-import { Hero } from "@/components/home/hero";
-import { Newsletter } from "@/components/home/newsletter";
-import { Testimonials } from "@/components/home/testimonials";
-import { ValueProps } from "@/components/home/value-props";
-import { getCollections } from "@/domains/collection";
-import { getProducts } from "@/domains/product";
+import { BestSellers } from "@/app/components/home/best-sellers";
+import { CategoryGrid } from "@/app/components/home/category-grid";
+import { Hero } from "@/app/components/home/hero";
+import { Newsletter } from "@/app/components/home/newsletter";
+import { Testimonials } from "@/app/components/home/testimonials";
+import { ValueProps } from "@/app/components/home/value-props";
+import { getCollections } from "@/app/[locale]/collections";
+import { getProducts } from "@/app/[locale]/products";
 
 export default async function HomePage({
   params,

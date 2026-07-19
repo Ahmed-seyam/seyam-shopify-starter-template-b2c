@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCart } from "@/domains/cart";
+import { getCart } from "@/app/[locale]/cart";
 import { routing } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";

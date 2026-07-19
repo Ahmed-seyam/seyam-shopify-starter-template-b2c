@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { env } from "@/core/config/env";
-import { getCart } from "@/domains/cart";
-import { CartPageView } from "@/domains/cart/components/cart-page-view";
+import { env } from "@/app/core/config/env";
+import { getCart } from "@/app/[locale]/cart";
+import { CartPageView } from "@/app/[locale]/cart/components/cart-page-view";
 
 // Cart reads the session cookie — always rendered per request.
 export const dynamic = "force-dynamic";

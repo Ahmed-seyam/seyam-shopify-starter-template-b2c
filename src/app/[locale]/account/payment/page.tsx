@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { CreditCardIcon } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/core/shopify/customer-session";
-import { EmptyState } from "@/core/ui";
-import { getCustomer } from "@/domains/customer";
-import { AccountShell } from "@/domains/customer/components/account-shell";
+import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
+import { EmptyState } from "@/app/core/ui";
+import { getCustomer } from "@/app/[locale]/account";
+import { AccountShell } from "@/app/[locale]/account/components/account-shell";
 
 export const dynamic = "force-dynamic";
 
