@@ -8,6 +8,7 @@ import { Button, QuantityStepper, toast } from "@/components/ui";
 // Server Actions must be imported from the 'use server' file directly —
 // the domain barrel also re-exports server-only queries.
 import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
+import { track } from "@/lib/tracking";
 import { useWishlist } from "@/app/[locale]/account/wishlist";
 import { cn } from "@/lib/utils";
 import type { ProductVariant } from "../_types";
@@ -59,6 +60,14 @@ export function PurchasePanel({
               await addToCart(selectedVariant.id, quantity, locale);
               // Header cart badge (client-fetched to keep pages static) re-fetches on this.
               window.dispatchEvent(new Event("cart:updated"));
+              track.addToCart({
+                id: selectedVariant.id,
+                handle,
+                name: title,
+                price: Number(selectedVariant.price.amount),
+                currency: selectedVariant.price.currencyCode,
+                quantity,
+              });
               toast.success(t("addedToCart", { title }));
             });
           }}

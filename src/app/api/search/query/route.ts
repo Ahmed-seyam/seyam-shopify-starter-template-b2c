@@ -56,6 +56,14 @@ function sanitizeParams(params: Record<string, unknown>): Record<string, unknown
     ...(typeof params.highlightPostTag === "string"
       ? { highlightPostTag: params.highlightPostTag }
       : {}),
+    // Click analytics: makes Algolia return a queryID per search, which the
+    // Insights events reference for click/conversion attribution.
+    ...(typeof params.clickAnalytics === "boolean"
+      ? { clickAnalytics: params.clickAnalytics }
+      : {}),
+    ...(typeof params.userToken === "string" && params.userToken.length <= 128
+      ? { userToken: params.userToken }
+      : {}),
   };
 }
 

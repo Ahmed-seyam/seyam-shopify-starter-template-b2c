@@ -14,6 +14,7 @@ import {
 } from "@/components/ui";
 import type { ProductCard } from "@/app/[locale]/products/_types";
 import { Link, useRouter } from "@/i18n/navigation";
+import { track } from "@/lib/tracking";
 
 /** Header search: popover with live product suggestions. */
 export function SearchPopup() {
@@ -59,6 +60,7 @@ export function SearchPopup() {
   const submit = () => {
     const q = query.trim();
     if (!q) return;
+    track.search(q);
     setOpen(false);
     router.push(`/search?q=${encodeURIComponent(q)}`);
   };

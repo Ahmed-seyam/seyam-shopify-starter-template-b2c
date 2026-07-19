@@ -79,6 +79,25 @@ src/
 search/predictive-search — zero dependencies. `SEARCH_PROVIDER=algolia`
 switches to the Algolia adapter (REST, no SDK); the webhook pipeline then
 also upserts/deletes index records, so cache and index stay consistent.
+The Algolia `/search` page is InstantSearch-powered (facet counts, chips,
+pagination) driven by the `searchFacets` config; all requests and Insights
+events are proxied through `/api/search/*` — no Algolia key in the browser.
+
+## Tracking
+
+`src/lib/tracking` — a `track.*` facade fanning out to every configured
+vendor; unconfigured vendors no-op. Events: page_view, view_item,
+add_to_cart, remove_from_cart, begin_checkout, purchase, search — plus UTM
+first-touch capture merged into every GTM push.
+
+| Env var | Enables |
+| --- | --- |
+| `NEXT_PUBLIC_GTM_ID` | Google Tag Manager (GA4 e-commerce dataLayer) |
+| `NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID` (+ `_REGION`) | CleverTap (idle-loaded SDK) |
+| `NEXT_PUBLIC_ENABLE_TRACKING=false` | Kill switch for all vendors |
+
+Algolia Insights (click/conversion analytics) needs no extra config — it
+activates with the Algolia search provider, relayed via `/api/search/events`.
 
 ## i18n
 

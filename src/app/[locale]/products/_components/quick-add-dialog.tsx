@@ -17,6 +17,7 @@ import {
 // Server Actions must be imported from the 'use server' file directly —
 // the domain barrel also re-exports server-only queries.
 import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
+import { track } from "@/lib/tracking";
 import { quickViewProduct } from "../_actions/quick-view";
 import type { Product, ProductVariant } from "../_types";
 import { OptionPill } from "./option-pill";
@@ -162,6 +163,14 @@ export function QuickAddDialog({
                     startTransition(async () => {
                       await addToCart(selectedVariant.id, quantity, locale);
                       window.dispatchEvent(new Event("cart:updated"));
+                      track.addToCart({
+                        id: selectedVariant.id,
+                        handle,
+                        name: product.title,
+                        price: Number(selectedVariant.price.amount),
+                        currency: selectedVariant.price.currencyCode,
+                        quantity,
+                      });
                       setAdded(true);
                       toast.success(t("addedToCart", { title: product.title }));
                     });

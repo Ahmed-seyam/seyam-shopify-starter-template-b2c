@@ -2,7 +2,7 @@
 
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { history } from "instantsearch.js/es/lib/routers";
 import type { UiState } from "instantsearch.js";
 import {
@@ -16,11 +16,14 @@ import {
 } from "react-instantsearch";
 import { Badge, Heading, SearchInput } from "@/components/ui";
 import { ProductGrid } from "@/components/catalog/product-grid";
+// Deep import — the products barrel re-exports server-only queries.
+import { ProductCard as ProductCardView } from "@/app/[locale]/products/_components/product-card";
 import { FacetPanel } from "./facet-panel";
 import { MobileFacets } from "./mobile-facets";
 import type { ProductCard } from "@/app/[locale]/products/_types";
 import { SEARCH_INDEX, searchFacets } from "./facets";
 import { proxySearchClient } from "./search-client";
+import { insightsClient, rememberQueryId, track } from "@/lib/tracking";
 
 /**
  * Algolia search page: InstantSearch state management + our kit UI. The
@@ -143,6 +146,14 @@ function Stats() {
   const t = useTranslations("search");
   const { nbHits, query } = useStats();
 
+  // Debounced Search event for GTM/CleverTap (Insights gets its own events
+  // via the middleware) — fires once the user pauses typing.
+  useEffect(() => {
+    if (!query) return;
+    const timer = setTimeout(() => track.search(query, nbHits), 1500);
+    return () => clearTimeout(timer);
+  }, [query, nbHits]);
+
   return (
     <Heading level={2}>
       {query
@@ -153,8 +164,29 @@ function Stats() {
 }
 
 function Hits() {
-  const { items } = useHits<ProductCard & Record<string, unknown>>();
-  return <ProductGrid products={items} />;
+  const { items, sendEvent } = useHits<ProductCard & Record<string, unknown>>();
+
+  if (items.length === 0) return <ProductGrid products={[]} />;
+
+  // Mirrors ProductGrid's layout with a capture wrapper per hit so Algolia
+  // Insights receives click events (with queryID) for relevance tuning.
+  return (
+    <div className="grid flex-1 grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-[1.125rem]">
+      {items.map((item) => (
+        <div
+          key={item.id}
+          onClickCapture={() => {
+            sendEvent("click", item, "Product Clicked");
+            // Persist the queryID so a later add-to-cart (PDP, quick-add)
+            // can send a search-attributed conversion.
+            rememberQueryId(item.handle, item.__queryID);
+          }}
+        >
+          <ProductCardView product={item} />
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function Pager() {
@@ -211,6 +243,7 @@ export function AlgoliaInstantSearch() {
       searchClient={proxySearchClient}
       indexName={SEARCH_INDEX}
       routing={routing}
+      insights={{ insightsClient }}
       future={{ preserveSharedStateOnUnmount: true }}
     >
       <SearchBox />

@@ -18,6 +18,8 @@ import {
   VariantSelector,
 } from "@/app/[locale]/products";
 import { PurchasePanel } from "@/app/[locale]/products/_components/purchase-panel";
+import { TrackProductView } from "@/app/[locale]/products/_components/track-product-view";
+import { itemFromProduct } from "@/lib/tracking";
 import { RelatedProducts } from "@/app/[locale]/products/_components/related-products";
 import { ReviewsSection } from "@/app/[locale]/products/_components/reviews-section";
 
@@ -143,6 +145,7 @@ export default async function ProductPage({ params }: PageProps) {
         <ReviewsSection productTitle={product.title} />
         <RelatedProducts currentHandle={product.handle} locale={locale} />
       </div>
+      <TrackProductView item={itemFromProduct(product)} />
     </Container>
   );
 }

@@ -17,6 +17,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { CheckoutButton } from "@/app/[locale]/checkout";
+import { cartSummary, track } from "@/lib/tracking";
 import { Link } from "@/i18n/navigation";
 // Direct 'use server' imports — never the barrel (server-only queries).
 import { fetchCart } from "../_actions/fetch-cart";
@@ -130,11 +131,19 @@ export function CartDrawer({
                 <span>{t("subtotal")}</span>
                 <Price money={cart.cost.subtotalAmount} />
               </div>
-              <CheckoutButton
-                checkoutUrl={cart.checkoutUrl}
-                mode={checkoutMode}
-                label={t("checkout")}
-              />
+              {/* Capture-phase so the event fires before checkout navigation. */}
+              <div
+                onClickCapture={() => {
+                  const { items, value, currency } = cartSummary(cart);
+                  track.beginCheckout(items, value, currency);
+                }}
+              >
+                <CheckoutButton
+                  checkoutUrl={cart.checkoutUrl}
+                  mode={checkoutMode}
+                  label={t("checkout")}
+                />
+              </div>
               <Button asChild variant="ghost" size="sm">
                 <Link href="/cart" onClick={() => setOpen(false)}>
                   {t("viewCart")}

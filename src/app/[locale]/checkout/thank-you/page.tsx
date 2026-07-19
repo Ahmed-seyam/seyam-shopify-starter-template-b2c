@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Button, Container, Heading, Text } from "@/components/ui";
 import { Link } from "@/i18n/navigation";
+import { TrackPurchase } from "../_components/track-purchase";
 
 // Confirmation lands here after Checkout Kit's embedded checkout fires
 // `ec.complete` (embedded mode). The order is already placed in Shopify — this
@@ -41,6 +42,7 @@ export default async function ThankYouPage({
       <Text variant="muted" className="max-w-md">
         {t("thankYouBody")}
       </Text>
+      {order && <TrackPurchase orderNumber={order} />}
       <Button asChild className="mt-4">
         <Link href="/">{t("continueShopping")}</Link>
       </Button>

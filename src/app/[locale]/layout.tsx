@@ -3,6 +3,7 @@ import { IBM_Plex_Sans_Arabic, Newsreader, Public_Sans } from "next/font/google"
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
+import { Analytics } from "@/components/layout/analytics";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
@@ -78,6 +79,7 @@ export default async function LocaleLayout({
             <main className="flex-1">{children}</main>
             <Footer />
             <Toaster />
+            <Analytics />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

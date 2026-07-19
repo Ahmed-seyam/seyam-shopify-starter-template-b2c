@@ -15,6 +15,7 @@ import {
   Separator,
 } from "@/components/ui";
 import { CheckoutButton } from "@/app/[locale]/checkout";
+import { cartSummary, track } from "@/lib/tracking";
 import { Link } from "@/i18n/navigation";
 // Direct 'use server' imports — never the barrel (server-only queries).
 import { applyDiscount } from "../_actions/apply-discount";
@@ -140,11 +141,19 @@ export function CartPageView({
               <Price money={cart.cost.totalAmount} />
             </div>
 
-            <CheckoutButton
-              checkoutUrl={cart.checkoutUrl}
-              mode={checkoutMode}
-              label={t("checkout")}
-            />
+            {/* Capture-phase so the event fires before checkout navigation. */}
+            <div
+              onClickCapture={() => {
+                const { items, value, currency } = cartSummary(cart);
+                track.beginCheckout(items, value, currency);
+              }}
+            >
+              <CheckoutButton
+                checkoutUrl={cart.checkoutUrl}
+                mode={checkoutMode}
+                label={t("checkout")}
+              />
+            </div>
             <Button asChild variant="ghost" size="sm">
               <Link href="/">{t("continueShopping")}</Link>
             </Button>
