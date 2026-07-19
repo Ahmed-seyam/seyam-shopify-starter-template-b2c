@@ -1,19 +1,23 @@
 import "server-only";
 import { env } from "@/lib/config/env";
+import type { CatalogParams } from "@/components/catalog/catalog-params";
 import type { ProductCard } from "@/app/[locale]/products/_types";
 import type { SearchOptions, SearchProvider } from "@/app/[locale]/search/_types";
+import { algoliaSort, catalogQuery } from "./builder";
 
 /**
  * Algolia adapter using the plain REST API — no SDK dependency.
  * Records are indexed by the webhook pipeline (see ./indexing.ts) with the
- * shape of ProductCard plus objectID = product handle.
+ * shape of ProductCard plus objectID = product handle and a numeric `price`.
+ * Catalog filters/sort are mapped by ./builder.ts.
  */
 
-type AlgoliaHit = ProductCard & { objectID: string };
+type AlgoliaHit = ProductCard & { objectID: string; price?: number };
 
 async function queryIndex(
   query: string,
   hitsPerPage: number,
+  catalog?: CatalogParams,
 ): Promise<ProductCard[]> {
   const config = env();
   if (!config.ALGOLIA_APP_ID || !config.ALGOLIA_SEARCH_API_KEY) {
@@ -31,7 +35,7 @@ async function queryIndex(
         "X-Algolia-API-Key": config.ALGOLIA_SEARCH_API_KEY,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query, hitsPerPage }),
+      body: JSON.stringify({ query, hitsPerPage, ...catalogQuery(catalog).build() }),
       cache: "no-store",
     },
   );
@@ -41,12 +45,15 @@ async function queryIndex(
   }
 
   const body = (await response.json()) as { hits: AlgoliaHit[] };
-  return body.hits.map(({ objectID: _objectID, ...product }) => product);
+  const hits = body.hits.map(
+    ({ objectID: _objectID, price: _price, ...product }) => product,
+  );
+  return algoliaSort(hits, catalog?.sort);
 }
 
 export const algoliaSearchProvider: SearchProvider = {
-  search(query: string, { limit = 24 }: SearchOptions) {
-    return queryIndex(query, limit);
+  search(query: string, { limit = 24, catalog }: SearchOptions) {
+    return queryIndex(query, limit, catalog);
   },
   suggest(query: string, { limit = 6 }: SearchOptions) {
     return queryIndex(query, limit);

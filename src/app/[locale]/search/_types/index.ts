@@ -1,9 +1,12 @@
 // Type-only deep import: the barrel's ProductCard is the component.
 import type { ProductCard } from "@/app/[locale]/products/_types";
+import type { CatalogParams } from "@/components/catalog/catalog-params";
 
 export type SearchOptions = {
   locale: string;
   limit?: number;
+  /** Filters + sort from the URL (see catalog-params) — full search only. */
+  catalog?: CatalogParams;
 };
 
 /**

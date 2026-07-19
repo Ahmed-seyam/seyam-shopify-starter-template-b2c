@@ -205,7 +205,8 @@
     "noResults": "No products found for \"{query}\".",
     "placeholder": "What are you looking for?",
     "viewAll": "View all results for \"{query}\"",
-    "startTyping": "Type a search above to find products."
+    "startTyping": "Type a search above to find products.",
+    "resultsCount": "{count, plural, one {# result} other {# results}}"
   },
   "errors": {
     "notFoundTitle": "Page not found",
@@ -284,7 +285,11 @@
       "max": "Max",
       "apply": "Apply",
       "clearAll": "Clear all",
-      "priceChip": "Price: {min} – {max}"
+      "priceChip": "Price: {min} – {max}",
+      "vendor": "Brand",
+      "tags": "Tags",
+      "showMore": "+ Show more",
+      "showLess": "− Show less"
     }
   },
   "reviews": {

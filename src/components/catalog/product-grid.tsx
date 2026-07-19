@@ -1,7 +1,9 @@
 import { SearchXIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, EmptyState } from "@/components/ui";
-import { ProductCard } from "@/app/[locale]/products";
+// Deep import keeps the server-only parts of the products barrel out of the
+// client bundle — this grid is rendered from both server and client trees.
+import { ProductCard } from "@/app/[locale]/products/_components/product-card";
 import type { ProductCard as ProductCardData } from "@/app/[locale]/products/_types";
 import { Link } from "@/i18n/navigation";
 

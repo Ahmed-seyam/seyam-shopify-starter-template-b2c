@@ -34,6 +34,10 @@ export async function syncSearchIndex(
     await writeRequest(`/${payload.handle}`, "PUT", {
       objectID: payload.handle,
       ...card,
+      // Numeric mirror of minPrice.amount — Algolia numericFilters (price
+      // range) only work on numbers. availableForSale must be listed in the
+      // index's attributesForFaceting for the in-stock facet filter.
+      price: Number(card.minPrice.amount),
     });
   }
 }

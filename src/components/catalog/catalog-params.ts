@@ -61,6 +61,24 @@ export function collectionSortArgs(sort: SortValue): {
   }
 }
 
+/**
+ * Shopify's search query only sorts by relevance or price (SearchSortKeys) —
+ * narrower than collections. Other sort values fall back to relevance.
+ */
+export function searchSortArgs(sort: SortValue): {
+  sortKey: "RELEVANCE" | "PRICE";
+  reverse: boolean;
+} {
+  switch (sort) {
+    case "price-asc":
+      return { sortKey: "PRICE", reverse: false };
+    case "price-desc":
+      return { sortKey: "PRICE", reverse: true };
+    default:
+      return { sortKey: "RELEVANCE", reverse: false };
+  }
+}
+
 export type ShopifyProductFilter =
   | { available: boolean }
   | { price: { min?: number; max?: number } };

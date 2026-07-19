@@ -13,7 +13,6 @@ import {
   Spinner,
 } from "@/components/ui";
 import type { ProductCard } from "@/app/[locale]/products/_types";
-import { suggestProducts } from "@/app/[locale]/search/_actions/suggest";
 import { Link, useRouter } from "@/i18n/navigation";
 
 /** Header search: popover with live product suggestions. */
@@ -36,12 +35,23 @@ export function SearchPopup() {
   useEffect(() => {
     if (debounce.current) clearTimeout(debounce.current);
     if (!active) return;
+    const controller = new AbortController();
     debounce.current = setTimeout(() => {
       startTransition(async () => {
-        setResults(await suggestProducts(query, locale));
+        try {
+          const params = new URLSearchParams({ q: query.trim(), locale });
+          const response = await fetch(`/api/search?${params}`, {
+            signal: controller.signal,
+          });
+          const body = (await response.json()) as { products?: ProductCard[] };
+          setResults(body.products ?? []);
+        } catch {
+          // Aborted or offline — keep whatever is on screen.
+        }
       });
     }, 250);
     return () => {
+      controller.abort();
       if (debounce.current) clearTimeout(debounce.current);
     };
   }, [query, active, locale]);

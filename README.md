@@ -40,6 +40,7 @@ src/
         _algolia/         #   Algolia adapter behind the same port
     api/webhooks/shopify/ # HMAC-verified cache invalidation + search sync
     api/revalidate/       # manual escape hatch (Bearer REVALIDATION_SECRET)
+    api/search/           # suggestions endpoint (same-origin + per-IP rate limit)
     fragments/            # ALL GraphQL fragments (common, product, cart)
   components/             # shared cross-route components (catalog, home, layout)
     ui/                   # shadcn/ui component kit (owned, restylable)

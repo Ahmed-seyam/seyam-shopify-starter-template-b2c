@@ -2,6 +2,10 @@ import "server-only";
 import { storefrontFetch } from "@/lib/shopify/client";
 import { flattenConnection, type Connection } from "@/lib/shopify/types";
 import {
+  collectionFilters,
+  searchSortArgs,
+} from "@/components/catalog/catalog-params";
+import {
   reshapeProductCard,
   type RawProductCard,
 } from "@/app/[locale]/products/_actions/reshape";
@@ -10,11 +14,20 @@ import { SEARCH_QUERY } from "../_queries/search-products";
 import type { SearchOptions, SearchProvider } from "../_types";
 
 export const shopifySearchProvider: SearchProvider = {
-  async search(query: string, { locale, limit = 24 }: SearchOptions) {
+  async search(query: string, { locale, limit = 24, catalog }: SearchOptions) {
+    const filters = catalog ? collectionFilters(catalog) : [];
+    const { sortKey, reverse } = searchSortArgs(catalog?.sort ?? "best-selling");
+
     const data = await storefrontFetch<{
       search: Connection<RawProductCard>;
     }>(SEARCH_QUERY, {
-      variables: { query, first: limit },
+      variables: {
+        query,
+        first: limit,
+        productFilters: filters.length > 0 ? filters : undefined,
+        sortKey,
+        reverse,
+      },
       locale,
       // Search results change constantly — keep out of the static cache.
       cache: "no-store",

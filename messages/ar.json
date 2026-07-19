@@ -205,7 +205,8 @@
     "noResults": "لا توجد منتجات مطابقة لـ \"{query}\".",
     "placeholder": "عمّ تبحث؟",
     "viewAll": "عرض كل النتائج لـ \"{query}\"",
-    "startTyping": "اكتب في البحث أعلاه للعثور على المنتجات."
+    "startTyping": "اكتب في البحث أعلاه للعثور على المنتجات.",
+    "resultsCount": "{count, plural, zero {لا نتائج} one {نتيجة واحدة} two {نتيجتان} few {# نتائج} other {# نتيجة}}"
   },
   "errors": {
     "notFoundTitle": "الصفحة غير موجودة",
@@ -284,7 +285,11 @@
       "max": "الأعلى",
       "apply": "تطبيق",
       "clearAll": "مسح الكل",
-      "priceChip": "السعر: {min} – {max}"
+      "priceChip": "السعر: {min} – {max}",
+      "vendor": "الماركة",
+      "tags": "الوسوم",
+      "showMore": "+ عرض المزيد",
+      "showLess": "− عرض أقل"
     }
   },
   "reviews": {
