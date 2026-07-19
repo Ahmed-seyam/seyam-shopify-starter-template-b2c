@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { env } from "@/core/config/env";
 import { getCart } from "@/domains/cart";
-import { CartView } from "@/domains/cart/components/cart-view";
+import { CartPageView } from "@/domains/cart/components/cart-page-view";
 
 // Cart reads the session cookie — always rendered per request.
 export const dynamic = "force-dynamic";
@@ -28,5 +28,5 @@ export default async function CartPage({
   // full-page refresh) and reconcile with each mutation's returned cart.
   // checkoutMode is resolved server-side (env is server-only) and passed down
   // so the checkout button can mount the embedded overlay or a plain link.
-  return <CartView initialCart={cart} checkoutMode={env().CHECKOUT_MODE} />;
+  return <CartPageView initialCart={cart} checkoutMode={env().CHECKOUT_MODE} />;
 }

@@ -4,6 +4,9 @@ export const GET_COLLECTION_QUERY = /* GraphQL */ `
   query getCollection(
     $handle: String!
     $first: Int!
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
+    $filters: [ProductFilter!]
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
@@ -22,7 +25,12 @@ export const GET_COLLECTION_QUERY = /* GraphQL */ `
         title
         description
       }
-      products(first: $first, sortKey: BEST_SELLING) {
+      products(
+        first: $first
+        sortKey: $sortKey
+        reverse: $reverse
+        filters: $filters
+      ) {
         edges {
           node {
             ...ProductCardFragment

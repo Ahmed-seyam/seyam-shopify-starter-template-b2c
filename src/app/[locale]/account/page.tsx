@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { customerAccountsEnabled } from "@/core/shopify/customer-session";
-import { Button } from "@/core/ui/button";
-import { Separator } from "@/core/ui/separator";
-import { logout } from "@/domains/customer/actions/logout";
+import { Button, Container, Heading, Text } from "@/core/ui";
+import { AccountShell } from "@/domains/customer/components/account-shell";
 import { getCustomer, getOrders, OrderList } from "@/domains/customer";
 import { Link } from "@/i18n/navigation";
 
@@ -26,10 +25,12 @@ export default async function AccountPage({
 
   if (!customerAccountsEnabled()) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-24 text-center">
-        <h1 className="mb-3 text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("notConfigured")}</p>
-      </div>
+      <Container className="max-w-2xl py-24 text-center">
+        <Heading level={1} className="mb-3">
+          {t("title")}
+        </Heading>
+        <Text variant="muted">{t("notConfigured")}</Text>
+      </Container>
     );
   }
 
@@ -37,9 +38,9 @@ export default async function AccountPage({
 
   if (!customer) {
     return (
-      <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("signInHint")}</p>
+      <Container className="flex max-w-2xl flex-col items-center gap-4 py-24 text-center">
+        <Heading level={1}>{t("title")}</Heading>
+        <Text variant="muted">{t("signInHint")}</Text>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button size="lg" asChild>
             <Link href="/account/login">{t("signIn")}</Link>
@@ -48,35 +49,28 @@ export default async function AccountPage({
             <Link href="/account/register">{t("registerCta")}</Link>
           </Button>
         </div>
-      </div>
+      </Container>
     );
   }
 
   const orders = await getOrders({ locale });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-muted-foreground">
-            {customer.displayName}
-            {customer.email ? ` · ${customer.email}` : ""}
-          </p>
-        </div>
-        {/* Sign-out is a state change → POST via Server Action, not a GET link. */}
-        <form action={logout}>
-          <input type="hidden" name="locale" value={locale} />
-          <Button type="submit" variant="outline">
-            {t("signOut")}
-          </Button>
-        </form>
-      </div>
-
-      <Separator className="my-6" />
-
-      <h2 className="mb-4 text-lg font-semibold">{t("ordersTitle")}</h2>
+    <AccountShell
+      locale={locale}
+      title={t("welcome", {
+        name: customer.firstName ?? customer.displayName,
+      })}
+    >
+      {customer.email && (
+        <Text variant="muted" className="mb-8">
+          {customer.email}
+        </Text>
+      )}
+      <Heading level={3} className="mb-4">
+        {t("ordersTitle")}
+      </Heading>
       <OrderList orders={orders} />
-    </div>
+    </AccountShell>
   );
 }

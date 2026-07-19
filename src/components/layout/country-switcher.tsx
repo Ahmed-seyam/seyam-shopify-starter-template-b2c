@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/ui/select";
+} from "@/core/ui";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { countries, parseLocale } from "@/i18n/routing";
 

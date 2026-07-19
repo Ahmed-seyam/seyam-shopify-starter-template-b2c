@@ -12,6 +12,7 @@ export const GET_CUSTOMER_QUERY = /* GraphQL */ `
       lastName
       displayName
       email
+      acceptsMarketing
     }
   }
 `;

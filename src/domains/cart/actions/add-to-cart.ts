@@ -11,9 +11,17 @@ export async function addToCart(
   variantId: string,
   quantity: number = 1,
   locale?: string,
+  /** Line-item properties shown at checkout (gift card recipient, etc.). */
+  attributes?: { key: string; value: string }[],
 ): Promise<void> {
   const cartId = await getSession("cart");
-  const lines = [{ merchandiseId: variantId, quantity }];
+  const lines = [
+    {
+      merchandiseId: variantId,
+      quantity,
+      ...(attributes?.length ? { attributes } : {}),
+    },
+  ];
 
   if (cartId) {
     // Self-heal: a stale/invalid cookie (expired cart, store switch) must

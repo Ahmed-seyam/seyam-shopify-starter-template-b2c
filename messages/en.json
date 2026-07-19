@@ -5,17 +5,84 @@
     "cart": "Cart",
     "account": "Account",
     "allProducts": "All products",
-    "footerNote": "Built with Next.js + Shopify Storefront API."
+    "footerNote": "Built with Next.js + Shopify Storefront API.",
+    "announcement": "Free shipping on orders over $150 — Easy 30-day returns",
+    "menu": "Menu",
+    "home": "Home"
   },
   "home": {
     "featuredTitle": "Featured products",
-    "browseCollections": "Browse collections"
+    "browseCollections": "Browse collections",
+    "hero": {
+      "eyebrow": "Fall / Winter Collection",
+      "title": "Considered clothing for everyday wear",
+      "body": "Durable, quietly designed essentials in natural fibers — built to be worn for years, not seasons.",
+      "cta": "Shop Now",
+      "secondaryCta": "New Arrivals"
+    },
+    "valueProps": {
+      "shipping": {
+        "title": "Free Shipping",
+        "sub": "On orders over $150"
+      },
+      "returns": {
+        "title": "Free Returns",
+        "sub": "Within 30 days"
+      },
+      "checkout": {
+        "title": "Secure Checkout",
+        "sub": "Encrypted payments"
+      },
+      "lasting": {
+        "title": "Made to Last",
+        "sub": "Natural, durable fibers"
+      }
+    },
+    "shopByCategory": "Shop by Category",
+    "giftCardsTile": "Gift Cards",
+    "bestSellers": "Best Sellers",
+    "viewAll": "View All",
+    "testimonials": {
+      "one": {
+        "quote": "Five years in and my overcoat still looks new. This is the last coat I will ever need to buy.",
+        "author": "Priya K., verified customer"
+      },
+      "two": {
+        "quote": "Understated, well-made, no logos. Exactly what I look for in everyday clothing.",
+        "author": "Marco V., verified customer"
+      },
+      "three": {
+        "quote": "Customer service helped me exchange a size in minutes. Refreshingly easy.",
+        "author": "Sofia R., verified customer"
+      }
+    },
+    "newsletter": {
+      "title": "Join the list",
+      "body": "Early access to new arrivals and seasonal offers. No spam, unsubscribe anytime.",
+      "placeholder": "Email address",
+      "submit": "Subscribe",
+      "success": "You are on the list — welcome!",
+      "error": "Enter a valid email address."
+    }
   },
   "product": {
     "addToCart": "Add to cart",
     "adding": "Adding…",
     "outOfStock": "Out of stock",
-    "description": "Description"
+    "description": "Description",
+    "sale": "Sale",
+    "quickAdd": "Quick Add",
+    "addedToCart": "\"{title}\" added to cart",
+    "addedShort": "Added to cart",
+    "quickAddError": "Could not load this product. Please try again.",
+    "removeFromWishlist": "Remove from wishlist",
+    "selectOptions": "Select options",
+    "related": "You may also like",
+    "reviewsAnchor": "See reviews",
+    "shippingTitle": "Shipping & Returns",
+    "shippingBody": "Free shipping on orders over $150. Free returns within 30 days of delivery.",
+    "careTitle": "Care",
+    "careBody": "See the label for fiber-specific care. When in doubt: wash cold, lay flat to dry."
   },
   "collection": {
     "empty": "No products in this collection yet.",
@@ -31,12 +98,21 @@
     "quantity": "Quantity",
     "increase": "Increase quantity",
     "decrease": "Decrease quantity",
-    "taxNote": "Taxes and shipping calculated at checkout."
+    "taxNote": "Taxes and shipping calculated at checkout.",
+    "viewCart": "View Cart",
+    "summary": "Order Summary",
+    "total": "Total",
+    "freeShippingNote": "Free shipping on orders over $150.",
+    "discountPlaceholder": "Discount code",
+    "apply": "Apply",
+    "discountApplied": "Discount applied.",
+    "discountRejected": "This code is not valid."
   },
   "checkout": {
     "thankYouTitle": "Thank you for your order",
     "thankYouBody": "Your order has been placed. A confirmation email is on its way.",
-    "continueShopping": "Continue shopping"
+    "continueShopping": "Continue shopping",
+    "orderNumber": "Order {order}"
   },
   "account": {
     "title": "My account",
@@ -78,18 +154,175 @@
       "passwordTooShort": "Password must be at least 8 characters.",
       "emailTaken": "An account with this email already exists.",
       "resetLinkInvalid": "This reset link is invalid or has expired.",
-      "generic": "Something went wrong. Please try again."
-    }
+      "generic": "Something went wrong. Please try again.",
+      "addressInvalid": "Please check the address fields and try again.",
+      "profileInvalid": "Please check your details and try again."
+    },
+    "welcome": "Hi, {name}",
+    "nav": {
+      "overview": "Overview",
+      "addresses": "Addresses",
+      "profile": "Profile",
+      "payment": "Payment",
+      "wishlist": "Wishlist"
+    },
+    "orderTitle": "Order {number}",
+    "backToAccount": "← Back to account",
+    "placedOn": "Placed on {date}",
+    "quantityLabel": "Qty: {count}",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "shippingAddress": "Shipping address",
+    "addressesHint": "Manage the addresses used at checkout.",
+    "addAddress": "Add address",
+    "editAddress": "Edit",
+    "deleteAddress": "Delete",
+    "setDefault": "Set as default",
+    "defaultAddress": "Default",
+    "noAddresses": "No saved addresses yet.",
+    "saveAddress": "Save address",
+    "cancel": "Cancel",
+    "addressSaved": "Address saved.",
+    "address1": "Address",
+    "address2": "Apartment, suite, etc. (optional)",
+    "city": "City",
+    "province": "State / Province",
+    "zip": "Postal code",
+    "country": "Country",
+    "phone": "Phone (optional)",
+    "profileHint": "Update your personal details. Leave the password blank to keep your current one.",
+    "passwordOptionalHint": "Leave blank to keep your current password.",
+    "marketingLabel": "Email me with news and offers",
+    "saveProfile": "Save changes",
+    "profileSaved": "Profile updated.",
+    "paymentTitle": "No saved payment methods",
+    "paymentHint": "Payment details are entered securely at checkout and managed by Shopify."
   },
   "search": {
     "title": "Search",
     "resultsFor": "Results for \"{query}\"",
     "noResults": "No products found for \"{query}\".",
-    "placeholder": "What are you looking for?"
+    "placeholder": "What are you looking for?",
+    "viewAll": "View all results for \"{query}\"",
+    "startTyping": "Type a search above to find products."
   },
   "errors": {
     "notFoundTitle": "Page not found",
     "notFoundBody": "The page you are looking for does not exist.",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "notFoundSearch": "Search the store…"
+  },
+  "nav": {
+    "outerwear": "Outerwear",
+    "knitwear": "Knitwear",
+    "tops": "Tops",
+    "bottoms": "Bottoms",
+    "accessories": "Accessories",
+    "giftCards": "Gift Cards",
+    "columns": {
+      "shop": "Shop",
+      "allOuterwear": "All Outerwear",
+      "coats": "Coats",
+      "vests": "Vests",
+      "jackets": "Jackets",
+      "material": "Material",
+      "wool": "Wool",
+      "quilted": "Quilted",
+      "shearling": "Shearling",
+      "fit": "Fit",
+      "regular": "Regular",
+      "relaxed": "Relaxed",
+      "featured": "Featured",
+      "featuredLink": "The Outerwear Edit"
+    }
+  },
+  "footer": {
+    "tagline": "Considered essentials, made to last.",
+    "help": "Help",
+    "shippingReturns": "Shipping & Returns",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "sizeGuide": "Size Guide",
+    "company": "Company",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "about": "About Us",
+    "weAccept": "We Accept",
+    "rights": "All rights reserved.",
+    "builtWith": "Built with Next.js + Shopify."
+  },
+  "wishlist": {
+    "add": "Add to wishlist",
+    "remove": "Remove from wishlist",
+    "addedToast": "Added \"{title}\" to wishlist",
+    "removedToast": "Removed \"{title}\" from wishlist",
+    "title": "Wishlist",
+    "emptyTitle": "Your wishlist is empty",
+    "emptyHint": "Tap the heart on any product to save it here.",
+    "browseCta": "Start browsing",
+    "viewAll": "View wishlist"
+  },
+  "catalog": {
+    "emptyTitle": "No products found",
+    "emptyBody": "Try adjusting your filters or search terms.",
+    "backHome": "Back to home",
+    "sort": {
+      "label": "Sort by",
+      "best-selling": "Best selling",
+      "newest": "Newest",
+      "price-asc": "Price: Low to high",
+      "price-desc": "Price: High to low",
+      "title": "Alphabetical"
+    },
+    "filters": {
+      "title": "Filters",
+      "availability": "Availability",
+      "inStockOnly": "In stock only",
+      "price": "Price",
+      "min": "Min",
+      "max": "Max",
+      "apply": "Apply",
+      "clearAll": "Clear all",
+      "priceChip": "Price: {min} – {max}"
+    }
+  },
+  "reviews": {
+    "title": "Reviews",
+    "write": "Write a review",
+    "dialogTitle": "Write a review",
+    "rating": "Your rating",
+    "reviewTitle": "Title",
+    "reviewBody": "Your review",
+    "yourName": "Your name",
+    "submit": "Submit review",
+    "submitting": "Submitting…",
+    "thanksTitle": "Thank you!",
+    "thanksBody": "Your review has been submitted for moderation.",
+    "error": "Please check the form and try again.",
+    "empty": "No reviews yet — be the first.",
+    "summary": "{average} out of 5 · {count, plural, one {# review} other {# reviews}}"
+  },
+  "giftCards": {
+    "title": "Gift Cards",
+    "heroTitle": "Give them the choice",
+    "heroSubtitle": "A digital gift card delivered by email — redeemable on anything in the store, with no expiry.",
+    "amountLabel": "Choose an amount",
+    "recipientEmail": "Recipient email (optional)",
+    "recipientHint": "We'll include it with the order so the card reaches them.",
+    "message": "Gift message (optional)",
+    "addToCart": "Add to cart — {price}",
+    "adding": "Adding…",
+    "added": "Gift card added to cart.",
+    "addFailed": "Could not add the gift card. Please try again.",
+    "unavailable": "Gift cards are not available right now",
+    "unavailableHint": "Add Shopify's gift card product to the store to enable this page.",
+    "howTitle": "How it works",
+    "step1Title": "Pick an amount",
+    "step1Body": "Choose a denomination and add a personal message.",
+    "step2Title": "Delivered by email",
+    "step2Body": "The gift card code arrives by email right after checkout.",
+    "step3Title": "Redeem at checkout",
+    "step3Body": "The balance applies to any order, and never expires."
   }
 }

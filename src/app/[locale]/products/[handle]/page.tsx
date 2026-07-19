@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Separator } from "@/core/ui/separator";
+import { Suspense } from "react";
 import {
-  AddToCartButton,
-  getProduct,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Breadcrumbs,
+  Container,
+  Heading,
   Price,
+} from "@/core/ui";
+import {
+  getProduct,
   ProductGallery,
   VariantSelector,
 } from "@/domains/product";
-import { Suspense } from "react";
+import { PurchasePanel } from "@/domains/product/components/purchase-panel";
+import { RelatedProducts } from "@/domains/product/components/related-products";
+import { ReviewsSection } from "@/domains/product/components/reviews-section";
 
 type PageProps = {
   params: Promise<{ locale: string; handle: string }>;
@@ -41,25 +51,46 @@ export default async function ProductPage({ params }: PageProps) {
   const { locale, handle } = await params;
   setRequestLocale(locale);
 
-  const [product, t] = await Promise.all([
+  const [product, t, tLayout] = await Promise.all([
     getProduct(handle, locale),
     getTranslations("product"),
+    getTranslations("layout"),
   ]);
   if (!product) notFound();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="grid gap-8 lg:grid-cols-2">
+    <Container className="py-8">
+      <Breadcrumbs
+        items={[
+          { label: tLayout("home"), href: "/" },
+          { label: product.title },
+        ]}
+        className="mb-6"
+      />
+
+      <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
         <ProductGallery images={product.images} title={product.title} />
 
         <div className="flex flex-col gap-6">
-          <div>
-            <p className="text-sm text-muted-foreground">{product.vendor}</p>
-            <h1 className="text-2xl font-bold">{product.title}</h1>
+          <div className="grid gap-2">
+            {product.vendor && (
+              <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                {product.vendor}
+              </p>
+            )}
+            <Heading level={2} asChild>
+              <h1>{product.title}</h1>
+            </Heading>
+            <a
+              href="#reviews"
+              className="text-sm text-muted-foreground underline-offset-2 hover:underline"
+            >
+              {t("reviewsAnchor")}
+            </a>
             <Price
               money={product.minPrice}
               compareAt={product.compareAtPrice}
-              className="mt-2 text-xl"
+              className="text-xl"
             />
           </div>
 
@@ -70,24 +101,48 @@ export default async function ProductPage({ params }: PageProps) {
             />
           </Suspense>
           <Suspense>
-            <AddToCartButton variants={product.variants} />
+            <PurchasePanel
+              handle={product.handle}
+              title={product.title}
+              variants={product.variants}
+            />
           </Suspense>
 
-          {product.descriptionHtml && (
-            <>
-              <Separator />
-              <section>
-                <h2 className="mb-2 font-semibold">{t("description")}</h2>
-                <div
-                  className="prose prose-sm max-w-none text-muted-foreground"
-                  // Trusted content: authored by the merchant in Shopify admin.
-                  dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-                />
-              </section>
-            </>
-          )}
+          <Accordion
+            type="multiple"
+            defaultValue={["details"]}
+            className="border-t border-border"
+          >
+            {product.descriptionHtml && (
+              <AccordionItem value="details">
+                <AccordionTrigger>{t("description")}</AccordionTrigger>
+                <AccordionContent>
+                  <div
+                    className="prose prose-sm max-w-none text-body"
+                    // Trusted content: authored by the merchant in Shopify admin.
+                    dangerouslySetInnerHTML={{
+                      __html: product.descriptionHtml,
+                    }}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            <AccordionItem value="shipping">
+              <AccordionTrigger>{t("shippingTitle")}</AccordionTrigger>
+              <AccordionContent>{t("shippingBody")}</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="care">
+              <AccordionTrigger>{t("careTitle")}</AccordionTrigger>
+              <AccordionContent>{t("careBody")}</AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </div>
-    </div>
+
+      <div className="mt-14 grid gap-14">
+        <ReviewsSection productTitle={product.title} />
+        <RelatedProducts currentHandle={product.handle} locale={locale} />
+      </div>
+    </Container>
   );
 }

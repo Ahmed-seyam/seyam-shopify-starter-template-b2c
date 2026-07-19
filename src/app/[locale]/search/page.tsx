@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ProductCard } from "@/domains/product";
+import { ProductGrid } from "@/components/catalog/product-grid";
+import { Container, Heading, SearchInput } from "@/core/ui";
 import { getSearchProvider } from "@/domains/search";
 
 type PageProps = {
@@ -24,20 +25,26 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
     : [];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">
-        {query ? t("resultsFor", { query }) : t("title")}
-      </h1>
+    <Container className="py-8">
+      <form action="" className="mx-auto mb-8 w-full max-w-xl">
+        <SearchInput
+          name="q"
+          defaultValue={query}
+          placeholder={t("placeholder")}
+          aria-label={t("title")}
+          className="h-12"
+        />
+      </form>
 
-      {query && products.length === 0 ? (
-        <p className="text-muted-foreground">{t("noResults", { query })}</p>
+      <Heading level={2} className="mb-6">
+        {query ? t("resultsFor", { query }) : t("title")}
+      </Heading>
+
+      {query ? (
+        <ProductGrid products={products} />
       ) : (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <p className="text-sm text-muted-foreground">{t("startTyping")}</p>
       )}
-    </div>
+    </Container>
   );
 }

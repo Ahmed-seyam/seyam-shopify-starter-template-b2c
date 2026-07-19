@@ -24,15 +24,29 @@ type RawCollection = {
   products: Connection<RawProductCard>;
 };
 
+type ProductFilter =
+  | { available: boolean }
+  | { price: { min?: number; max?: number } };
+
 export async function getCollection(
   handle: string,
   locale: string,
-  { first = 24 }: { first?: number } = {},
+  {
+    first = 24,
+    sortKey = "BEST_SELLING",
+    reverse = false,
+    filters,
+  }: {
+    first?: number;
+    sortKey?: "BEST_SELLING" | "CREATED" | "PRICE" | "TITLE";
+    reverse?: boolean;
+    filters?: ProductFilter[];
+  } = {},
 ): Promise<CollectionWithProducts | null> {
   const data = await storefrontFetch<{ collection: RawCollection | null }>(
     GET_COLLECTION_QUERY,
     {
-      variables: { handle, first },
+      variables: { handle, first, sortKey, reverse, filters },
       locale,
       // Products shown inside a collection change when products change too.
       tags: [TAGS.collections, collectionTag(handle), TAGS.products],

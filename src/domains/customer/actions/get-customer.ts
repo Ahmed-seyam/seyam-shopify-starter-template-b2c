@@ -9,6 +9,7 @@ type RawCustomer = {
   lastName: string | null;
   displayName: string;
   email: string | null;
+  acceptsMarketing: boolean;
 };
 
 /** Null = signed out (no/expired token or accounts disabled) — never throws. */
@@ -27,5 +28,6 @@ export async function getCustomer(locale?: string): Promise<Customer | null> {
     lastName: data.customer.lastName,
     displayName: data.customer.displayName,
     email: data.customer.email,
+    acceptsMarketing: data.customer.acceptsMarketing,
   };
 }

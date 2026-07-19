@@ -1,11 +1,26 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ActiveFilterChips } from "@/components/catalog/active-filter-chips";
+import {
+  collectionFilters,
+  collectionSortArgs,
+  parseCatalogParams,
+} from "@/components/catalog/catalog-params";
+import { FilterPanel, MobileFilters } from "@/components/catalog/filter-panel";
+import { ProductGrid } from "@/components/catalog/product-grid";
+import { SortSelect } from "@/components/catalog/sort-select";
+import { Breadcrumbs, Container, Heading, Text } from "@/core/ui";
 import { getCollection } from "@/domains/collection";
-import { ProductCard } from "@/domains/product";
 
 type PageProps = {
   params: Promise<{ locale: string; handle: string }>;
+  searchParams: Promise<{
+    sort?: string;
+    available?: string;
+    min?: string;
+    max?: string;
+  }>;
 };
 
 export function generateStaticParams(): Array<{ handle: string }> {
@@ -25,39 +40,71 @@ export async function generateMetadata({
   };
 }
 
-export default async function CollectionPage({ params }: PageProps) {
-  const { locale, handle } = await params;
+export default async function CollectionPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const [{ locale, handle }, rawParams] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   setRequestLocale(locale);
 
-  const [collection, t] = await Promise.all([
-    getCollection(handle, locale),
+  const catalogParams = parseCatalogParams(rawParams);
+  const { sortKey, reverse } = collectionSortArgs(catalogParams.sort);
+  const filters = collectionFilters(catalogParams);
+
+  const [collection, t, tLayout] = await Promise.all([
+    getCollection(handle, locale, {
+      sortKey,
+      reverse,
+      filters: filters.length > 0 ? filters : undefined,
+    }),
     getTranslations("collection"),
+    getTranslations("layout"),
   ]);
   if (!collection) notFound();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold">{collection.title}</h1>
+    <Container className="py-8">
+      <Breadcrumbs
+        items={[
+          { label: tLayout("home"), href: "/" },
+          { label: collection.title },
+        ]}
+        className="mb-5"
+      />
+
+      <header className="mb-7 max-w-2xl">
+        <Heading level={1} className="text-3xl md:text-4xl">
+          {collection.title}
+        </Heading>
         {collection.description && (
-          <p className="mt-1 text-muted-foreground">
+          <Text variant="muted" className="mt-2">
             {collection.description}
-          </p>
+          </Text>
         )}
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("productsCount", { count: collection.products.length })}
-        </p>
       </header>
 
-      {collection.products.length === 0 ? (
-        <p className="text-muted-foreground">{t("empty")}</p>
-      ) : (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {collection.products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+      <div className="flex items-start gap-10">
+        <FilterPanel params={catalogParams} />
+
+        <div className="flex min-w-0 flex-1 flex-col gap-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <MobileFilters params={catalogParams} />
+              <p className="text-sm text-muted-foreground">
+                {t("productsCount", { count: collection.products.length })}
+              </p>
+            </div>
+            <SortSelect value={catalogParams.sort} />
+          </div>
+
+          <ActiveFilterChips params={catalogParams} />
+
+          <ProductGrid products={collection.products} />
         </div>
-      )}
-    </div>
+      </div>
+    </Container>
   );
 }

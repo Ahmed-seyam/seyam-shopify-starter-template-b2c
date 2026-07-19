@@ -13,6 +13,7 @@ export const GET_ORDERS_QUERY = /* GraphQL */ `
           node {
             id
             name
+            orderNumber
             processedAt
             financialStatus
             totalPrice {

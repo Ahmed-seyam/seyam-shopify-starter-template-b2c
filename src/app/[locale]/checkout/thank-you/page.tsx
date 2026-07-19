@@ -1,6 +1,7 @@
+import { CheckCircle2Icon } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Button } from "@/core/ui/button";
+import { Button, Container, Heading, Text } from "@/core/ui";
 import { Link } from "@/i18n/navigation";
 
 // Confirmation lands here after Checkout Kit's embedded checkout fires
@@ -15,20 +16,34 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ThankYouPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ order?: string }>;
 }) {
-  const { locale } = await params;
+  const [{ locale }, { order }] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
   const t = await getTranslations("checkout");
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 px-4 py-24 text-center">
-      <h1 className="text-3xl font-bold">{t("thankYouTitle")}</h1>
-      <p className="text-muted-foreground">{t("thankYouBody")}</p>
+    <Container className="flex max-w-2xl flex-col items-center gap-4 py-24 text-center">
+      <span className="flex size-14 items-center justify-center rounded-full bg-accent-light/25">
+        <CheckCircle2Icon className="size-7 text-primary" />
+      </span>
+      <Heading level={1} className="text-3xl md:text-4xl">
+        {t("thankYouTitle")}
+      </Heading>
+      {order && (
+        <p className="text-sm font-medium text-muted-foreground">
+          {t("orderNumber", { order })}
+        </p>
+      )}
+      <Text variant="muted" className="max-w-md">
+        {t("thankYouBody")}
+      </Text>
       <Button asChild className="mt-4">
         <Link href="/">{t("continueShopping")}</Link>
       </Button>
-    </div>
+    </Container>
   );
 }

@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Newsreader, Public_Sans } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Toaster } from "@/core/ui";
 import { dirForLocale, routing } from "@/i18n/routing";
 import "../globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const publicSans = Public_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const newsreader = Newsreader({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
 const arabicSans = IBM_Plex_Sans_Arabic({
@@ -52,7 +62,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`${geistSans.variable} ${arabicSans.variable} h-full antialiased`}
+      className={`${publicSans.variable} ${newsreader.variable} ${arabicSans.variable} h-full antialiased`}
       // ThemeProvider's pre-paint script mutates the class on <html> before
       // hydration; suppress the resulting attribute mismatch warning.
       suppressHydrationWarning
@@ -67,6 +77,7 @@ export default async function LocaleLayout({
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
+            <Toaster />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

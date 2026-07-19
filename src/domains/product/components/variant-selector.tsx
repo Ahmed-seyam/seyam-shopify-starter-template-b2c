@@ -1,14 +1,14 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/core/ui/button";
-import { Label } from "@/core/ui/label";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import type { ProductOption, ProductVariant } from "../types";
+import { OptionPill } from "./option-pill";
 
 /**
  * Selection state lives in the URL (?Color=Red&Size=M) so PDP links are
- * shareable and the server resolves the variant on each render.
+ * shareable and the server resolves the variant on each render. Renders the
+ * shared option-pill primitives (states per spec #s-variants).
  */
 export function VariantSelector({
   options,
@@ -21,7 +21,10 @@ export function VariantSelector({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  if (options.length === 1 && options[0]?.values.length === 1) {
+  if (
+    options.length === 0 ||
+    (options.length === 1 && options[0].values.length === 1)
+  ) {
     return null;
   }
 
@@ -46,29 +49,34 @@ export function VariantSelector({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {options.map((option) => (
-        <div key={option.name}>
-          <Label className="mb-2 block">{option.name}</Label>
-          <div className="flex flex-wrap gap-2">
-            {option.values.map((value) => {
-              const selected = searchParams.get(option.name) === value;
-              return (
-                <Button
+    <div className="flex flex-col gap-5">
+      {options.map((option) => {
+        const chosen = searchParams.get(option.name);
+        return (
+          <fieldset key={option.name}>
+            <legend className="mb-2.5 flex items-baseline gap-2 text-sm font-medium text-foreground">
+              {option.name}
+              {chosen && (
+                <span className="font-normal text-muted-foreground">
+                  {chosen}
+                </span>
+              )}
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {option.values.map((value) => (
+                <OptionPill
                   key={value}
-                  type="button"
-                  size="sm"
-                  variant={selected ? "default" : "outline"}
-                  disabled={!isAvailable(option.name, value)}
+                  selected={chosen === value}
+                  unavailable={!isAvailable(option.name, value)}
                   onClick={() => select(option.name, value)}
                 >
                   {value}
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+                </OptionPill>
+              ))}
+            </div>
+          </fieldset>
+        );
+      })}
     </div>
   );
 }

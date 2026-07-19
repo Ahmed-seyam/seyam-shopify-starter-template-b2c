@@ -7,7 +7,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 
 type Theme = "light" | "dark" | "system";
@@ -26,14 +26,42 @@ const DEFAULT_THEME: Theme = "system";
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
+// localStorage as an external store: same-tab writes notify via `listeners`,
+// cross-tab writes via the "storage" event. The server snapshot is the
+// default, so the first client render matches SSR and there's no hydration
+// mismatch (resolvedTheme stays undefined until mounted).
+const listeners = new Set<() => void>();
+
+function readTheme(): Theme {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === "light" || stored === "dark" || stored === "system"
+      ? stored
+      : DEFAULT_THEME;
+  } catch {
+    return DEFAULT_THEME;
+  }
+}
+
+function subscribeTheme(callback: () => void) {
+  listeners.add(callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    listeners.delete(callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function subscribeSystem(callback: () => void) {
+  const mql = window.matchMedia("(prefers-color-scheme: dark)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
 function getSystemTheme(): ResolvedTheme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
-}
-
-function resolve(theme: Theme): ResolvedTheme {
-  return theme === "system" ? getSystemTheme() : theme;
 }
 
 /**
@@ -64,44 +92,39 @@ function apply(resolved: ResolvedTheme) {
 const themeInitScript = `(function(){try{var e=localStorage.getItem('${STORAGE_KEY}')||'${DEFAULT_THEME}',m=window.matchMedia('(prefers-color-scheme: dark)').matches,d=e==='dark'||(e==='system'&&m),r=document.documentElement;r.classList.toggle('dark',d);r.style.colorScheme=d?'dark':'light';}catch(e){}})();`;
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme | undefined>(
-    undefined,
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    readTheme,
+    () => DEFAULT_THEME,
+  );
+  const systemTheme = useSyncExternalStore(
+    subscribeSystem,
+    getSystemTheme,
+    () => undefined,
   );
 
   useServerInsertedHTML(() => (
     <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
   ));
 
-  // On mount, adopt the stored preference and reflect the class the pre-paint
-  // script already applied. resolvedTheme stays undefined on the server and the
-  // first client render, so there's no hydration mismatch.
-  useEffect(() => {
-    const stored =
-      (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? DEFAULT_THEME;
-    setThemeState(stored);
-    setResolvedTheme(resolve(stored));
-  }, []);
+  // systemTheme is undefined on the server and the first client render, which
+  // keeps resolvedTheme undefined until mounted (no hydration mismatch).
+  const resolvedTheme =
+    systemTheme === undefined
+      ? undefined
+      : theme === "system"
+        ? systemTheme
+        : theme;
 
-  // Follow the OS setting while the preference is "system".
+  // Sync the <html> class whenever the resolution changes (user choice or OS
+  // switch). On mount this re-applies what the pre-paint script already set.
   useEffect(() => {
-    if (theme !== "system") return;
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => {
-      const next = getSystemTheme();
-      setResolvedTheme(next);
-      apply(next);
-    };
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, [theme]);
+    if (resolvedTheme) apply(resolvedTheme);
+  }, [resolvedTheme]);
 
   const setTheme = useCallback((next: Theme) => {
-    setThemeState(next);
     localStorage.setItem(STORAGE_KEY, next);
-    const resolved = resolve(next);
-    setResolvedTheme(resolved);
-    apply(resolved);
+    for (const listener of listeners) listener();
   }, []);
 
   const value = useMemo<ThemeContextValue>(
