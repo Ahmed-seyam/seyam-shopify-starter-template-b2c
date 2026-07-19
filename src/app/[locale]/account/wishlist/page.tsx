@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
 import { Container, Heading } from "@/app/core/ui";
 import { getCustomer } from "@/app/[locale]/account";
-import { AccountShell } from "@/app/[locale]/account/components/account-shell";
+import { AccountShell } from "@/app/[locale]/account/_components/account-shell";
 import { WishlistView } from "@/app/[locale]/account/wishlist";
 
 // Guests keep their wishlist too (localStorage) — the page never requires

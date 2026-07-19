@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 import { env } from "@/app/core/config/env";
 import { IconButton } from "@/app/core/ui";
-import { CartDrawer } from "@/app/[locale]/cart/components/cart-drawer";
+import { CartDrawer } from "@/app/[locale]/cart/_components/cart-drawer";
 import { WishlistPopup } from "@/app/[locale]/account/wishlist";
 import { Link } from "@/i18n/navigation";
 import { AnnouncementBar } from "./announcement-bar";

@@ -11,9 +11,9 @@ import {
   Separator,
   Text,
 } from "@/app/core/ui";
-import { getOrder } from "@/app/[locale]/account/actions/get-order";
-import { AccountShell } from "@/app/[locale]/account/components/account-shell";
-import { OrderStatusBadge } from "@/app/[locale]/account/components/order-status-badge";
+import { getOrder } from "@/app/[locale]/account/_actions/get-order";
+import { AccountShell } from "@/app/[locale]/account/_components/account-shell";
+import { OrderStatusBadge } from "@/app/[locale]/account/_components/order-status-badge";
 import { Link } from "@/i18n/navigation";
 
 export const dynamic = "force-dynamic";

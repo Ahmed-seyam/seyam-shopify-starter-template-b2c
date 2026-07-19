@@ -6,7 +6,7 @@ import { Alert, Button, Container, Heading, Input, Text } from "@/app/core/ui";
 import {
   subscribeNewsletter,
   type SubscribeState,
-} from "@/app/[locale]/pages/actions/subscribe-newsletter";
+} from "@/app/[locale]/pages/_actions/subscribe-newsletter";
 
 const initialState: SubscribeState = { status: "idle" };
 

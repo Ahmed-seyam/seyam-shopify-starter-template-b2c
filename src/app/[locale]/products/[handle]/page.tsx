@@ -17,9 +17,9 @@ import {
   ProductGallery,
   VariantSelector,
 } from "@/app/[locale]/products";
-import { PurchasePanel } from "@/app/[locale]/products/components/purchase-panel";
-import { RelatedProducts } from "@/app/[locale]/products/components/related-products";
-import { ReviewsSection } from "@/app/[locale]/products/components/reviews-section";
+import { PurchasePanel } from "@/app/[locale]/products/_components/purchase-panel";
+import { RelatedProducts } from "@/app/[locale]/products/_components/related-products";
+import { ReviewsSection } from "@/app/[locale]/products/_components/reviews-section";
 
 type PageProps = {
   params: Promise<{ locale: string; handle: string }>;

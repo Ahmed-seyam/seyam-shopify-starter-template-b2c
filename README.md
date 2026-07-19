@@ -30,13 +30,14 @@ Open http://localhost:3000 — you'll be redirected to `/en` (or `/ar`).
 src/
   app/
     [locale]/…            # en/ar routes (next-intl, RTL-ready); domain code
-                          # is co-located inside each route segment:
-      products/           #   page.tsx + queries/ · actions/ · components/ · types/
-      collections/ cart/  #   (mutations/ = Server Actions)
+                          # is co-located inside each route segment in private
+                          # (_underscore) folders, so route files stand out:
+      products/           #   page.tsx + _queries/ · _actions/ · _components/ · _types/
+      collections/ cart/  #   (_mutations/ = Server Actions)
       account/            #   customer auth + profile (wishlist/ nested inside)
       pages/              #   Shopify content pages
       search/             #   SearchProvider port + native adapter
-        algolia/          #   Algolia adapter behind the same port
+        _algolia/         #   Algolia adapter behind the same port
     api/webhooks/shopify/ # HMAC-verified cache invalidation + search sync
     api/revalidate/       # manual escape hatch (Bearer REVALIDATION_SECRET)
     core/

@@ -1,7 +1,7 @@
-export { getProduct } from "./actions/get-product";
-export { getProducts } from "./actions/get-products";
-export { ProductCard } from "./components/product-card";
-export { ProductGallery } from "./components/product-gallery";
-export { VariantSelector } from "./components/variant-selector";
+export { getProduct } from "./_actions/get-product";
+export { getProducts } from "./_actions/get-products";
+export { ProductCard } from "./_components/product-card";
+export { ProductGallery } from "./_components/product-gallery";
+export { VariantSelector } from "./_components/variant-selector";
 export { Price, formatMoney } from "@/app/core/ui";
-export type * from "./types";
+export type * from "./_types";

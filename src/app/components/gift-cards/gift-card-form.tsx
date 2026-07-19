@@ -3,9 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { Button, Field, formatMoney, Input, Textarea, toast } from "@/app/core/ui";
-import { addToCart } from "@/app/[locale]/cart/actions/add-to-cart";
-import { OptionPill } from "@/app/[locale]/products/components/option-pill";
-import type { Product } from "@/app/[locale]/products/types";
+import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
+import { OptionPill } from "@/app/[locale]/products/_components/option-pill";
+import type { Product } from "@/app/[locale]/products/_types";
 
 /**
  * Amount picker + recipient details for the store's gift-card product.

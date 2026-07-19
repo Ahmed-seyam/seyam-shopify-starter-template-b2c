@@ -12,8 +12,8 @@ import {
   SearchInput,
   Spinner,
 } from "@/app/core/ui";
-import type { ProductCard } from "@/app/[locale]/products/types";
-import { suggestProducts } from "@/app/[locale]/search/actions/suggest";
+import type { ProductCard } from "@/app/[locale]/products/_types";
+import { suggestProducts } from "@/app/[locale]/search/_actions/suggest";
 import { Link, useRouter } from "@/i18n/navigation";
 
 /** Header search: popover with live product suggestions. */

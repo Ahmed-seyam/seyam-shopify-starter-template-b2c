@@ -1,9 +1,9 @@
-export { getCustomer } from "./actions/get-customer";
-export { getOrders } from "./actions/get-orders";
-export { OrderList } from "./components/order-list";
-export { LoginForm } from "./components/login-form";
-export { RegisterForm } from "./components/register-form";
-export { RecoverForm } from "./components/recover-form";
-export { ResetForm } from "./components/reset-form";
-export { AuthLayout } from "./components/auth-layout";
-export type * from "./types";
+export { getCustomer } from "./_actions/get-customer";
+export { getOrders } from "./_actions/get-orders";
+export { OrderList } from "./_components/order-list";
+export { LoginForm } from "./_components/login-form";
+export { RegisterForm } from "./_components/register-form";
+export { RecoverForm } from "./_components/recover-form";
+export { ResetForm } from "./_components/reset-form";
+export { AuthLayout } from "./_components/auth-layout";
+export type * from "./_types";
