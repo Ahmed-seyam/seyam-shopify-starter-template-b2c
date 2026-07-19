@@ -51,9 +51,9 @@ src/
 **Rules that keep it clean:**
 
 - Pages are adapters; they import from their segment's `index.ts` only.
-- `queries/` are server-only reads (`import "server-only"`) that map raw
+- `_queries/` are server-only reads (`import "server-only"`) that map raw
   Shopify shapes to domain types — components never see Storefront API types.
-- `mutations/` are Server Actions (`"use server"`). Client components import
+- `_mutations/` are Server Actions (`"use server"`). Client components import
   them from the actions file directly (never through the barrel).
 - The browser makes **zero direct calls to Shopify**; all tokens are plain
   env vars (no `NEXT_PUBLIC_`), enforced by `server-only`.
