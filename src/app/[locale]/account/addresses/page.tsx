@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
+import { customerAccountsEnabled } from "@/lib/shopify/customer-session";
 import { getAddresses } from "@/app/[locale]/account/_actions/get-addresses";
 import { getCustomer } from "@/app/[locale]/account";
 import { AccountShell } from "@/app/[locale]/account/_components/account-shell";

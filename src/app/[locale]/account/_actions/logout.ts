@@ -1,10 +1,10 @@
 "use server";
 
-import { storefrontMutation } from "@/app/core/shopify/client";
+import { storefrontMutation } from "@/lib/shopify/client";
 import {
   clearCustomerToken,
   getCustomerToken,
-} from "@/app/core/shopify/customer-session";
+} from "@/lib/shopify/customer-session";
 import { syncCartBuyerIdentity } from "@/app/[locale]/cart";
 import { redirect } from "@/i18n/navigation";
 import { CUSTOMER_ACCESS_TOKEN_DELETE_MUTATION } from "../_mutations/customer-access-token-delete";

@@ -2,7 +2,7 @@
 
 import { HeartIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { IconButton, toast } from "@/app/core/ui";
+import { IconButton, toast } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { useWishlist } from "./use-wishlist";
 

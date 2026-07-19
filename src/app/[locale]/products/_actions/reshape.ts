@@ -4,8 +4,8 @@ import type {
   Money,
   Seo,
   ShopifyImage,
-} from "@/app/core/shopify/types";
-import { flattenConnection } from "@/app/core/shopify/types";
+} from "@/lib/shopify/types";
+import { flattenConnection } from "@/lib/shopify/types";
 import type { Product, ProductCard, ProductVariant } from "../_types";
 
 // Anti-corruption layer: raw Storefront API shapes stop here.

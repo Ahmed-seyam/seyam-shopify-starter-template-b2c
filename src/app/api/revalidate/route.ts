@@ -2,7 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { env } from "@/app/core/config/env";
+import { env } from "@/lib/config/env";
 
 /** Constant-time bearer-token check — avoids leaking the secret via timing. */
 function bearerMatches(authorization: string | null, secret: string): boolean {

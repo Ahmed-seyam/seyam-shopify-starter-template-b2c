@@ -1,5 +1,5 @@
 import "server-only";
-import { env } from "@/app/core/config/env";
+import { env } from "@/lib/config/env";
 import type { ProductCard } from "@/app/[locale]/products/_types";
 import type { SearchOptions, SearchProvider } from "@/app/[locale]/search/_types";
 

@@ -1,4 +1,4 @@
-import { PRODUCT_CARD_FRAGMENT } from "@/app/core/shopify/fragments";
+import { PRODUCT_CARD_FRAGMENT } from "@/app/fragments";
 
 export const SEARCH_QUERY = /* GraphQL */ `
   query searchProducts(

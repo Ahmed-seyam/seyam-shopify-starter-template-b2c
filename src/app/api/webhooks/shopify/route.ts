@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { env } from "@/app/core/config/env";
-import { invalidateForTopic } from "@/app/core/cache/invalidation";
-import { verifyWebhookHmac } from "@/app/core/security/webhook-hmac";
+import { env } from "@/lib/config/env";
+import { invalidateForTopic } from "@/lib/cache/invalidation";
+import { verifyWebhookHmac } from "@/lib/security/webhook-hmac";
 import { syncSearchIndex } from "@/app/[locale]/search/_algolia";
 
 export const dynamic = "force-dynamic";

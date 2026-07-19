@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
-import { Button, Container, Heading, NavLink } from "@/app/core/ui";
+import { Button, Container, Heading, NavLink } from "@/components/ui";
 // Direct action import — the domain barrel must stay free of server-only code.
 import { logout } from "../_actions/logout";
 

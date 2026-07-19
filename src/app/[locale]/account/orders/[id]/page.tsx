@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/app/core/shopify/customer-session";
+import { customerAccountsEnabled } from "@/lib/shopify/customer-session";
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   ImageFrame,
   Separator,
   Text,
-} from "@/app/core/ui";
+} from "@/components/ui";
 import { getOrder } from "@/app/[locale]/account/_actions/get-order";
 import { AccountShell } from "@/app/[locale]/account/_components/account-shell";
 import { OrderStatusBadge } from "@/app/[locale]/account/_components/order-status-badge";

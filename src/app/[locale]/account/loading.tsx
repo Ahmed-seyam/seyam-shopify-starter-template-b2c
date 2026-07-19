@@ -1,4 +1,4 @@
-import { Container, Skeleton } from "@/app/core/ui";
+import { Container, Skeleton } from "@/components/ui";
 
 export default function AccountLoading() {
   return (

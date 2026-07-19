@@ -16,7 +16,7 @@ import {
   Input,
   RatingStars,
   Textarea,
-} from "@/app/core/ui";
+} from "@/components/ui";
 import {
   submitReview,
   type ReviewState,

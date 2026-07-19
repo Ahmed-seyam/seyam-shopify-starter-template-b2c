@@ -2,9 +2,9 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { Button } from "@/app/core/ui";
-import { Input } from "@/app/core/ui";
-import { Label } from "@/app/core/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
 import { reset } from "../_actions/reset";
 import { idleAuthState } from "../_types";
 

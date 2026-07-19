@@ -6,7 +6,7 @@ import {
   ShopifyUserError,
   storefrontMutation,
   type UserError,
-} from "@/app/core/shopify/client";
+} from "@/lib/shopify/client";
 import { syncCartBuyerIdentity } from "@/app/[locale]/cart";
 import { redirect } from "@/i18n/navigation";
 import { CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION } from "../_mutations/customer-access-token-create";

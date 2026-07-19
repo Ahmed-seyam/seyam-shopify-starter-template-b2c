@@ -1,7 +1,7 @@
 import "server-only";
-import type { UserError } from "@/app/core/shopify/client";
-import { flattenConnection } from "@/app/core/shopify/types";
-import type { RawCart } from "../fragments";
+import type { UserError } from "@/lib/shopify/client";
+import { flattenConnection } from "@/lib/shopify/types";
+import type { RawCart } from "@/app/fragments";
 import type { Cart } from "../_types";
 
 /** Payload shape shared by all cart mutations. */

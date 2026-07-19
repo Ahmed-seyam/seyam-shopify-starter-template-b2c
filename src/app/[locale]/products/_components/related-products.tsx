@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { SectionHeader } from "@/app/core/ui";
+import { SectionHeader } from "@/components/ui";
 import { getProducts } from "../_actions/get-products";
 import { ProductCard } from "./product-card";
 

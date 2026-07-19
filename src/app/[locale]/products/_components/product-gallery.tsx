@@ -2,8 +2,8 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
-import { IconButton, ImageFrame } from "@/app/core/ui";
-import type { ShopifyImage } from "@/app/core/shopify/types";
+import { IconButton, ImageFrame } from "@/components/ui";
+import type { ShopifyImage } from "@/lib/shopify/types";
 import { cn } from "@/lib/utils";
 
 /**

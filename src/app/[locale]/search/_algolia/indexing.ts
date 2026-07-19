@@ -1,5 +1,5 @@
 import "server-only";
-import { env } from "@/app/core/config/env";
+import { env } from "@/lib/config/env";
 import { getProduct } from "@/app/[locale]/products";
 import { routing } from "@/i18n/routing";
 

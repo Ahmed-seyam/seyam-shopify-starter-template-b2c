@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ProductGrid } from "@/app/components/catalog/product-grid";
-import { Container, Heading, SearchInput } from "@/app/core/ui";
+import { ProductGrid } from "@/components/catalog/product-grid";
+import { Container, Heading, SearchInput } from "@/components/ui";
 import { getSearchProvider } from "@/app/[locale]/search";
 
 type PageProps = {

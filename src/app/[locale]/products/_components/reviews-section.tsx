@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Heading, RatingStars } from "@/app/core/ui";
+import { Heading, RatingStars } from "@/components/ui";
 import { ReviewDialog } from "./review-dialog";
 
 export type Review = {

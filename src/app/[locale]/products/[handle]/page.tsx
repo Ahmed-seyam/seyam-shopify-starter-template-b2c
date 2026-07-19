@@ -11,7 +11,7 @@ import {
   Container,
   Heading,
   Price,
-} from "@/app/core/ui";
+} from "@/components/ui";
 import {
   getProduct,
   ProductGallery,

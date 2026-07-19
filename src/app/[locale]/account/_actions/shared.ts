@@ -1,6 +1,6 @@
 import "server-only";
-import type { UserError } from "@/app/core/shopify/client";
-import { saveCustomerToken } from "@/app/core/shopify/customer-session";
+import type { UserError } from "@/lib/shopify/client";
+import { saveCustomerToken } from "@/lib/shopify/customer-session";
 import { routing } from "@/i18n/routing";
 
 /** Payload returned by the token-issuing mutations (create / reset). */

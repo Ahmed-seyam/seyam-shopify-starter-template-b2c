@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { Button, Checkbox, Field, Input, Label, toast } from "@/app/core/ui";
+import { Button, Checkbox, Field, Input, Label, toast } from "@/components/ui";
 // Direct action import — the domain barrel must stay free of server-only code.
 import { updateProfile } from "../_actions/update-profile";
 import { idleAuthState, type AuthState, type Customer } from "../_types";

@@ -1,7 +1,7 @@
 "use server";
 
-import { storefrontMutation } from "@/app/core/shopify/client";
-import { getSession } from "@/app/core/shopify/session";
+import { storefrontMutation } from "@/lib/shopify/client";
+import { getSession } from "@/lib/shopify/session";
 import { CART_LINES_REMOVE_MUTATION } from "../_mutations/cart-lines-remove";
 import type { Cart } from "../_types";
 import {

@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ActiveFilterChips } from "@/app/components/catalog/active-filter-chips";
+import { ActiveFilterChips } from "@/components/catalog/active-filter-chips";
 import {
   collectionFilters,
   collectionSortArgs,
   parseCatalogParams,
-} from "@/app/components/catalog/catalog-params";
-import { FilterPanel, MobileFilters } from "@/app/components/catalog/filter-panel";
-import { ProductGrid } from "@/app/components/catalog/product-grid";
-import { SortSelect } from "@/app/components/catalog/sort-select";
-import { Breadcrumbs, Container, Heading, Text } from "@/app/core/ui";
+} from "@/components/catalog/catalog-params";
+import { FilterPanel, MobileFilters } from "@/components/catalog/filter-panel";
+import { ProductGrid } from "@/components/catalog/product-grid";
+import { SortSelect } from "@/components/catalog/sort-select";
+import { Breadcrumbs, Container, Heading, Text } from "@/components/ui";
 import { getCollection } from "@/app/[locale]/collections";
 
 type PageProps = {

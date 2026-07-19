@@ -13,7 +13,7 @@ import {
   Input,
   Price,
   Separator,
-} from "@/app/core/ui";
+} from "@/components/ui";
 import { CheckoutButton } from "@/app/[locale]/checkout";
 import { Link } from "@/i18n/navigation";
 // Direct 'use server' imports — never the barrel (server-only queries).

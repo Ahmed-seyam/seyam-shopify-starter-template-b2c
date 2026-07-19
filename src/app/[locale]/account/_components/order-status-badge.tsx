@@ -1,4 +1,4 @@
-import { Badge } from "@/app/core/ui";
+import { Badge } from "@/components/ui";
 
 /** Shopify enum → readable label; enum values are API-fixed, not locale keys. */
 function humanize(status: string) {

@@ -1,6 +1,6 @@
 import "server-only";
-import { productTag, TAGS } from "@/app/core/cache/tags";
-import { storefrontFetch } from "@/app/core/shopify/client";
+import { productTag, TAGS } from "@/lib/cache/tags";
+import { storefrontFetch } from "@/lib/shopify/client";
 import { GET_PRODUCT_QUERY } from "../_queries/get-product";
 import type { Product } from "../_types";
 import { reshapeProduct, type RawProduct } from "./reshape";

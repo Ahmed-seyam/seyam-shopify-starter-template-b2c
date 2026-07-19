@@ -3,7 +3,7 @@
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Badge, Button, IconButton, ImageFrame, Price } from "@/app/core/ui";
+import { Badge, Button, IconButton, ImageFrame, Price } from "@/components/ui";
 import { WishlistButton, useWishlist } from "@/app/[locale]/account/wishlist";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";

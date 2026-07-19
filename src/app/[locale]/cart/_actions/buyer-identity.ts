@@ -1,7 +1,7 @@
 import "server-only";
-import { storefrontMutation } from "@/app/core/shopify/client";
-import { getCustomerToken } from "@/app/core/shopify/customer-session";
-import { getSession } from "@/app/core/shopify/session";
+import { storefrontMutation } from "@/lib/shopify/client";
+import { getCustomerToken } from "@/lib/shopify/customer-session";
+import { getSession } from "@/lib/shopify/session";
 import { parseLocale } from "@/i18n/routing";
 import { CART_BUYER_IDENTITY_UPDATE_MUTATION } from "../_mutations/cart-buyer-identity-update";
 import { CART_SESSION, type CartPayload } from "./shared";

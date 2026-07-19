@@ -1,6 +1,6 @@
 import "server-only";
-import { pageTag, TAGS } from "@/app/core/cache/tags";
-import { storefrontFetch } from "@/app/core/shopify/client";
+import { pageTag, TAGS } from "@/lib/cache/tags";
+import { storefrontFetch } from "@/lib/shopify/client";
 import { GET_PAGE_QUERY } from "../_queries/get-page";
 import type { Page } from "../_types";
 

@@ -7,7 +7,7 @@ import type {
   ShopifyCheckoutCompleteEvent,
   ShopifyCheckoutErrorEvent,
 } from "@shopify/checkout-kit";
-import { Button } from "@/app/core/ui";
+import { Button } from "@/components/ui";
 // Import the Server Action from its 'use server' file directly — never via the
 // cart domain barrel, which re-exports server-only fetchers.
 import { clearCart } from "@/app/[locale]/cart/_actions/clear-cart";

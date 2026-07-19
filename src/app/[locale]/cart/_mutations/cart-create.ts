@@ -1,4 +1,4 @@
-import { CART_FRAGMENT } from "../fragments";
+import { CART_FRAGMENT } from "@/app/fragments";
 
 export const CART_CREATE_MUTATION = /* GraphQL */ `
   mutation cartCreate(

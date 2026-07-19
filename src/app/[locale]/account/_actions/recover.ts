@@ -2,7 +2,7 @@
 
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
-import { ShopifyUserError, storefrontMutation } from "@/app/core/shopify/client";
+import { ShopifyUserError, storefrontMutation } from "@/lib/shopify/client";
 import { CUSTOMER_RECOVER_MUTATION } from "../_mutations/customer-recover";
 import type { AuthState } from "../_types";
 import { safeLocale } from "./shared";

@@ -1,8 +1,8 @@
 import "server-only";
-import { storefrontFetch, storefrontMutation } from "@/app/core/shopify/client";
-import { getSession } from "@/app/core/shopify/session";
+import { storefrontFetch, storefrontMutation } from "@/lib/shopify/client";
+import { getSession } from "@/lib/shopify/session";
 import { parseLocale } from "@/i18n/routing";
-import type { RawCart } from "../fragments";
+import type { RawCart } from "@/app/fragments";
 import { CART_BUYER_IDENTITY_UPDATE_MUTATION } from "../_mutations/cart-buyer-identity-update";
 import { GET_CART_QUERY } from "../_queries/get-cart";
 import type { Cart } from "../_types";

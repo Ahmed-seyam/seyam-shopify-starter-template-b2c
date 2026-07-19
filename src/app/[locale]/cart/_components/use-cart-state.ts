@@ -2,7 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { useOptimistic, useState, useTransition } from "react";
-import type { Money } from "@/app/core/shopify/types";
+import type { Money } from "@/lib/shopify/types";
 // Direct imports from the 'use server' files — the domain barrel re-exports
 // server-only queries that must not enter this client bundle.
 import { removeLine } from "../_actions/remove-line";

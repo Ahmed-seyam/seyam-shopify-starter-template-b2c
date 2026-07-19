@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { env } from "@/app/core/config/env";
+import { env } from "@/lib/config/env";
 import { getCart } from "@/app/[locale]/cart";
 import { CartPageView } from "@/app/[locale]/cart/_components/cart-page-view";
 

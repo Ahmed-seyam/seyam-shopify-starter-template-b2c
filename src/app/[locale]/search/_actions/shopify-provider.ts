@@ -1,6 +1,6 @@
 import "server-only";
-import { storefrontFetch } from "@/app/core/shopify/client";
-import { flattenConnection, type Connection } from "@/app/core/shopify/types";
+import { storefrontFetch } from "@/lib/shopify/client";
+import { flattenConnection, type Connection } from "@/lib/shopify/types";
 import {
   reshapeProductCard,
   type RawProductCard,

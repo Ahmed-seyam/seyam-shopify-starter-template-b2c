@@ -3,10 +3,10 @@ import { IBM_Plex_Sans_Arabic, Newsreader, Public_Sans } from "next/font/google"
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Footer } from "@/app/components/layout/footer";
-import { Header } from "@/app/components/layout/header";
-import { ThemeProvider } from "@/app/components/layout/theme-provider";
-import { Toaster } from "@/app/core/ui";
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
+import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Toaster } from "@/components/ui";
 import { dirForLocale, routing } from "@/i18n/routing";
 import "../globals.css";
 

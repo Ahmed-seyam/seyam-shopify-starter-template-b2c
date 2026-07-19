@@ -1,8 +1,8 @@
 "use server";
 
-import { storefrontMutation } from "@/app/core/shopify/client";
-import { getSession } from "@/app/core/shopify/session";
-import type { RawCart } from "../fragments";
+import { storefrontMutation } from "@/lib/shopify/client";
+import { getSession } from "@/lib/shopify/session";
+import type { RawCart } from "@/app/fragments";
 import { CART_DISCOUNT_CODES_UPDATE_MUTATION } from "../_mutations/cart-discount-codes-update";
 import type { Cart } from "../_types";
 import { CART_SESSION, toCart, type CartPayload } from "./shared";

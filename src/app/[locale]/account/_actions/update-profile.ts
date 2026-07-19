@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
-import { ShopifyUserError, storefrontMutation } from "@/app/core/shopify/client";
-import { getCustomerToken } from "@/app/core/shopify/customer-session";
+import { ShopifyUserError, storefrontMutation } from "@/lib/shopify/client";
+import { getCustomerToken } from "@/lib/shopify/customer-session";
 import { CUSTOMER_UPDATE_MUTATION } from "../_mutations/customer-update";
 import type { AuthState } from "../_types";
 import { persistToken, safeLocale, type TokenPayload } from "./shared";

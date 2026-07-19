@@ -1,7 +1,7 @@
 import "server-only";
-import { storefrontFetch } from "@/app/core/shopify/client";
-import { getCustomerToken } from "@/app/core/shopify/customer-session";
-import { flattenConnection, type Connection } from "@/app/core/shopify/types";
+import { storefrontFetch } from "@/lib/shopify/client";
+import { getCustomerToken } from "@/lib/shopify/customer-session";
+import { flattenConnection, type Connection } from "@/lib/shopify/types";
 import { GET_ORDERS_QUERY } from "../_queries/get-orders";
 import type { CustomerOrder } from "../_types";
 

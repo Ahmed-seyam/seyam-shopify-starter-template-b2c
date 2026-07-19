@@ -3,7 +3,7 @@
 import { HeartIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { Button, EmptyState, ProductGridSkeleton } from "@/app/core/ui";
+import { Button, EmptyState, ProductGridSkeleton } from "@/components/ui";
 import { ProductCard } from "@/app/[locale]/products/_components/product-card";
 import type { ProductCard as ProductCardType } from "@/app/[locale]/products/_types";
 import { Link } from "@/i18n/navigation";

@@ -1,7 +1,7 @@
 import "server-only";
-import { TAGS } from "@/app/core/cache/tags";
-import { storefrontFetch } from "@/app/core/shopify/client";
-import { flattenConnection, type Connection } from "@/app/core/shopify/types";
+import { TAGS } from "@/lib/cache/tags";
+import { storefrontFetch } from "@/lib/shopify/client";
+import { flattenConnection, type Connection } from "@/lib/shopify/types";
 import { GET_PRODUCTS_QUERY } from "../_queries/get-products";
 import type { ProductCard } from "../_types";
 import { reshapeProductCard, type RawProductCard } from "./reshape";

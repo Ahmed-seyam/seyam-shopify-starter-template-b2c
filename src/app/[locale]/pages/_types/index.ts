@@ -1,4 +1,4 @@
-import type { Seo } from "@/app/core/shopify/types";
+import type { Seo } from "@/lib/shopify/types";
 
 export type Page = {
   id: string;

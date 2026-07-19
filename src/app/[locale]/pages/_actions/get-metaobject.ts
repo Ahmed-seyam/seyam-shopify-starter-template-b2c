@@ -1,6 +1,6 @@
 import "server-only";
-import { metaobjectTag, TAGS } from "@/app/core/cache/tags";
-import { storefrontFetch } from "@/app/core/shopify/client";
+import { metaobjectTag, TAGS } from "@/lib/cache/tags";
+import { storefrontFetch } from "@/lib/shopify/client";
 import { GET_METAOBJECT_QUERY } from "../_queries/get-metaobject";
 import type { Metaobject, MetaobjectField } from "../_types";
 

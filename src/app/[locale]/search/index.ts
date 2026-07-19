@@ -1,5 +1,5 @@
 import "server-only";
-import { env } from "@/app/core/config/env";
+import { env } from "@/lib/config/env";
 import { algoliaSearchProvider } from "@/app/[locale]/search/_algolia";
 import { shopifySearchProvider } from "./_actions/shopify-provider";
 import type { SearchProvider } from "./_types";

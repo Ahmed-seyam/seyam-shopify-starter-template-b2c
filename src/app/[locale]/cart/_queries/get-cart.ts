@@ -1,4 +1,4 @@
-import { CART_FRAGMENT } from "../fragments";
+import { CART_FRAGMENT } from "@/app/fragments";
 
 export const GET_CART_QUERY = /* GraphQL */ `
   query getCart(

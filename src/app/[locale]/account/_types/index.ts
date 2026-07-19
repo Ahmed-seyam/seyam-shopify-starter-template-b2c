@@ -1,4 +1,4 @@
-import type { Money } from "@/app/core/shopify/types";
+import type { Money } from "@/lib/shopify/types";
 
 export type Customer = {
   firstName: string | null;
@@ -47,7 +47,7 @@ export type CustomerOrderLine = {
   quantity: number;
   totalPrice: Money;
   variantTitle: string | null;
-  image: import("@/app/core/shopify/types").ShopifyImage | null;
+  image: import("@/lib/shopify/types").ShopifyImage | null;
 };
 
 export type CustomerOrderDetail = {

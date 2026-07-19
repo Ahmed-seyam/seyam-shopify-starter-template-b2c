@@ -1,4 +1,4 @@
-import { Container, ProductGridSkeleton, Skeleton } from "@/app/core/ui";
+import { Container, ProductGridSkeleton, Skeleton } from "@/components/ui";
 
 export default function CollectionLoading() {
   return (

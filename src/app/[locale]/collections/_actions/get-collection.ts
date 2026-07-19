@@ -1,12 +1,12 @@
 import "server-only";
-import { collectionTag, TAGS } from "@/app/core/cache/tags";
-import { storefrontFetch } from "@/app/core/shopify/client";
+import { collectionTag, TAGS } from "@/lib/cache/tags";
+import { storefrontFetch } from "@/lib/shopify/client";
 import {
   flattenConnection,
   type Connection,
   type Seo,
   type ShopifyImage,
-} from "@/app/core/shopify/types";
+} from "@/lib/shopify/types";
 import {
   reshapeProductCard,
   type RawProductCard,

@@ -1,6 +1,6 @@
 import "server-only";
-import { storefrontFetch } from "@/app/core/shopify/client";
-import { getCustomerToken } from "@/app/core/shopify/customer-session";
+import { storefrontFetch } from "@/lib/shopify/client";
+import { getCustomerToken } from "@/lib/shopify/customer-session";
 import { GET_CUSTOMER_QUERY } from "../_queries/get-customer";
 import type { Customer } from "../_types";
 

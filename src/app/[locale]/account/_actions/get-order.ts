@@ -1,12 +1,12 @@
 import "server-only";
-import { storefrontFetch } from "@/app/core/shopify/client";
-import { getCustomerToken } from "@/app/core/shopify/customer-session";
+import { storefrontFetch } from "@/lib/shopify/client";
+import { getCustomerToken } from "@/lib/shopify/customer-session";
 import {
   flattenConnection,
   type Connection,
   type Money,
   type ShopifyImage,
-} from "@/app/core/shopify/types";
+} from "@/lib/shopify/types";
 import { GET_ORDER_DETAILS_QUERY } from "../_queries/get-order";
 import type { CustomerOrderDetail } from "../_types";
 

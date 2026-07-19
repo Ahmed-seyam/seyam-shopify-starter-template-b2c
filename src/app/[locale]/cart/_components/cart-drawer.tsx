@@ -15,14 +15,14 @@ import {
   SheetTitle,
   SheetTrigger,
   Spinner,
-} from "@/app/core/ui";
+} from "@/components/ui";
 import { CheckoutButton } from "@/app/[locale]/checkout";
 import { Link } from "@/i18n/navigation";
 // Direct 'use server' imports — never the barrel (server-only queries).
 import { fetchCart } from "../_actions/fetch-cart";
 import { CartLine } from "./cart-line";
 import { EMPTY_CART, useCartState } from "./use-cart-state";
-import { Price } from "@/app/core/ui";
+import { Price } from "@/components/ui";
 
 /**
  * Header cart: badge trigger + slide-over drawer (spec #s-cart). The count

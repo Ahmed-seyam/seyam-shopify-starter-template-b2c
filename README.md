@@ -40,12 +40,14 @@ src/
         _algolia/         #   Algolia adapter behind the same port
     api/webhooks/shopify/ # HMAC-verified cache invalidation + search sync
     api/revalidate/       # manual escape hatch (Bearer REVALIDATION_SECRET)
-    core/
-      shopify/            # server-only Storefront + Admin clients
-      cache/              # tag vocabulary + webhook topic → tag map
-      security/           # HMAC verification
-      ui/                 # shadcn/ui components (owned, restylable)
-    components/           # shared cross-route components (catalog, home, layout)
+    fragments/            # ALL GraphQL fragments (common, product, cart)
+  components/             # shared cross-route components (catalog, home, layout)
+    ui/                   # shadcn/ui component kit (owned, restylable)
+  lib/
+    shopify/              # server-only Storefront + Admin clients
+    cache/                # tag vocabulary + webhook topic → tag map
+    security/             # HMAC verification
+    config/               # env validation + nav config
 ```
 
 **Rules that keep it clean:**

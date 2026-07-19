@@ -2,7 +2,7 @@
 
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { IconButton, ImageFrame, Price, QuantityStepper } from "@/app/core/ui";
+import { IconButton, ImageFrame, Price, QuantityStepper } from "@/components/ui";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { CartLine as CartLineData } from "../_types";

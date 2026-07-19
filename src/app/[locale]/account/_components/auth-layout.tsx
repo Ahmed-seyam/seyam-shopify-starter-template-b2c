@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/core/ui";
+} from "@/components/ui";
 
 /** Shared centered card shell for the sign-in / register / recover / reset pages. */
 export function AuthLayout({

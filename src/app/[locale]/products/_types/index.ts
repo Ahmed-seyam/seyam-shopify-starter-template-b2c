@@ -1,4 +1,4 @@
-import type { Money, Seo, ShopifyImage } from "@/app/core/shopify/types";
+import type { Money, Seo, ShopifyImage } from "@/lib/shopify/types";
 
 export type ProductOption = {
   name: string;

@@ -1,4 +1,4 @@
-import type { Seo, ShopifyImage } from "@/app/core/shopify/types";
+import type { Seo, ShopifyImage } from "@/lib/shopify/types";
 // Type-only deep import: the barrel's ProductCard is the component.
 import type { ProductCard } from "@/app/[locale]/products/_types";
 

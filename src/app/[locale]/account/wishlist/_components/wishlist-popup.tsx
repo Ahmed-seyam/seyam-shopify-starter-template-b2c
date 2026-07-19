@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
   Spinner,
   Text,
-} from "@/app/core/ui";
+} from "@/components/ui";
 import { ProductCard } from "@/app/[locale]/products/_components/product-card";
 import type { ProductCard as ProductCardType } from "@/app/[locale]/products/_types";
 import { Link } from "@/i18n/navigation";

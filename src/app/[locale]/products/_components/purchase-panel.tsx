@@ -4,7 +4,7 @@ import { HeartIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
-import { Button, QuantityStepper, toast } from "@/app/core/ui";
+import { Button, QuantityStepper, toast } from "@/components/ui";
 // Server Actions must be imported from the 'use server' file directly —
 // the domain barrel also re-exports server-only queries.
 import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";

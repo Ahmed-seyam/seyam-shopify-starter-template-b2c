@@ -17,7 +17,7 @@ import {
   Field,
   Input,
   toast,
-} from "@/app/core/ui";
+} from "@/components/ui";
 // Server Actions are imported from their 'use server' file directly, never via
 // the domain barrel (the barrel would pull server-only code into the bundle).
 import {

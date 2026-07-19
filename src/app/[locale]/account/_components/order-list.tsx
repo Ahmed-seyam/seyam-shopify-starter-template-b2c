@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronRightIcon } from "lucide-react";
-import { EmptyState, formatMoney } from "@/app/core/ui";
+import { EmptyState, formatMoney } from "@/components/ui";
 import { Link } from "@/i18n/navigation";
 import type { CustomerOrder } from "../_types";
 import { OrderStatusBadge } from "./order-status-badge";

@@ -1,12 +1,12 @@
 import "server-only";
-import { TAGS } from "@/app/core/cache/tags";
-import { storefrontFetch } from "@/app/core/shopify/client";
+import { TAGS } from "@/lib/cache/tags";
+import { storefrontFetch } from "@/lib/shopify/client";
 import {
   flattenConnection,
   type Connection,
   type Seo,
   type ShopifyImage,
-} from "@/app/core/shopify/types";
+} from "@/lib/shopify/types";
 import { GET_COLLECTIONS_QUERY } from "../_queries/get-collections";
 import type { Collection } from "../_types";
 
