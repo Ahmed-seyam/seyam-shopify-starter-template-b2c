@@ -10,7 +10,7 @@ Arabic/English with RTL, and pluggable search.
 ```bash
 cp .env.example .env        # fill in your store domain + tokens
 npm install
-npm run seed                # demo products + collection (needs Admin token)
+npm run seed                # demo products, collections + pages (needs Admin token)
 npm run dev
 ```
 
@@ -21,7 +21,7 @@ Open http://localhost:3000 — you'll be redirected to `/en` (or `/ar`).
 1. A store (a free [Partner development store](https://partners.shopify.com) works).
 2. A **custom app** (Settings → Apps → Develop apps) with:
    - Storefront API enabled → `SHOPIFY_STOREFRONT_TOKEN`
-   - Admin API scopes `write_products`, `read_products` → `SHOPIFY_ADMIN_TOKEN`
+   - Admin API scopes `write_products`, `read_products`, `write_content` → `SHOPIFY_ADMIN_TOKEN`
    - The app's **API secret key** → `SHOPIFY_WEBHOOK_SECRET`
 
 ## Architecture

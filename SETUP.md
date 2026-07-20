@@ -20,7 +20,7 @@ In the store admin:
    - `unauthenticated_read_customers` + `unauthenticated_write_customers` + `unauthenticated_read_customer_tags` (the `app/[locale]/account` login/register/recover/reset flows)
    - `unauthenticated_read_content` (the `app/[locale]/pages` pages)
    - `unauthenticated_read_metaobjects` (the metaobjects CMS)
-3. **Configuration → Admin API** → check scopes: `read_products`, `write_products`, `read_publications`, `write_publications` (seed + publish to channel). Add `read_metaobjects` **only if** you use the metaobjects CMS and want its webhooks — see the metaobjects note below. Note: online-store **Pages have no webhook topic** at all, so page edits are never webhook-invalidated (they rely on ISR TTL or `POST /api/revalidate`).
+3. **Configuration → Admin API** → check scopes: `read_products`, `write_products`, `write_content` (seed creates content Pages), `read_publications`, `write_publications` (seed + publish to channel). Add `read_metaobjects` **only if** you use the metaobjects CMS and want its webhooks — see the metaobjects note below. Note: online-store **Pages have no webhook topic** at all, so page edits are never webhook-invalidated (they rely on ISR TTL or `POST /api/revalidate`).
 4. **Install the app**, then collect from **API credentials**:
 
 | `.env` variable | Where it is |
@@ -41,7 +41,7 @@ One more secret doesn't come from Shopify — **you generate it yourself**:
 ```bash
 cp .env.example .env    # paste the values above
 npm install
-npm run seed            # 6 demo products + "Featured" collection, published
+npm run seed            # ~30 demo products, all nav/footer collections + pages, published
 npm run sync-locales    # pull languages + markets from the store into routing
 npm run dev
 ```
