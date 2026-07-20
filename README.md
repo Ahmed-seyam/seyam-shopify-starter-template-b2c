@@ -26,40 +26,58 @@ Open http://localhost:3000 — you'll be redirected to `/en` (or `/ar`).
 
 ## Architecture
 
+The whole design rests on one invariant: **Shopify is reached exactly one way —
+by calling our own `/api/*` Route Handlers.** See
+[`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full picture; the map below is the
+tour.
+
 ```
 src/
   app/
-    [locale]/…            # en/ar routes (next-intl, RTL-ready); domain code
-                          # is co-located inside each route segment in private
+    [locale]/…            # en/ar routes (next-intl, RTL); domain code is
+                          # co-located inside each route segment in private
                           # (_underscore) folders, so route files stand out:
-      products/           #   page.tsx + _queries/ · _actions/ · _components/ · _types/
-      collections/ cart/  #   (_mutations/ = Server Actions)
-      account/            #   customer auth + profile (wishlist/ nested inside)
-      pages/              #   Shopify content pages
-      search/             #   SearchProvider port + native adapter
-        _algolia/         #   Algolia adapter behind the same port
-    api/webhooks/shopify/ # HMAC-verified cache invalidation + search sync
-    api/revalidate/       # manual escape hatch (Bearer REVALIDATION_SECRET)
-    api/search/           # suggestions endpoint (same-origin + per-IP rate limit)
-    fragments/            # ALL GraphQL fragments (common, product, cart)
-  components/             # shared cross-route components (catalog, home, layout)
-    ui/                   # shadcn/ui component kit (owned, restylable)
-  lib/
-    shopify/              # server-only Storefront + Admin clients
-    cache/                # tag vocabulary + webhook topic → tag map
-    security/             # HMAC verification
-    config/               # env validation + nav config
+      products/           #   page.tsx + _actions/ · _components/ · _types/ · index.ts
+      collections/ cart/  #   _actions/ = server-only reads + "use server" mutations,
+      account/            #     both calling callApi (never Shopify directly)
+      pages/ search/      #   account/ nests wishlist/; search/ has an _algolia/ adapter
+      checkout/           #   redirect or embedded (Checkout Kit)
+    api/                  # the ONLY Shopify egress — one handler per operation:
+      product/ cart/ …/   #   <domain>/<op>/route.ts (+ co-located query.ts)
+      webhooks/shopify/   #   HMAC-verified cache invalidation + search sync
+      revalidate/         #   manual escape hatch (Bearer REVALIDATION_SECRET)
+      search/             #   query/suggestions + Insights (same-origin, rate-limited)
+  hooks/                  # TanStack Query client islands (cart, search, wishlist)
+  components/             # shared cross-route UI (catalog, home, layout, providers)
+    ui/                   # owned, restylable shadcn kit (grouped by role)
+  lib/                    # infra only — never fetches domain data
+    server/api/           #   callApi transport + { data }/{ error } route contract
+    server/cache/         #   tag vocabulary + webhook topic → tag map
+    server/products/      #   raw → domain reshaping
+    query/keys.ts         #   central TanStack query-key registry
+  plugins/                # swappable adapters, selected by env
+    server/shopify/       #   Storefront + Admin clients, session (server-only)
+    server/algolia/       #   search egress + webhook index-sync
+    server/security/      #   HMAC verification + rate limiting
+    client/tracking/      #   GTM · CleverTap · Algolia Insights · UTM
+  config/env.ts           # zod-validated, lazy (store-independent build)
+  fragments/              # ALL GraphQL fragments (common, product, cart)
+  types/ validation/      # domain types + zod schemas
+  i18n/  proxy.ts         # next-intl config + Next 16 middleware (locale routing)
 ```
 
 **Rules that keep it clean:**
 
-- Pages are adapters; they import from their segment's `index.ts` only.
-- `_queries/` are server-only reads (`import "server-only"`) that map raw
-  Shopify shapes to domain types — components never see Storefront API types.
-- `_mutations/` are Server Actions (`"use server"`). Client components import
-  them from the actions file directly (never through the barrel).
-- The browser makes **zero direct calls to Shopify**; all tokens are plain
-  env vars (no `NEXT_PUBLIC_`), enforced by `server-only`.
+- `storefrontFetch` / `storefrontMutation` (`plugins/server/shopify/client.ts`)
+  are imported **only** by `app/api/` handlers. Pages/actions reach data via
+  `callApi` (`lib/server/api/http.ts`) over that internal HTTP layer.
+- Pages are adapters; they import from their segment's `index.ts` barrel only.
+- `_actions/` hold both server-only **reads** (`import "server-only"`, for SSR)
+  and Server Action **mutations** (`"use server"`, called from the client).
+  Reshaping to domain types happens behind the API, so components never see
+  Storefront API types.
+- The browser makes **zero direct calls to Shopify**; all tokens are plain env
+  vars (no `NEXT_PUBLIC_`), enforced by `server-only`.
 
 ## Caching & invalidation
 
@@ -85,8 +103,8 @@ events are proxied through `/api/search/*` — no Algolia key in the browser.
 
 ## Tracking
 
-`src/lib/tracking` — a `track.*` facade fanning out to every configured
-vendor; unconfigured vendors no-op. Events: page_view, view_item,
+`src/plugins/client/tracking` — a `track.*` facade fanning out to every
+configured vendor; unconfigured vendors no-op. Events: page_view, view_item,
 add_to_cart, remove_from_cart, begin_checkout, purchase, search — plus UTM
 first-touch capture merged into every GTM push.
 
