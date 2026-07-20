@@ -1,8 +1,8 @@
 "use client";
 
 import { HeartIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import {
   Badge,
   Button,
@@ -14,10 +14,8 @@ import {
   Text,
 } from "@/components/ui";
 import { ProductCard } from "@/app/[locale]/products/_components/product-card";
-import type { ProductCard as ProductCardType } from "@/types/product";
+import { useWishlistProducts } from "@/hooks/use-wishlist-products";
 import { Link } from "@/i18n/navigation";
-// Direct action import — never via the domain barrel.
-import { getWishlistProducts } from "../_actions/get-wishlist-products";
 import { useWishlist } from "./use-wishlist";
 
 const PREVIEW_COUNT = 3;
@@ -25,23 +23,12 @@ const PREVIEW_COUNT = 3;
 /** Header heart: count badge + popover preview of the latest saved items. */
 export function WishlistPopup() {
   const t = useTranslations("wishlist");
-  const locale = useLocale();
   const { handles, count } = useWishlist();
   const [open, setOpen] = useState(false);
-  const [products, setProducts] = useState<ProductCardType[] | null>(null);
 
   // Latest saves first; refetched while open so removals reflect immediately.
-  const key = open ? handles.slice(-PREVIEW_COUNT).reverse().join(",") : "";
-  useEffect(() => {
-    if (!key) return;
-    let cancelled = false;
-    getWishlistProducts(key.split(","), locale).then((result) => {
-      if (!cancelled) setProducts(result);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [key, locale]);
+  const previewHandles = open ? handles.slice(-PREVIEW_COUNT).reverse() : [];
+  const { products } = useWishlistProducts(previewHandles);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -64,7 +51,7 @@ export function WishlistPopup() {
           <Text variant="muted" className="px-2 py-6 text-center text-sm">
             {t("emptyTitle")}
           </Text>
-        ) : products === null ? (
+        ) : products === undefined ? (
           <div className="flex justify-center py-6">
             <Spinner />
           </div>

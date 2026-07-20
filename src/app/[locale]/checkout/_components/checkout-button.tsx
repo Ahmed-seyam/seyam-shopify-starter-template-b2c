@@ -8,9 +8,7 @@ import type {
   ShopifyCheckoutErrorEvent,
 } from "@shopify/checkout-kit";
 import { Button } from "@/components/ui";
-// Import the Server Action from its 'use server' file directly — never via the
-// cart domain barrel, which re-exports server-only fetchers.
-import { clearCart } from "@/app/[locale]/cart/_actions/clear-cart";
+import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "@/i18n/navigation";
 
 type CheckoutMode = "redirect" | "embedded";
@@ -53,6 +51,7 @@ function EmbeddedCheckout({
   const ref = useRef<ShopifyCheckout>(null);
   const router = useRouter();
   const locale = useLocale();
+  const { clear } = useCart();
   // The custom element only exists after the SDK's side-effect import runs in
   // the browser; render it (and enable the button) once registered.
   const [ready, setReady] = useState(false);
@@ -78,10 +77,9 @@ function EmbeddedCheckout({
     const onComplete = (event: ShopifyCheckoutCompleteEvent) => {
       const orderId = event.detail?.order?.id;
       // The order is placed — Shopify converted the cart, so forget our cart
-      // cookie and refresh the badge before leaving, otherwise the purchased
-      // items linger until a manual reload.
-      void clearCart().then(() => {
-        window.dispatchEvent(new Event("cart:updated"));
+      // cookie and reset the shared cart cache before leaving, otherwise the
+      // purchased items linger until a manual reload.
+      void clear().then(() => {
         // Hand off to our own branded confirmation — never Shopify's page.
         router.push(
           `/checkout/thank-you${orderId ? `?order=${encodeURIComponent(orderId)}` : ""}`,
@@ -101,7 +99,7 @@ function EmbeddedCheckout({
     });
     el.addEventListener("checkout:error", onError as EventListener, { signal });
     return () => controller.abort();
-  }, [ready, router, locale]);
+  }, [ready, router, locale, clear]);
 
   return (
     <>

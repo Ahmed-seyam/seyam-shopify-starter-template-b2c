@@ -14,9 +14,7 @@ import {
   Spinner,
   toast,
 } from "@/components/ui";
-// Server Actions must be imported from the 'use server' file directly —
-// the domain barrel also re-exports server-only queries.
-import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
+import { useCart } from "@/hooks/use-cart";
 import { track } from "@/plugins/client/tracking";
 import { quickViewProduct } from "../_actions/quick-view";
 import type { Product, ProductVariant } from "@/types/product";
@@ -37,6 +35,7 @@ export function QuickAddDialog({
 }) {
   const t = useTranslations("product");
   const locale = useLocale();
+  const { addItem } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
@@ -161,8 +160,7 @@ export function QuickAddDialog({
                   onClick={() => {
                     if (!selectedVariant) return;
                     startTransition(async () => {
-                      await addToCart(selectedVariant.id, quantity, locale);
-                      window.dispatchEvent(new Event("cart:updated"));
+                      await addItem(selectedVariant.id, quantity);
                       track.addToCart({
                         id: selectedVariant.id,
                         handle,

@@ -1,35 +1,18 @@
 "use client";
 
 import { HeartIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button, EmptyState, ProductGridSkeleton } from "@/components/ui";
 import { ProductCard } from "@/app/[locale]/products/_components/product-card";
-import type { ProductCard as ProductCardType } from "@/types/product";
+import { useWishlistProducts } from "@/hooks/use-wishlist-products";
 import { Link } from "@/i18n/navigation";
-// Server Actions are imported from their 'use server' file directly, never via
-// the domain barrel.
-import { getWishlistProducts } from "../_actions/get-wishlist-products";
 import { useWishlist } from "./use-wishlist";
 
 /** Grid of saved products, resolved from localStorage handles per render. */
 export function WishlistView() {
   const t = useTranslations("wishlist");
-  const locale = useLocale();
   const { handles } = useWishlist();
-  const [products, setProducts] = useState<ProductCardType[] | null>(null);
-
-  const key = handles.join(",");
-  useEffect(() => {
-    if (!key) return;
-    let cancelled = false;
-    getWishlistProducts(key.split(","), locale).then((result) => {
-      if (!cancelled) setProducts(result);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [key, locale]);
+  const { products } = useWishlistProducts(handles);
 
   // Filtering by live handles makes removals instant while a refetch runs.
   const visible = products?.filter((p) => handles.includes(p.handle));

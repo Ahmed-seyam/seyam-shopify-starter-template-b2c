@@ -2,12 +2,10 @@
 
 import { HeartIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 import { Button, QuantityStepper, toast } from "@/components/ui";
-// Server Actions must be imported from the 'use server' file directly —
-// the domain barrel also re-exports server-only queries.
-import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
+import { useCart } from "@/hooks/use-cart";
 import { track } from "@/plugins/client/tracking";
 import { useWishlist } from "@/app/[locale]/account/wishlist";
 import { cn } from "@/utils";
@@ -28,11 +26,11 @@ export function PurchasePanel({
 }) {
   const t = useTranslations("product");
   const tWishlist = useTranslations("wishlist");
-  const locale = useLocale();
   const searchParams = useSearchParams();
   const [quantity, setQuantity] = useState(1);
-  const [pending, startTransition] = useTransition();
+  const { addItem, isMutating } = useCart();
   const { has, toggle } = useWishlist();
+  const pending = isMutating;
 
   const selectedVariant = useMemo(() => {
     if (variants.length === 1) return variants[0];
@@ -54,22 +52,18 @@ export function PurchasePanel({
           size="lg"
           className="h-11 flex-1"
           disabled={disabled}
-          onClick={() => {
+          onClick={async () => {
             if (!selectedVariant) return;
-            startTransition(async () => {
-              await addToCart(selectedVariant.id, quantity, locale);
-              // Header cart badge (client-fetched to keep pages static) re-fetches on this.
-              window.dispatchEvent(new Event("cart:updated"));
-              track.addToCart({
-                id: selectedVariant.id,
-                handle,
-                name: title,
-                price: Number(selectedVariant.price.amount),
-                currency: selectedVariant.price.currencyCode,
-                quantity,
-              });
-              toast.success(t("addedToCart", { title }));
+            await addItem(selectedVariant.id, quantity);
+            track.addToCart({
+              id: selectedVariant.id,
+              handle,
+              name: title,
+              price: Number(selectedVariant.price.amount),
+              currency: selectedVariant.price.currencyCode,
+              quantity,
             });
+            toast.success(t("addedToCart", { title }));
           }}
         >
           {pending

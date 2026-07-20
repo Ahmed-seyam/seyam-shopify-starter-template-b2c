@@ -5,8 +5,8 @@ import type { Cart } from "../_types";
 type GetCartOptions = {
   /**
    * Reprice the cart when its buyer country differs from the locale's market.
-   * Only the cart page should pass this: market-agnostic callers like
-   * /api/cart/count would otherwise flip the cart back on every poll.
+   * Only the cart page should pass this: market-agnostic callers (e.g. the
+   * header badge/drawer cart read) would otherwise flip the cart back.
    */
   syncBuyerCountry?: boolean;
 };

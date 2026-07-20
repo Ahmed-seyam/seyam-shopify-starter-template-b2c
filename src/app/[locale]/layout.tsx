@@ -7,6 +7,7 @@ import { Analytics } from "@/components/layout/analytics";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui";
 import { dirForLocale, routing } from "@/i18n/routing";
 import "../globals.css";
@@ -74,13 +75,15 @@ export default async function LocaleLayout({
         }`}
       >
         <ThemeProvider>
-          <NextIntlClientProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <Toaster />
-            <Analytics />
-          </NextIntlClientProvider>
+          <QueryProvider>
+            <NextIntlClientProvider>
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <Toaster />
+              <Analytics />
+            </NextIntlClientProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -2,12 +2,12 @@
 
 import { ShoppingBagIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import { useState } from "react";
 import {
   Badge,
   Button,
   IconButton,
+  Price,
   Sheet,
   SheetContent,
   SheetFooter,
@@ -17,18 +17,16 @@ import {
   Spinner,
 } from "@/components/ui";
 import { CheckoutButton } from "@/app/[locale]/checkout";
-import { cartSummary, track } from "@/plugins/client/tracking";
+import { useCart } from "@/hooks/use-cart";
+import { cartSummary, itemFromCartLine, track } from "@/plugins/client/tracking";
 import { Link } from "@/i18n/navigation";
-// Direct 'use server' imports — never the barrel (server-only queries).
-import { fetchCart } from "../_actions/fetch-cart";
+import type { CartLine as CartLineType } from "../_types";
 import { CartLine } from "./cart-line";
-import { EMPTY_CART, useCartState } from "./use-cart-state";
-import { Price } from "@/components/ui";
 
 /**
- * Header cart: badge trigger + slide-over drawer (spec #s-cart). The count
- * stays client-fetched so pages remain static; the full cart loads when the
- * drawer opens.
+ * Header cart: badge trigger + slide-over drawer (spec #s-cart). Badge count
+ * and cart contents both read the shared `['cart']` query — no separate
+ * count fetch, no cross-component event bus.
  */
 export function CartDrawer({
   checkoutMode,
@@ -36,35 +34,31 @@ export function CartDrawer({
   checkoutMode: "redirect" | "embedded";
 }) {
   const t = useTranslations("cart");
-  const locale = useLocale();
-
   const [open, setOpen] = useState(false);
-  const [count, setCount] = useState(0);
-  const [loaded, setLoaded] = useState(false);
-  const { cart, setCart, pending, setQuantity, remove } = useCartState(null);
+  const {
+    cart,
+    itemCount,
+    isLoading,
+    isMutating,
+    updateQuantity,
+    removeItem,
+    refresh,
+  } = useCart();
 
-  const refreshCount = useCallback(() => {
-    fetch("/api/cart/count")
-      .then((response) => response.json())
-      .then((body: { count: number }) => setCount(body.count))
-      .catch(() => {});
-  }, []);
+  const remove = (line: CartLineType) => {
+    track.removeFromCart(itemFromCartLine(line));
+    removeItem(line.id);
+  };
 
-  useEffect(() => {
-    refreshCount();
-    window.addEventListener("cart:updated", refreshCount);
-    return () => window.removeEventListener("cart:updated", refreshCount);
-  }, [refreshCount]);
+  const setQuantity = (line: CartLineType, quantity: number) => {
+    if (quantity <= 0) return remove(line);
+    updateQuantity(line.id, quantity);
+  };
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
-    if (next) {
-      setLoaded(false);
-      fetchCart(locale).then((data) => {
-        setCart(data ?? EMPTY_CART);
-        setLoaded(true);
-      });
-    }
+    // Revalidate against the server when the drawer opens.
+    if (next) refresh();
   };
 
   return (
@@ -72,9 +66,9 @@ export function CartDrawer({
       <SheetTrigger asChild>
         <IconButton aria-label={t("title")} className="relative">
           <ShoppingBagIcon />
-          {count > 0 && (
+          {itemCount > 0 && (
             <Badge variant="count" className="absolute top-0.5 end-0.5 h-4 min-w-4">
-              {count}
+              {itemCount}
             </Badge>
           )}
         </IconButton>
@@ -84,15 +78,15 @@ export function CartDrawer({
         <SheetHeader className="border-b border-border">
           <SheetTitle className="font-serif text-lg">
             {t("title")}
-            {cart.totalQuantity > 0 && (
+            {itemCount > 0 && (
               <span className="ms-2 text-sm font-normal text-muted-foreground">
-                ({cart.totalQuantity})
+                ({itemCount})
               </span>
             )}
           </SheetTitle>
         </SheetHeader>
 
-        {!loaded ? (
+        {isLoading ? (
           <div className="flex flex-1 items-center justify-center">
             <Spinner className="size-5 text-muted-foreground" />
           </div>
@@ -114,7 +108,7 @@ export function CartDrawer({
                   <CartLine
                     line={line}
                     density="drawer"
-                    pending={pending}
+                    pending={isMutating}
                     onQuantityChange={setQuantity}
                     onRemove={remove}
                     onNavigate={() => setOpen(false)}

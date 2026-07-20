@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { Button, Field, formatMoney, Input, Textarea, toast } from "@/components/ui";
-import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
+import { useCart } from "@/hooks/use-cart";
 import { OptionPill } from "@/app/[locale]/products/_components/option-pill";
 import type { Product } from "@/types/product";
 
@@ -16,6 +16,7 @@ import type { Product } from "@/types/product";
 export function GiftCardForm({ product }: { product: Product }) {
   const t = useTranslations("giftCards");
   const locale = useLocale();
+  const { addItem } = useCart();
   const [pending, startTransition] = useTransition();
 
   const variants = product.variants;
@@ -39,8 +40,7 @@ export function GiftCardForm({ product }: { product: Product }) {
         ];
         startTransition(async () => {
           try {
-            await addToCart(selected.id, 1, locale, attributes);
-            window.dispatchEvent(new Event("cart:updated"));
+            await addItem(selected.id, 1, attributes);
             toast.success(t("added"));
           } catch {
             toast.error(t("addFailed"));

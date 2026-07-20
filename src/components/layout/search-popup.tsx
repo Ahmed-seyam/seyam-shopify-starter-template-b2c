@@ -1,8 +1,8 @@
 "use client";
 
 import { SearchIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import {
   IconButton,
   Popover,
@@ -12,50 +12,18 @@ import {
   SearchInput,
   Spinner,
 } from "@/components/ui";
-import type { ProductCard } from "@/types/product";
+import { useSearch } from "@/hooks/use-search";
 import { Link, useRouter } from "@/i18n/navigation";
 import { track } from "@/plugins/client/tracking";
 
 /** Header search: popover with live product suggestions. */
 export function SearchPopup() {
   const t = useTranslations("search");
-  const locale = useLocale();
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<ProductCard[]>([]);
-  const [pending, startTransition] = useTransition();
-  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const active = query.trim().length >= 2;
-  // Stale results are hidden by `visible` below instead of cleared in the
-  // effect (setState directly in an effect cascades renders).
-  const visible = active ? results : [];
-
-  useEffect(() => {
-    if (debounce.current) clearTimeout(debounce.current);
-    if (!active) return;
-    const controller = new AbortController();
-    debounce.current = setTimeout(() => {
-      startTransition(async () => {
-        try {
-          const params = new URLSearchParams({ q: query.trim(), locale });
-          const response = await fetch(`/api/search?${params}`, {
-            signal: controller.signal,
-          });
-          const body = (await response.json()) as { products?: ProductCard[] };
-          setResults(body.products ?? []);
-        } catch {
-          // Aborted or offline — keep whatever is on screen.
-        }
-      });
-    }, 250);
-    return () => {
-      controller.abort();
-      if (debounce.current) clearTimeout(debounce.current);
-    };
-  }, [query, active, locale]);
+  const { results: visible, isSearching: pending } = useSearch(query);
 
   const submit = () => {
     const q = query.trim();

@@ -1,8 +1,8 @@
 "use client";
 
 import { ShoppingBagIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -15,13 +15,11 @@ import {
   Separator,
 } from "@/components/ui";
 import { CheckoutButton } from "@/app/[locale]/checkout";
-import { cartSummary, track } from "@/plugins/client/tracking";
+import { useCart } from "@/hooks/use-cart";
+import { cartSummary, itemFromCartLine, track } from "@/plugins/client/tracking";
 import { Link } from "@/i18n/navigation";
-// Direct 'use server' imports — never the barrel (server-only queries).
-import { applyDiscount } from "../_actions/apply-discount";
-import type { Cart } from "../_types";
+import type { Cart, CartLine as CartLineType } from "../_types";
 import { CartLine } from "./cart-line";
-import { useCartState } from "./use-cart-state";
 
 /** Cart page (spec #s-cartpage): lines + order-summary card. */
 export function CartPageView({
@@ -32,15 +30,29 @@ export function CartPageView({
   checkoutMode: "redirect" | "embedded";
 }) {
   const t = useTranslations("cart");
-  const locale = useLocale();
-  const { cart, setCart, pending, setQuantity, remove } =
-    useCartState(initialCart);
+  const {
+    cart,
+    isMutating,
+    isApplyingCoupon,
+    updateQuantity,
+    removeItem,
+    applyCoupon,
+  } = useCart(initialCart);
 
   const [code, setCode] = useState("");
   const [discountState, setDiscountState] = useState<
     "idle" | "applied" | "rejected"
   >("idle");
-  const [discountPending, startDiscount] = useTransition();
+
+  const remove = (line: CartLineType) => {
+    track.removeFromCart(itemFromCartLine(line));
+    removeItem(line.id);
+  };
+
+  const setQuantity = (line: CartLineType, quantity: number) => {
+    if (quantity <= 0) return remove(line);
+    updateQuantity(line.id, quantity);
+  };
 
   if (cart.lines.length === 0) {
     return (
@@ -71,7 +83,7 @@ export function CartPageView({
               <CartLine
                 line={line}
                 density="page"
-                pending={pending}
+                pending={isMutating}
                 onQuantityChange={setQuantity}
                 onRemove={remove}
               />
@@ -95,14 +107,11 @@ export function CartPageView({
 
             <form
               className="flex gap-2"
-              onSubmit={(event) => {
+              onSubmit={async (event) => {
                 event.preventDefault();
                 if (!code.trim()) return;
-                startDiscount(async () => {
-                  const result = await applyDiscount(code, locale);
-                  if (result.cart) setCart(result.cart);
-                  setDiscountState(result.applied ? "applied" : "rejected");
-                });
+                const applied = await applyCoupon(code);
+                setDiscountState(applied ? "applied" : "rejected");
               }}
             >
               <Input
@@ -120,7 +129,7 @@ export function CartPageView({
                 variant="secondary"
                 size="sm"
                 className="h-10"
-                disabled={discountPending || !code.trim()}
+                disabled={isApplyingCoupon || !code.trim()}
               >
                 {t("apply")}
               </Button>
