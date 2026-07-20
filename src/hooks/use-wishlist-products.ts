@@ -2,7 +2,9 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useLocale } from "next-intl";
+import { useEffect } from "react";
 import { getWishlistProducts } from "@/app/[locale]/account/wishlist/_actions/get-wishlist-products";
+import { useWishlist } from "@/app/[locale]/account/wishlist/_components/use-wishlist";
 import { queryKeys } from "@/lib/query/keys";
 
 /**
@@ -13,6 +15,7 @@ import { queryKeys } from "@/lib/query/keys";
  */
 export function useWishlistProducts(handles: string[]) {
   const locale = useLocale();
+  const { removeMany } = useWishlist();
 
   const query = useQuery({
     queryKey: queryKeys.wishlist(locale, handles),
@@ -22,6 +25,19 @@ export function useWishlistProducts(handles: string[]) {
     // removing one item doesn't flash the whole grid to a skeleton.
     placeholderData: keepPreviousData,
   });
+
+  // Self-heal: once a fetch genuinely succeeds, any requested handle the
+  // Storefront couldn't resolve (deleted/renamed product) is a permanent ghost
+  // — it counts toward the badge but has no removable card. Prune it. Guarded
+  // to real successes (not placeholder/error) so a transient outage never
+  // wipes the list.
+  const resolved = query.data;
+  useEffect(() => {
+    if (query.isSuccess && !query.isPlaceholderData && resolved) {
+      const found = new Set(resolved.map((p) => p.handle));
+      removeMany(handles.filter((h) => !found.has(h)));
+    }
+  }, [query.isSuccess, query.isPlaceholderData, resolved, handles, removeMany]);
 
   return {
     // `undefined` while first-loading; `[]` once resolved to nothing.

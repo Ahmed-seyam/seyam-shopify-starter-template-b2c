@@ -2,7 +2,7 @@
 
 import { CheckCircle2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   Button,
   Dialog,
@@ -54,32 +54,35 @@ export function QuickAddDialog({
     );
   }, [product, selected]);
 
+  // Fetch on open. This is keyed off the `open` prop rather than the dialog's
+  // onOpenChange, because the dialog is opened by the card's external Quick Add
+  // button (controlled `open`) — Radix only fires onOpenChange from its own
+  // controls (Esc / overlay / close), so it never sees the open transition.
+  useEffect(() => {
+    if (!open || product || loading) return;
+    setLoading(true);
+    quickViewProduct(handle, locale).then((data) => {
+      setProduct(data);
+      setLoading(false);
+      if (data) {
+        // Preselect the first available variant so one-option products
+        // are addable immediately.
+        const first =
+          data.variants.find((variant) => variant.availableForSale) ??
+          data.variants[0];
+        if (first) {
+          setSelected(
+            Object.fromEntries(
+              first.selectedOptions.map((option) => [option.name, option.value])
+            )
+          );
+        }
+      }
+    });
+  }, [open, handle, locale, product, loading]);
+
   const handleOpenChange = (next: boolean) => {
     onOpenChange(next);
-    if (next && !product && !loading) {
-      setLoading(true);
-      quickViewProduct(handle, locale).then((data) => {
-        setProduct(data);
-        setLoading(false);
-        if (data) {
-          // Preselect the first available variant so one-option products
-          // are addable immediately.
-          const first =
-            data.variants.find((variant) => variant.availableForSale) ??
-            data.variants[0];
-          if (first) {
-            setSelected(
-              Object.fromEntries(
-                first.selectedOptions.map((option) => [
-                  option.name,
-                  option.value,
-                ])
-              )
-            );
-          }
-        }
-      });
-    }
     if (!next) setAdded(false);
   };
 

@@ -78,5 +78,13 @@ export function useWishlist() {
     write(read().filter((h) => h !== handle));
   }, []);
 
-  return { handles, count: handles.length, has, toggle, remove };
+  const removeMany = useCallback((toRemove: string[]) => {
+    if (toRemove.length === 0) return;
+    const drop = new Set(toRemove);
+    const current = read();
+    const next = current.filter((h) => !drop.has(h));
+    if (next.length !== current.length) write(next);
+  }, []);
+
+  return { handles, count: handles.length, has, toggle, remove, removeMany };
 }

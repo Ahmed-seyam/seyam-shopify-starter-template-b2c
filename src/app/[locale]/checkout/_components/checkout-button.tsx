@@ -37,7 +37,7 @@ export function CheckoutButton({ checkoutUrl, mode, label }: Props) {
   }
 
   return (
-    <Button size="lg" className="mt-6 w-full" asChild>
+    <Button size="lg" className="w-full" asChild>
       {/* Checkout is always Shopify-hosted — payments never touch this app. */}
       <a href={checkoutUrl}>{label}</a>
     </Button>
@@ -103,10 +103,19 @@ function EmbeddedCheckout({
 
   return (
     <>
-      {ready && <shopify-checkout ref={ref} src={checkoutUrl} target="popup" />}
+      {/* Popup target: the element only hosts the overlay dialog, so keep it out
+          of layout flow — otherwise it renders as an empty ~72px block. */}
+      {ready && (
+        <shopify-checkout
+          ref={ref}
+          src={checkoutUrl}
+          target="popup"
+          style={{ display: "none" }}
+        />
+      )}
       <Button
         size="lg"
-        className="mt-6 w-full"
+        className="w-full"
         disabled={!ready}
         onClick={() => ref.current?.open()}
       >

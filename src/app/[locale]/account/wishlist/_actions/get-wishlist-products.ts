@@ -1,6 +1,6 @@
 "use server";
 
-import { getProducts } from "@/app/[locale]/products/_actions/get-products";
+import { getProductsByHandles } from "@/app/[locale]/products/_actions/get-products-by-handles";
 import type { ProductCard } from "@/types/product";
 
 const MAX_HANDLES = 24;
@@ -12,23 +12,17 @@ const MAX_HANDLES = 24;
  */
 export async function getWishlistProducts(
   handles: string[],
-  locale: string
+  locale: string,
 ): Promise<ProductCard[]> {
   const clean = [
     ...new Set(
-      handles.filter((h) => typeof h === "string" && /^[\w-]+$/.test(h))
+      handles.filter((h) => typeof h === "string" && /^[\w-]+$/.test(h)),
     ),
   ].slice(0, MAX_HANDLES);
   if (clean.length === 0) return [];
 
-  try {
-    const products = await getProducts(locale, {
-      first: clean.length,
-      query: clean.map((h) => `handle:${h}`).join(" OR "),
-    });
-    const byHandle = new Map(products.map((p) => [p.handle, p]));
-    return clean.flatMap((h) => byHandle.get(h) ?? []);
-  } catch {
-    return [];
-  }
+  // Errors propagate so the caller's query enters an error state rather than a
+  // successful-but-empty one — the client prunes "missing" handles only on a
+  // genuine success, so a swallowed failure must never look like one.
+  return getProductsByHandles(clean, locale);
 }
