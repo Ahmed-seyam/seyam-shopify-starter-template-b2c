@@ -1,8 +1,9 @@
 import { timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import { z } from "zod";
-import { env } from "@/lib/config/env";
+import { env } from "@/config/env";
+import { readJson } from "@/app/api/_utils";
+import { revalidateSchema } from "@/validation/system";
 
 /** Constant-time bearer-token check — avoids leaking the secret via timing. */
 function bearerMatches(authorization: string | null, secret: string): boolean {
@@ -13,11 +14,6 @@ function bearerMatches(authorization: string | null, secret: string): boolean {
 }
 
 export const dynamic = "force-dynamic";
-
-const bodySchema = z.object({
-  tags: z.array(z.string()).optional(),
-  paths: z.array(z.string()).optional(),
-});
 
 /**
  * Manual revalidation escape hatch for missed webhooks.
@@ -37,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const parsed = bodySchema.safeParse(await request.json().catch(() => null));
+  const parsed = revalidateSchema.safeParse(await readJson(request));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }

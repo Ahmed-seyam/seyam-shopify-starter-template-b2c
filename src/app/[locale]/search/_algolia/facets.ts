@@ -6,7 +6,7 @@
  * syncs the state into URL params.
  *
  * Add a filter = add a line here (and list the attribute in the Algolia
- * index's attributesForFaceting). Records are indexed by ../indexing.ts with
+ * index's attributesForFaceting). Records are indexed by @/plugins/server/algolia/indexing.ts with
  * the Product card shape, so vendor/tags/availableForSale/price all exist.
  */
 

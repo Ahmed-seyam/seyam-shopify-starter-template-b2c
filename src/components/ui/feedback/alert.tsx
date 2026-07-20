@@ -6,7 +6,7 @@ import {
   InfoIcon,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const alertVariants = cva(
   "relative flex w-full items-start gap-3 rounded-md border px-4 py-3 text-sm [&_svg]:mt-0.5 [&_svg]:size-4 [&_svg]:shrink-0",

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ArrowRightIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Heading } from "@/components/ui/typography";
 import { Link } from "@/i18n/navigation";
 

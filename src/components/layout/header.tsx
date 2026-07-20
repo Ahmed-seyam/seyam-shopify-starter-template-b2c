@@ -1,7 +1,7 @@
 import { UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Suspense } from "react";
-import { env } from "@/lib/config/env";
+import { env } from "@/config/env";
 import { IconButton } from "@/components/ui";
 import { CartDrawer } from "@/app/[locale]/cart/_components/cart-drawer";
 import { WishlistPopup } from "@/app/[locale]/account/wishlist";

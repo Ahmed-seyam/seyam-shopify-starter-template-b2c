@@ -1,35 +1,19 @@
 import "server-only";
-import { TAGS } from "@/lib/cache/tags";
-import { storefrontFetch } from "@/lib/shopify/client";
-import {
-  flattenConnection,
-  type Connection,
-  type Seo,
-  type ShopifyImage,
-} from "@/lib/shopify/types";
-import { GET_COLLECTIONS_QUERY } from "../_queries/get-collections";
+import { callApi } from "@/lib/server/api/http";
+import { TAGS } from "@/lib/server/cache/tags";
 import type { Collection } from "../_types";
 
-type RawCollection = {
-  id: string;
-  handle: string;
-  title: string;
-  description: string;
-  image: ShopifyImage | null;
-  seo: Seo;
-};
-
+/**
+ * Server-side client for the collections-listing endpoint
+ * (/api/collection/get-collections).
+ */
 export async function getCollections(
   locale: string,
   { first = 12 }: { first?: number } = {},
 ): Promise<Collection[]> {
-  const data = await storefrontFetch<{
-    collections: Connection<RawCollection>;
-  }>(GET_COLLECTIONS_QUERY, {
-    variables: { first },
-    locale,
+  return callApi<Collection[]>("/api/collection/get-collections", {
+    searchParams: { locale, first },
     tags: [TAGS.collections],
+    revalidate: 60 * 60 * 24,
   });
-
-  return flattenConnection(data.collections);
 }

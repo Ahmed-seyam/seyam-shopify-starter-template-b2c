@@ -2,19 +2,39 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { Button } from "@/components/ui";
-import { Input } from "@/components/ui";
-import { Label } from "@/components/ui";
+import { Button, FieldError, Input, Label } from "@/components/ui";
 import { Link } from "@/i18n/navigation";
 // Server Actions are imported from their 'use server' file directly, never via
 // the domain barrel (the barrel would pull server-only code into the bundle).
 import { login } from "../_actions/login";
-import { idleAuthState } from "../_types";
+import { idleAuthState, type AuthState } from "../_types";
+import { erroredFields } from "@/app/[locale]/_utils";
+import { loginSchema } from "@/validation/auth";
 
 export function LoginForm() {
   const t = useTranslations("account");
   const locale = useLocale();
-  const [state, action, pending] = useActionState(login, idleAuthState);
+  // Client-side format check against the shared schema — never reveals whether
+  // an account exists (that stays the server's generic message); it only flags
+  // an empty/malformed field before the request is made.
+  const [state, action, pending] = useActionState(
+    async (prev: AuthState, formData: FormData): Promise<AuthState> => {
+      const parsed = loginSchema.safeParse({
+        email: formData.get("email"),
+        password: formData.get("password"),
+      });
+      if (!parsed.success) {
+        const fieldErrors: Record<string, string> = {};
+        for (const f of erroredFields(parsed.error)) {
+          fieldErrors[f] =
+            f === "email" ? t("errors.emailInvalid") : t("errors.required");
+        }
+        return { error: null, fieldErrors };
+      }
+      return login(prev, formData);
+    },
+    idleAuthState,
+  );
 
   return (
     <form action={action} className="flex flex-col gap-4">
@@ -28,7 +48,9 @@ export function LoginForm() {
           type="email"
           autoComplete="email"
           required
+          aria-invalid={state.fieldErrors?.email ? true : undefined}
         />
+        <FieldError>{state.fieldErrors?.email}</FieldError>
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -47,7 +69,9 @@ export function LoginForm() {
           type="password"
           autoComplete="current-password"
           required
+          aria-invalid={state.fieldErrors?.password ? true : undefined}
         />
+        <FieldError>{state.fieldErrors?.password}</FieldError>
       </div>
 
       {state.error && (

@@ -26,6 +26,8 @@ import {
   setDefaultAddress,
 } from "../_actions/address-crud";
 import { idleAuthState, type AuthState, type CustomerAddress } from "../_types";
+import { erroredFields } from "@/app/[locale]/_utils";
+import { addressSchema, addressFields } from "@/validation/account";
 
 export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
   const t = useTranslations("account");
@@ -36,7 +38,19 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
   const [editing, setEditing] = useState<CustomerAddress | null>(null);
 
   const [state, formAction, pending] = useActionState(
-    async (prev: AuthState, formData: FormData) => {
+    async (prev: AuthState, formData: FormData): Promise<AuthState> => {
+      const parsed = addressSchema.safeParse(
+        Object.fromEntries(
+          addressFields.map((key) => [key, formData.get(key) ?? ""]),
+        ),
+      );
+      if (!parsed.success) {
+        const fieldErrors: Record<string, string> = {};
+        for (const f of erroredFields(parsed.error)) {
+          fieldErrors[f] = t("errors.required");
+        }
+        return { error: null, fieldErrors };
+      }
       const result = await saveAddress(prev, formData);
       if (result.ok) {
         setOpen(false);
@@ -44,7 +58,7 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
       }
       return result;
     },
-    idleAuthState
+    idleAuthState,
   );
 
   const openFor = (address: CustomerAddress | null) => {
@@ -153,7 +167,12 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
             {editing && <input type="hidden" name="id" value={editing.id} />}
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label={t("firstName")} htmlFor="addr-first" required>
+              <Field
+                label={t("firstName")}
+                htmlFor="addr-first"
+                required
+                error={state.fieldErrors?.firstName}
+              >
                 <Input
                   id="addr-first"
                   name="firstName"
@@ -162,7 +181,12 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
                   required
                 />
               </Field>
-              <Field label={t("lastName")} htmlFor="addr-last" required>
+              <Field
+                label={t("lastName")}
+                htmlFor="addr-last"
+                required
+                error={state.fieldErrors?.lastName}
+              >
                 <Input
                   id="addr-last"
                   name="lastName"
@@ -173,7 +197,12 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
               </Field>
             </div>
 
-            <Field label={t("address1")} htmlFor="addr-1" required>
+            <Field
+              label={t("address1")}
+              htmlFor="addr-1"
+              required
+              error={state.fieldErrors?.address1}
+            >
               <Input
                 id="addr-1"
                 name="address1"
@@ -192,7 +221,12 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
             </Field>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label={t("city")} htmlFor="addr-city" required>
+              <Field
+                label={t("city")}
+                htmlFor="addr-city"
+                required
+                error={state.fieldErrors?.city}
+              >
                 <Input
                   id="addr-city"
                   name="city"
@@ -209,7 +243,12 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
                   defaultValue={editing?.province ?? ""}
                 />
               </Field>
-              <Field label={t("zip")} htmlFor="addr-zip" required>
+              <Field
+                label={t("zip")}
+                htmlFor="addr-zip"
+                required
+                error={state.fieldErrors?.zip}
+              >
                 <Input
                   id="addr-zip"
                   name="zip"
@@ -218,7 +257,12 @@ export function AddressesView({ addresses }: { addresses: CustomerAddress[] }) {
                   required
                 />
               </Field>
-              <Field label={t("country")} htmlFor="addr-country" required>
+              <Field
+                label={t("country")}
+                htmlFor="addr-country"
+                required
+                error={state.fieldErrors?.country}
+              >
                 <Input
                   id="addr-country"
                   name="country"

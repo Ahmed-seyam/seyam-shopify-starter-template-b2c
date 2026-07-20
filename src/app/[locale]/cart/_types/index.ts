@@ -1,4 +1,4 @@
-import type { Money, ShopifyImage } from "@/lib/shopify/types";
+import type { Money, ShopifyImage } from "@/types/shopify";
 
 export type CartLine = {
   id: string;

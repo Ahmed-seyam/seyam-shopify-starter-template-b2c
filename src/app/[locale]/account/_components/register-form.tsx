@@ -2,16 +2,37 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { Button } from "@/components/ui";
-import { Input } from "@/components/ui";
-import { Label } from "@/components/ui";
+import { Button, FieldError, Input, Label } from "@/components/ui";
 import { register } from "../_actions/register";
-import { idleAuthState } from "../_types";
+import { idleAuthState, type AuthState } from "../_types";
+import { erroredFields } from "@/app/[locale]/_utils";
+import { registerSchema } from "@/validation/auth";
 
 export function RegisterForm() {
   const t = useTranslations("account");
   const locale = useLocale();
-  const [state, action, pending] = useActionState(register, idleAuthState);
+  const [state, action, pending] = useActionState(
+    async (prev: AuthState, formData: FormData): Promise<AuthState> => {
+      const parsed = registerSchema.safeParse({
+        email: formData.get("email"),
+        password: formData.get("password"),
+        firstName: formData.get("firstName") || undefined,
+        lastName: formData.get("lastName") || undefined,
+      });
+      if (!parsed.success) {
+        const fieldErrors: Record<string, string> = {};
+        for (const f of erroredFields(parsed.error)) {
+          fieldErrors[f] =
+            f === "email"
+              ? t("errors.emailInvalid")
+              : t("errors.passwordTooShort");
+        }
+        return { error: null, fieldErrors };
+      }
+      return register(prev, formData);
+    },
+    idleAuthState,
+  );
 
   return (
     <form action={action} className="flex flex-col gap-4">
@@ -40,7 +61,9 @@ export function RegisterForm() {
           type="email"
           autoComplete="email"
           required
+          aria-invalid={state.fieldErrors?.email ? true : undefined}
         />
+        <FieldError>{state.fieldErrors?.email}</FieldError>
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -52,8 +75,13 @@ export function RegisterForm() {
           autoComplete="new-password"
           minLength={8}
           required
+          aria-invalid={state.fieldErrors?.password ? true : undefined}
         />
-        <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>
+        {state.fieldErrors?.password ? (
+          <FieldError>{state.fieldErrors.password}</FieldError>
+        ) : (
+          <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>
+        )}
       </div>
 
       {state.error && (

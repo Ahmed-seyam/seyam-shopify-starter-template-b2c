@@ -17,9 +17,9 @@ import {
 // Server Actions must be imported from the 'use server' file directly —
 // the domain barrel also re-exports server-only queries.
 import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
-import { track } from "@/lib/tracking";
+import { track } from "@/plugins/client/tracking";
 import { quickViewProduct } from "../_actions/quick-view";
-import type { Product, ProductVariant } from "../_types";
+import type { Product, ProductVariant } from "@/types/product";
 import { OptionPill } from "./option-pill";
 
 /**

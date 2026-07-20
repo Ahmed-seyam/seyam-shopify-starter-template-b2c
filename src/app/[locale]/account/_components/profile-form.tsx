@@ -6,18 +6,39 @@ import { Button, Checkbox, Field, Input, Label, toast } from "@/components/ui";
 // Direct action import — the domain barrel must stay free of server-only code.
 import { updateProfile } from "../_actions/update-profile";
 import { idleAuthState, type AuthState, type Customer } from "../_types";
+import { erroredFields } from "@/app/[locale]/_utils";
+import { profileSchema } from "@/validation/account";
 
 export function ProfileForm({ customer }: { customer: Customer }) {
   const t = useTranslations("account");
   const locale = useLocale();
 
   const [state, formAction, pending] = useActionState(
-    async (prev: AuthState, formData: FormData) => {
+    async (prev: AuthState, formData: FormData): Promise<AuthState> => {
+      const parsed = profileSchema.safeParse({
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+        email: formData.get("email"),
+        password: formData.get("password") ?? "",
+        acceptsMarketing: formData.get("acceptsMarketing") === "on",
+      });
+      if (!parsed.success) {
+        const fieldErrors: Record<string, string> = {};
+        for (const f of erroredFields(parsed.error)) {
+          fieldErrors[f] =
+            f === "email"
+              ? t("errors.emailInvalid")
+              : f === "password"
+                ? t("errors.passwordTooShort")
+                : t("errors.required");
+        }
+        return { error: null, fieldErrors };
+      }
       const result = await updateProfile(prev, formData);
       if (result.ok) toast.success(t("profileSaved"));
       return result;
     },
-    idleAuthState
+    idleAuthState,
   );
 
   return (
@@ -25,7 +46,12 @@ export function ProfileForm({ customer }: { customer: Customer }) {
       <input type="hidden" name="locale" value={locale} />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={t("firstName")} htmlFor="profile-first" required>
+        <Field
+          label={t("firstName")}
+          htmlFor="profile-first"
+          required
+          error={state.fieldErrors?.firstName}
+        >
           <Input
             id="profile-first"
             name="firstName"
@@ -34,7 +60,12 @@ export function ProfileForm({ customer }: { customer: Customer }) {
             required
           />
         </Field>
-        <Field label={t("lastName")} htmlFor="profile-last" required>
+        <Field
+          label={t("lastName")}
+          htmlFor="profile-last"
+          required
+          error={state.fieldErrors?.lastName}
+        >
           <Input
             id="profile-last"
             name="lastName"
@@ -45,7 +76,12 @@ export function ProfileForm({ customer }: { customer: Customer }) {
         </Field>
       </div>
 
-      <Field label={t("email")} htmlFor="profile-email" required>
+      <Field
+        label={t("email")}
+        htmlFor="profile-email"
+        required
+        error={state.fieldErrors?.email}
+      >
         <Input
           id="profile-email"
           name="email"
@@ -60,6 +96,7 @@ export function ProfileForm({ customer }: { customer: Customer }) {
         label={t("newPassword")}
         htmlFor="profile-password"
         hint={t("passwordOptionalHint")}
+        error={state.fieldErrors?.password}
       >
         <Input
           id="profile-password"

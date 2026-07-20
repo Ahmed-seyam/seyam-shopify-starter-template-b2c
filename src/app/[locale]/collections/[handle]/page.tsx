@@ -6,7 +6,7 @@ import {
   collectionFilters,
   collectionSortArgs,
   parseCatalogParams,
-} from "@/components/catalog/catalog-params";
+} from "@/lib/client/catalog/params";
 import { FilterPanel, MobileFilters } from "@/components/catalog/filter-panel";
 import { ProductGrid } from "@/components/catalog/product-grid";
 import { SortSelect } from "@/components/catalog/sort-select";
@@ -23,9 +23,10 @@ type PageProps = {
   }>;
 };
 
-export function generateStaticParams(): Array<{ handle: string }> {
-  return [];
-}
+// Rendered on demand: collection data is fetched through the internal /api
+// layer (a Server Component can't fetch a Route Handler while prerendering).
+// Cache tags on /api/collection/get-collection keep the data fresh.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

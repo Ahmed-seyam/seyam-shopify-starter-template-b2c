@@ -1,6 +1,6 @@
 "use server";
 
-import type { Product } from "../_types";
+import type { Product } from "@/types/product";
 import { getProduct } from "./get-product";
 
 /** Fetches full product data for the quick-add dialog. */

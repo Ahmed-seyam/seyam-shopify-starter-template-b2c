@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Button, EmptyState, ProductGridSkeleton } from "@/components/ui";
 import { ProductCard } from "@/app/[locale]/products/_components/product-card";
-import type { ProductCard as ProductCardType } from "@/app/[locale]/products/_types";
+import type { ProductCard as ProductCardType } from "@/types/product";
 import { Link } from "@/i18n/navigation";
 // Server Actions are imported from their 'use server' file directly, never via
 // the domain barrel.

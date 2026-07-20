@@ -1,18 +1,13 @@
 "use server";
 
 import { getTranslations } from "next-intl/server";
-import { z } from "zod";
-import { ShopifyUserError, storefrontMutation } from "@/lib/shopify/client";
+import { callApi } from "@/lib/server/api/http";
+import { ShopifyUserError } from "@/plugins/server/shopify/client";
 import { syncCartBuyerIdentity } from "@/app/[locale]/cart";
 import { redirect } from "@/i18n/navigation";
-import { CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION } from "../_mutations/customer-access-token-create";
+import { loginSchema } from "@/validation/auth";
 import type { AuthState } from "../_types";
-import { persistToken, safeLocale, type TokenPayload } from "./shared";
-
-const schema = z.object({
-  email: z.email(),
-  password: z.string().min(1),
-});
+import { safeLocale } from "@/app/[locale]/_utils";
 
 export async function login(
   _prev: AuthState,
@@ -21,30 +16,28 @@ export async function login(
   const locale = safeLocale(formData.get("locale"));
   const t = await getTranslations({ locale, namespace: "account.errors" });
 
-  const parsed = schema.safeParse({
+  const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
   if (!parsed.success) return { error: t("invalidCredentials") };
 
   try {
-    const payload = await storefrontMutation<TokenPayload>(
-      "customerAccessTokenCreate",
-      CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION,
-      { variables: { input: parsed.data }, locale },
+    const { authenticated } = await callApi<{ authenticated: boolean }>(
+      "/api/account/login",
+      { method: "POST", auth: true, body: { ...parsed.data, locale } },
     );
-    // Shopify reports bad credentials as a userError (thrown below); a null
-    // token without one would be an unexpected shape — treat as failure.
-    if (!payload.customerAccessToken) return { error: t("invalidCredentials") };
-    await persistToken(payload.customerAccessToken);
+    if (!authenticated) return { error: t("invalidCredentials") };
   } catch (error) {
     // Never reveal whether it was the email or the password that was wrong.
-    if (error instanceof ShopifyUserError) return { error: t("invalidCredentials") };
+    if (error instanceof ShopifyUserError) {
+      return { error: t("invalidCredentials") };
+    }
     throw error;
   }
 
-  // Link any existing guest cart to the customer so checkout is attributed
-  // to them (token is now in the cookie, read within this same request).
+  // Link any existing guest cart to the customer (token cookie is now set this
+  // request, and callApi forwards it to the cart endpoint).
   await syncCartBuyerIdentity(locale);
 
   // redirect() throws NEXT_REDIRECT — must run outside the try/catch above.

@@ -1,6 +1,6 @@
 "use server";
 
-import { z } from "zod";
+import { newsletterSchema } from "@/validation/marketing";
 
 export type SubscribeState = { status: "idle" | "success" | "error" };
 
@@ -12,8 +12,8 @@ export async function subscribeNewsletter(
   _prev: SubscribeState,
   formData: FormData
 ): Promise<SubscribeState> {
-  const email = z.string().email().safeParse(formData.get("email"));
-  if (!email.success) return { status: "error" };
+  const parsed = newsletterSchema.safeParse({ email: formData.get("email") });
+  if (!parsed.success) return { status: "error" };
 
   return { status: "success" };
 }

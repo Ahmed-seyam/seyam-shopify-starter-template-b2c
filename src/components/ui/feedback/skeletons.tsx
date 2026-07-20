@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Skeleton } from "./skeleton";
 
 /** Placeholder matching ProductCard's layout (3/4 image + two text lines). */

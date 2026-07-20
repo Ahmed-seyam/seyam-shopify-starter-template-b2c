@@ -3,10 +3,10 @@
 import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
-import { navItems } from "@/lib/config/nav";
+import { navItems } from "@/config/nav";
 import { ImageFrame, NavLink } from "@/components/ui";
 import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 /**
  * Desktop nav row + mega menu panel. The panel is positioned against the

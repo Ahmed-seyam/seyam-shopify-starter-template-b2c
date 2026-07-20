@@ -19,7 +19,7 @@ import {
 } from "@/app/[locale]/products";
 import { PurchasePanel } from "@/app/[locale]/products/_components/purchase-panel";
 import { TrackProductView } from "@/app/[locale]/products/_components/track-product-view";
-import { itemFromProduct } from "@/lib/tracking";
+import { itemFromProduct } from "@/plugins/client/tracking";
 import { RelatedProducts } from "@/app/[locale]/products/_components/related-products";
 import { ReviewsSection } from "@/app/[locale]/products/_components/reviews-section";
 
@@ -27,11 +27,11 @@ type PageProps = {
   params: Promise<{ locale: string; handle: string }>;
 };
 
-// No build-time params: images stay store-independent (Docker) and pages
-// materialize via ISR on first request. Webhooks keep them fresh.
-export function generateStaticParams(): Array<{ handle: string }> {
-  return [];
-}
+// Product data is fetched through the internal /api HTTP layer, so this page
+// renders on demand (a Server Component cannot fetch a Route Handler while being
+// prerendered). Data-layer caching + webhook freshness are preserved by the
+// cache tags on /api/product/get-product's Storefront fetch.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

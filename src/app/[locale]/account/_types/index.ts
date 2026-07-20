@@ -1,4 +1,4 @@
-import type { Money } from "@/lib/shopify/types";
+import type { Money } from "@/types/shopify";
 
 export type Customer = {
   firstName: string | null;
@@ -24,7 +24,12 @@ export type CustomerOrder = {
  * shows inline rather than redirecting (password recovery). Lives here in the
  * client-safe types module so form components never import server-only code.
  */
-export type AuthState = { error: string | null; ok?: boolean };
+export type AuthState = {
+  error: string | null;
+  ok?: boolean;
+  /** Per-field messages from the client-side pre-validation, keyed by input name. */
+  fieldErrors?: Record<string, string>;
+};
 
 export const idleAuthState: AuthState = { error: null };
 
@@ -47,7 +52,7 @@ export type CustomerOrderLine = {
   quantity: number;
   totalPrice: Money;
   variantTitle: string | null;
-  image: import("@/lib/shopify/types").ShopifyImage | null;
+  image: import("@/types/shopify").ShopifyImage | null;
 };
 
 export type CustomerOrderDetail = {

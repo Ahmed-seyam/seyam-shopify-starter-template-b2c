@@ -3,7 +3,7 @@
 import { HeartIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { IconButton, toast } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { useWishlist } from "./use-wishlist";
 
 /** Heart toggle used on product cards and the product page. */

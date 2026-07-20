@@ -2,6 +2,7 @@ export { Input } from "./input";
 export { Textarea } from "./textarea";
 export { Label } from "./label";
 export { Field } from "./field";
+export { FieldError } from "./field-error";
 export { Checkbox } from "./checkbox";
 export { RadioGroup, RadioGroupItem } from "./radio-group";
 export { SearchInput } from "./search-input";

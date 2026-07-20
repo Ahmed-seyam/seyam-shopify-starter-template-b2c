@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { track, type TrackedItem } from "@/lib/tracking";
+import { track, type TrackedItem } from "@/plugins/client/tracking";
 
 /** Fires view_item once per product page visit (rendered by the PDP). */
 export function TrackProductView({ item }: { item: TrackedItem }) {

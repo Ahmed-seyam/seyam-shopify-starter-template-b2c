@@ -1,13 +1,10 @@
 "use server";
 
 import { getTranslations } from "next-intl/server";
-import { z } from "zod";
-import { ShopifyUserError, storefrontMutation } from "@/lib/shopify/client";
-import { CUSTOMER_RECOVER_MUTATION } from "../_mutations/customer-recover";
+import { callApi } from "@/lib/server/api/http";
+import { recoverSchema } from "@/validation/auth";
 import type { AuthState } from "../_types";
-import { safeLocale } from "./shared";
-
-const schema = z.object({ email: z.email() });
+import { safeLocale } from "@/app/[locale]/_utils";
 
 export async function recover(
   _prev: AuthState,
@@ -16,20 +13,16 @@ export async function recover(
   const locale = safeLocale(formData.get("locale"));
   const t = await getTranslations({ locale, namespace: "account.errors" });
 
-  const parsed = schema.safeParse({ email: formData.get("email") });
+  const parsed = recoverSchema.safeParse({ email: formData.get("email") });
   if (!parsed.success) return { error: t("emailInvalid") };
 
-  try {
-    await storefrontMutation(
-      "customerRecover",
-      CUSTOMER_RECOVER_MUTATION,
-      { variables: { email: parsed.data.email }, locale },
-    );
-  } catch (error) {
-    // Swallow userErrors: the confirmation is deliberately identical whether
-    // or not the email exists, so the form can't be used to enumerate accounts.
-    if (!(error instanceof ShopifyUserError)) throw error;
-  }
+  // The endpoint deliberately returns the same result whether or not the email
+  // exists (no account enumeration).
+  await callApi("/api/account/recover", {
+    method: "POST",
+    auth: true,
+    body: { ...parsed.data, locale },
+  });
 
   return { error: null, ok: true };
 }

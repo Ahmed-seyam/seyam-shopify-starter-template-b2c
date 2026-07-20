@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui";
-import { SORT_VALUES, type SortValue } from "./catalog-params";
+import { SORT_VALUES, type SortValue } from "@/lib/client/catalog/params";
 import { useCatalogUrl } from "./use-catalog-url";
 
 export function SortSelect({ value }: { value: SortValue }) {

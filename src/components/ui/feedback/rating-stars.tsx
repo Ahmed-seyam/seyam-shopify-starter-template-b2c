@@ -3,7 +3,7 @@
 import * as React from "react";
 import { StarIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const sizeClasses = {
   sm: "[&_svg]:size-3.5",

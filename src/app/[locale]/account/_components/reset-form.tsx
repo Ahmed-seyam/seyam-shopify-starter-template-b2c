@@ -2,17 +2,32 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { Button } from "@/components/ui";
-import { Input } from "@/components/ui";
-import { Label } from "@/components/ui";
+import { Button, FieldError, Input, Label } from "@/components/ui";
 import { reset } from "../_actions/reset";
-import { idleAuthState } from "../_types";
+import { idleAuthState, type AuthState } from "../_types";
+import { erroredFields } from "@/app/[locale]/_utils";
+import { resetSchema } from "@/validation/auth";
 
 /** `id` + `token` come from the emailed /account/reset/[id]/[token] link. */
 export function ResetForm({ id, token }: { id: string; token: string }) {
   const t = useTranslations("account");
   const locale = useLocale();
-  const [state, action, pending] = useActionState(reset, idleAuthState);
+  const [state, action, pending] = useActionState(
+    async (prev: AuthState, formData: FormData): Promise<AuthState> => {
+      const parsed = resetSchema.safeParse({
+        password: formData.get("password"),
+      });
+      if (!parsed.success) {
+        const fieldErrors: Record<string, string> = {};
+        for (const f of erroredFields(parsed.error)) {
+          fieldErrors[f] = t("errors.passwordTooShort");
+        }
+        return { error: null, fieldErrors };
+      }
+      return reset(prev, formData);
+    },
+    idleAuthState,
+  );
 
   return (
     <form action={action} className="flex flex-col gap-4">
@@ -29,8 +44,13 @@ export function ResetForm({ id, token }: { id: string; token: string }) {
           autoComplete="new-password"
           minLength={8}
           required
+          aria-invalid={state.fieldErrors?.password ? true : undefined}
         />
-        <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>
+        {state.fieldErrors?.password ? (
+          <FieldError>{state.fieldErrors.password}</FieldError>
+        ) : (
+          <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>
+        )}
       </div>
 
       {state.error && (

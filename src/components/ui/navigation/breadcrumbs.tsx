@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ChevronRightIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Link } from "@/i18n/navigation";
 
 type Crumb = { label: React.ReactNode; href?: string };

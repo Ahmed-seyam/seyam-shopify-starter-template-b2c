@@ -3,7 +3,7 @@
 import { MenuIcon, UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Suspense, useState } from "react";
-import { navItems } from "@/lib/config/nav";
+import { navItems } from "@/config/nav";
 import {
   IconButton,
   Separator,

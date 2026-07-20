@@ -152,6 +152,7 @@
       "invalidCredentials": "Incorrect email or password.",
       "emailInvalid": "Enter a valid email address.",
       "passwordTooShort": "Password must be at least 8 characters.",
+      "required": "This field is required.",
       "emailTaken": "An account with this email already exists.",
       "resetLinkInvalid": "This reset link is invalid or has expired.",
       "generic": "Something went wrong. Please try again.",
@@ -305,6 +306,12 @@
     "thanksTitle": "Thank you!",
     "thanksBody": "Your review has been submitted for moderation.",
     "error": "Please check the form and try again.",
+    "invalid": {
+      "rating": "Please choose a rating from 1 to 5.",
+      "title": "Please enter a title.",
+      "body": "Your review must be at least 10 characters.",
+      "name": "Please enter your name."
+    },
     "empty": "No reviews yet — be the first.",
     "summary": "{average} out of 5 · {count, plural, one {# review} other {# reviews}}"
   },

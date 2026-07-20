@@ -1,6 +1,6 @@
 import { useLocale } from "next-intl";
-import type { Money } from "@/lib/shopify/types";
-import { cn } from "@/lib/utils";
+import type { Money } from "@/types/shopify";
+import { cn } from "@/utils";
 
 export function formatMoney(money: Money, locale: string): string {
   return new Intl.NumberFormat(locale, {

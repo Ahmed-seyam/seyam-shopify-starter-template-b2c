@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Link, usePathname } from "@/i18n/navigation";
 
 /**

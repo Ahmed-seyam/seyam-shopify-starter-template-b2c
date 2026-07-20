@@ -1,33 +1,17 @@
 import "server-only";
-import { collectionTag, TAGS } from "@/lib/cache/tags";
-import { storefrontFetch } from "@/lib/shopify/client";
-import {
-  flattenConnection,
-  type Connection,
-  type Seo,
-  type ShopifyImage,
-} from "@/lib/shopify/types";
-import {
-  reshapeProductCard,
-  type RawProductCard,
-} from "@/app/[locale]/products/_actions/reshape";
-import { GET_COLLECTION_QUERY } from "../_queries/get-collection";
+import { callApi } from "@/lib/server/api/http";
+import { collectionTag, TAGS } from "@/lib/server/cache/tags";
 import type { CollectionWithProducts } from "../_types";
-
-type RawCollection = {
-  id: string;
-  handle: string;
-  title: string;
-  description: string;
-  image: ShopifyImage | null;
-  seo: Seo;
-  products: Connection<RawProductCard>;
-};
 
 type ProductFilter =
   | { available: boolean }
   | { price: { min?: number; max?: number } };
 
+/**
+ * Server-side client for the collection-detail endpoint. Shopify + GraphQL live
+ * behind /api/collection/get-collection. `filters` is JSON-encoded because it's
+ * an array of objects.
+ */
 export async function getCollection(
   handle: string,
   locale: string,
@@ -43,27 +27,19 @@ export async function getCollection(
     filters?: ProductFilter[];
   } = {},
 ): Promise<CollectionWithProducts | null> {
-  const data = await storefrontFetch<{ collection: RawCollection | null }>(
-    GET_COLLECTION_QUERY,
+  return callApi<CollectionWithProducts | null>(
+    "/api/collection/get-collection",
     {
-      variables: { handle, first, sortKey, reverse, filters },
-      locale,
-      // Products shown inside a collection change when products change too.
+      searchParams: {
+        handle,
+        locale,
+        first,
+        sortKey,
+        reverse,
+        filters: filters ? JSON.stringify(filters) : undefined,
+      },
       tags: [TAGS.collections, collectionTag(handle), TAGS.products],
+      revalidate: 60 * 60 * 24,
     },
   );
-
-  if (!data.collection) return null;
-
-  return {
-    id: data.collection.id,
-    handle: data.collection.handle,
-    title: data.collection.title,
-    description: data.collection.description,
-    image: data.collection.image,
-    seo: data.collection.seo,
-    products: flattenConnection(data.collection.products).map(
-      reshapeProductCard,
-    ),
-  };
 }

@@ -6,8 +6,8 @@ import { useState } from "react";
 import { Badge, Button, IconButton, ImageFrame, Price } from "@/components/ui";
 import { WishlistButton, useWishlist } from "@/app/[locale]/account/wishlist";
 import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
-import type { ProductCard as ProductCardType } from "../_types";
+import { cn } from "@/utils";
+import type { ProductCard as ProductCardType } from "@/types/product";
 import { QuickAddDialog } from "./quick-add-dialog";
 
 type ProductCardProps = {

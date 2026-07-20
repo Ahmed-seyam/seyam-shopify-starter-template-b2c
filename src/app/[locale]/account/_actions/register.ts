@@ -1,28 +1,13 @@
 "use server";
 
 import { getTranslations } from "next-intl/server";
-import { z } from "zod";
-import {
-  ShopifyUserError,
-  storefrontMutation,
-  type UserError,
-} from "@/lib/shopify/client";
+import { callApi } from "@/lib/server/api/http";
+import { ShopifyUserError } from "@/plugins/server/shopify/client";
 import { syncCartBuyerIdentity } from "@/app/[locale]/cart";
 import { redirect } from "@/i18n/navigation";
-import { CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION } from "../_mutations/customer-access-token-create";
-import { CUSTOMER_CREATE_MUTATION } from "../_mutations/customer-create";
+import { registerSchema } from "@/validation/auth";
 import type { AuthState } from "../_types";
-import { persistToken, safeLocale, type TokenPayload } from "./shared";
-
-const schema = z.object({
-  email: z.email(),
-  // Shopify enforces its own policy; 8 is a friendly client-visible floor.
-  password: z.string().min(8),
-  firstName: z.string().trim().optional(),
-  lastName: z.string().trim().optional(),
-});
-
-type CreatePayload = { customer: { id: string } | null; userErrors: UserError[] };
+import { safeLocale } from "@/app/[locale]/_utils";
 
 export async function register(
   _prev: AuthState,
@@ -31,7 +16,7 @@ export async function register(
   const locale = safeLocale(formData.get("locale"));
   const t = await getTranslations({ locale, namespace: "account.errors" });
 
-  const parsed = schema.safeParse({
+  const parsed = registerSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
     firstName: formData.get("firstName") || undefined,
@@ -40,16 +25,20 @@ export async function register(
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
     return {
-      error: issue?.path[0] === "password" ? t("passwordTooShort") : t("emailInvalid"),
+      error:
+        issue?.path[0] === "password"
+          ? t("passwordTooShort")
+          : t("emailInvalid"),
     };
   }
 
+  let signedIn = false;
   try {
-    await storefrontMutation<CreatePayload>(
-      "customerCreate",
-      CUSTOMER_CREATE_MUTATION,
-      { variables: { input: parsed.data }, locale },
+    const result = await callApi<{ signedIn: boolean }>(
+      "/api/account/register",
+      { method: "POST", auth: true, body: { ...parsed.data, locale } },
     );
+    signedIn = result.signedIn;
   } catch (error) {
     if (error instanceof ShopifyUserError) {
       const code = error.userErrors[0]?.code;
@@ -60,28 +49,6 @@ export async function register(
       return { error: error.userErrors[0]?.message ?? t("generic") };
     }
     throw error;
-  }
-
-  // Auto sign-in so the new customer lands on their account, not the login page.
-  let signedIn = false;
-  try {
-    const payload = await storefrontMutation<TokenPayload>(
-      "customerAccessTokenCreate",
-      CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION,
-      {
-        variables: {
-          input: { email: parsed.data.email, password: parsed.data.password },
-        },
-        locale,
-      },
-    );
-    if (payload.customerAccessToken) {
-      await persistToken(payload.customerAccessToken);
-      signedIn = true;
-    }
-  } catch (error) {
-    if (!(error instanceof ShopifyUserError)) throw error;
-    // Account exists but auto-login failed — send them to sign in manually.
   }
 
   if (signedIn) await syncCartBuyerIdentity(locale);

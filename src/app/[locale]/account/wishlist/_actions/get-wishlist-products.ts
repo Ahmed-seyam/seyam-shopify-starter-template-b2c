@@ -1,7 +1,7 @@
 "use server";
 
 import { getProducts } from "@/app/[locale]/products/_actions/get-products";
-import type { ProductCard } from "@/app/[locale]/products/_types";
+import type { ProductCard } from "@/types/product";
 
 const MAX_HANDLES = 24;
 

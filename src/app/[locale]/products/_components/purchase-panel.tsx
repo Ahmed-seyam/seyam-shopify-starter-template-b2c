@@ -8,10 +8,10 @@ import { Button, QuantityStepper, toast } from "@/components/ui";
 // Server Actions must be imported from the 'use server' file directly —
 // the domain barrel also re-exports server-only queries.
 import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
-import { track } from "@/lib/tracking";
+import { track } from "@/plugins/client/tracking";
 import { useWishlist } from "@/app/[locale]/account/wishlist";
-import { cn } from "@/lib/utils";
-import type { ProductVariant } from "../_types";
+import { cn } from "@/utils";
+import type { ProductVariant } from "@/types/product";
 
 /**
  * PDP purchase block: quantity stepper + add-to-cart + wishlist secondary.

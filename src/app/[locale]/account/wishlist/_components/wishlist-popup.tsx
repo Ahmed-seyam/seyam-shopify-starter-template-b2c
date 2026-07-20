@@ -14,7 +14,7 @@ import {
   Text,
 } from "@/components/ui";
 import { ProductCard } from "@/app/[locale]/products/_components/product-card";
-import type { ProductCard as ProductCardType } from "@/app/[locale]/products/_types";
+import type { ProductCard as ProductCardType } from "@/types/product";
 import { Link } from "@/i18n/navigation";
 // Direct action import — never via the domain barrel.
 import { getWishlistProducts } from "../_actions/get-wishlist-products";

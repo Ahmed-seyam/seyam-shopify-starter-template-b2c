@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { track } from "@/lib/tracking";
+import { track } from "@/plugins/client/tracking";
 
 /**
  * Fires the purchase event on the thank-you page, deduplicated per order via

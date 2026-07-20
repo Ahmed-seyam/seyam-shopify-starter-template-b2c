@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSearchProvider } from "@/app/[locale]/search";
-import { checkRateLimit, clientIp } from "@/lib/security/rate-limit";
+import { env } from "@/config/env";
+import { algoliaSearchProvider } from "@/plugins/server/algolia/adapter";
+import { checkRateLimit, clientIp } from "@/plugins/server/security/rate-limit";
+import { shopifySuggest } from "./_shopify";
 
 /**
  * Live search suggestions for the header popup.
@@ -49,10 +51,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const products = await getSearchProvider().suggest(query, {
-      locale,
-      limit,
-    });
+    // Suggest is served by the active backend: Algolia hits Algolia directly,
+    // Shopify goes through the Storefront egress helper — both server-side,
+    // both inside this Route Handler.
+    const products =
+      env().SEARCH_PROVIDER === "algolia"
+        ? await algoliaSearchProvider.suggest(query, { locale, limit })
+        : await shopifySuggest(query, { locale, limit });
     return NextResponse.json(
       { products },
       // Same query within a minute is served by the CDN — bots hammering a

@@ -1,37 +1,21 @@
 import "server-only";
-import { metaobjectTag, TAGS } from "@/lib/cache/tags";
-import { storefrontFetch } from "@/lib/shopify/client";
-import { GET_METAOBJECT_QUERY } from "../_queries/get-metaobject";
-import type { Metaobject, MetaobjectField } from "../_types";
-
-type RawMetaobject = Omit<Metaobject, "fields"> & {
-  fields: MetaobjectField[];
-};
+import { callApi } from "@/lib/server/api/http";
+import { metaobjectTag, TAGS } from "@/lib/server/cache/tags";
+import type { Metaobject } from "../_types";
 
 /**
- * CMS slot: any content source (Sanity, …) can replace this behind the same
- * signature — callers only ever see the Metaobject domain type.
+ * Server-side client for the metaobject endpoint (/api/page/get-metaobject).
+ * Any CMS source can replace the route behind the same signature — callers only
+ * ever see the Metaobject domain type.
  */
 export async function getMetaobject(
   type: string,
   handle: string,
   locale: string,
 ): Promise<Metaobject | null> {
-  const data = await storefrontFetch<{ metaobject: RawMetaobject | null }>(
-    GET_METAOBJECT_QUERY,
-    {
-      variables: { handle, type },
-      locale,
-      tags: [TAGS.metaobjects, metaobjectTag(handle)],
-    },
-  );
-
-  if (!data.metaobject) return null;
-
-  return {
-    ...data.metaobject,
-    fields: Object.fromEntries(
-      data.metaobject.fields.map((field) => [field.key, field]),
-    ),
-  };
+  return callApi<Metaobject | null>("/api/page/get-metaobject", {
+    searchParams: { type, handle, locale },
+    tags: [TAGS.metaobjects, metaobjectTag(handle)],
+    revalidate: 60 * 60 * 24,
+  });
 }

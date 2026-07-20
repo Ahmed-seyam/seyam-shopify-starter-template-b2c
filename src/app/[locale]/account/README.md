@@ -4,20 +4,35 @@ Customer accounts via the **classic Shopify Storefront API** (email/password,
 `customerAccessTokenCreate`). Login, registration, password recovery and reset
 are **in-app pages** — the storefront owns the UI, no redirect to Shopify.
 
+All Shopify egress goes through HTTP Route Handlers under `app/api/account/`
+(the only code that imports `lib/shopify/client`). The `_actions` below call
+those endpoints via `callApi` (`lib/api/http`) — they never touch Shopify
+directly. See the [API HTTP layer](../../../../lib/api) for the contract.
+
 ```
-customer/
-  queries/     GraphQL query documents (get-customer.ts, get-orders.ts)
-  mutations/   GraphQL mutation documents (customer-access-token-create.ts,
+app/api/account/            Route Handlers (the only Shopify callers)
+  _queries/    GraphQL query documents (get-customer.ts, get-orders.ts, …)
+  _mutations/  GraphQL mutation documents (customer-access-token-create.ts,
                customer-create.ts, customer-recover.ts, customer-reset.ts,
-               customer-access-token-delete.ts). customerUserErrors is
-               aliased to `userErrors` so storefrontMutation handles them.
-  actions/     login / register / recover / reset / logout ('use server'),
-               get-customer / get-orders (server-only reads; null/[] when
-               signed out — pages never crash on missing auth). shared.ts
-               holds safeLocale (redirect-target validation) + persistToken.
-  components/  login/register/recover/reset forms (useActionState),
+               customer-access-token-delete.ts, customer-address.ts,
+               customer-update.ts). customerUserErrors is aliased to
+               `userErrors` so storefrontMutation handles them.
+  _shared.ts   TokenPayload + persistToken (saves the JWE cookie in-handler;
+               callApi propagates the Set-Cookie back to the browser).
+  login/ logout/ register/ recover/ reset/ update-profile/
+  address/{save,delete,set-default}/   POST mutations
+  customer/ orders/ order/ addresses/  GET reads
+
+customer/ (this segment)
+  _actions/    login / register / recover / reset / logout ('use server' form
+               actions — own validation, translations, redirect); get-customer
+               / get-orders / get-order / get-addresses (server-only read
+               wrappers; null/[] when signed out). All call the /api routes.
+               Validation schemas come from @/validation/{auth,account};
+               safeLocale (redirect-target validation) from @/app/[locale]/_utils.
+  _components/ login/register/recover/reset forms (useActionState),
                auth-layout.tsx (card shell), order-list.tsx
-  types/       domain types + AuthState (client-safe; forms import from here)
+  _types/      domain types + AuthState (client-safe; forms import from here)
 ```
 
 Supporting piece outside the domain:
@@ -35,8 +50,9 @@ Storefront API needs no other credentials. Until then the account pages show a
 "not configured" notice. Point Shopify's customer "reset password" notification
 at `${SITE_URL}/account/reset/{{ customer.id }}/{{ token }}` for the reset link.
 
-Future mutations (update address, …): document in `mutations/`, Server Action
-in `actions/`, and check userErrors the same way (`storefrontMutation`).
+Future mutations: add a Route Handler under `app/api/account/` (GraphQL in
+`_mutations/`, `storefrontMutation` in the handler), then a thin `_actions`
+wrapper that calls it via `callApi` and maps the revived `ShopifyUserError`.
 
 **B2B fork note:** this classic token CANNOT carry buyer context. Shopify's
 `BuyerInput.customerAccessToken` for `@inContext(buyer:)` requires a **Customer

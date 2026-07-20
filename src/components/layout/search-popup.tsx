@@ -12,9 +12,9 @@ import {
   SearchInput,
   Spinner,
 } from "@/components/ui";
-import type { ProductCard } from "@/app/[locale]/products/_types";
+import type { ProductCard } from "@/types/product";
 import { Link, useRouter } from "@/i18n/navigation";
-import { track } from "@/lib/tracking";
+import { track } from "@/plugins/client/tracking";
 
 /** Header search: popover with live product suggestions. */
 export function SearchPopup() {

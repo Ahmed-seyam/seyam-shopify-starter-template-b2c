@@ -2,7 +2,7 @@
 
 import { SlidersHorizontalIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   BottomSheet,
   BottomSheetContent,
@@ -13,7 +13,7 @@ import {
   Input,
   Label,
 } from "@/components/ui";
-import type { CatalogParams } from "./catalog-params";
+import type { CatalogParams } from "@/lib/client/catalog/params";
 import { useCatalogUrl } from "./use-catalog-url";
 
 /** Filter controls (in-stock, price range) — desktop sidebar + mobile bottom sheet. */
@@ -87,8 +87,8 @@ function FilterControls({
   );
 }
 
-/** Desktop sidebar. */
-export function FilterPanel({ params }: { params: CatalogParams }) {
+/** Desktop sidebar frame — shared by URL-param filters and Algolia facets. */
+export function FilterSidebar({ children }: { children: ReactNode }) {
   const t = useTranslations("catalog.filters");
 
   return (
@@ -96,13 +96,29 @@ export function FilterPanel({ params }: { params: CatalogParams }) {
       <p className="mb-5 font-serif text-lg font-medium text-foreground">
         {t("title")}
       </p>
-      <FilterControls params={params} />
+      {children}
     </aside>
   );
 }
 
-/** Mobile trigger + bottom sheet. */
-export function MobileFilters({ params }: { params: CatalogParams }) {
+/** Desktop sidebar. */
+export function FilterPanel({ params }: { params: CatalogParams }) {
+  return (
+    <FilterSidebar>
+      <FilterControls params={params} />
+    </FilterSidebar>
+  );
+}
+
+/**
+ * Mobile trigger + bottom sheet frame. The render prop hands the controls a
+ * `close` callback so applying a filter can dismiss the sheet.
+ */
+export function MobileFilterSheet({
+  children,
+}: {
+  children: (close: () => void) => ReactNode;
+}) {
   const t = useTranslations("catalog.filters");
   const [open, setOpen] = useState(false);
 
@@ -116,8 +132,17 @@ export function MobileFilters({ params }: { params: CatalogParams }) {
       </BottomSheetTrigger>
       <BottomSheetContent className="p-6">
         <BottomSheetTitle className="mb-4">{t("title")}</BottomSheetTitle>
-        <FilterControls params={params} onApplied={() => setOpen(false)} />
+        {children(() => setOpen(false))}
       </BottomSheetContent>
     </BottomSheet>
+  );
+}
+
+/** Mobile trigger + bottom sheet. */
+export function MobileFilters({ params }: { params: CatalogParams }) {
+  return (
+    <MobileFilterSheet>
+      {(close) => <FilterControls params={params} onApplied={close} />}
+    </MobileFilterSheet>
   );
 }

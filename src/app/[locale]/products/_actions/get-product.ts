@@ -1,22 +1,21 @@
 import "server-only";
-import { productTag, TAGS } from "@/lib/cache/tags";
-import { storefrontFetch } from "@/lib/shopify/client";
-import { GET_PRODUCT_QUERY } from "../_queries/get-product";
-import type { Product } from "../_types";
-import { reshapeProduct, type RawProduct } from "./reshape";
+import { callApi } from "@/lib/server/api/http";
+import { productTag, TAGS } from "@/lib/server/cache/tags";
+import type { Product } from "@/types/product";
 
+/**
+ * Server-side client for the product-detail endpoint. Shopify is never touched
+ * here — the query + token live behind `/api/product/get-product`. Cache tags
+ * are carried on the outer fetch too so a webhook `revalidateTag` clears both
+ * this response and the handler's Storefront fetch.
+ */
 export async function getProduct(
   handle: string,
   locale: string,
 ): Promise<Product | null> {
-  const data = await storefrontFetch<{ product: RawProduct | null }>(
-    GET_PRODUCT_QUERY,
-    {
-      variables: { handle },
-      locale,
-      tags: [TAGS.products, productTag(handle)],
-    },
-  );
-
-  return data.product ? reshapeProduct(data.product) : null;
+  return callApi<Product | null>("/api/product/get-product", {
+    searchParams: { handle, locale },
+    tags: [TAGS.products, productTag(handle)],
+    revalidate: 60 * 60 * 24,
+  });
 }

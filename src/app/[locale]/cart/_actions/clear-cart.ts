@@ -1,6 +1,6 @@
 "use server";
 
-import { clearSession } from "@/lib/shopify/session";
+import { clearSession } from "@/plugins/server/shopify/session";
 
 /**
  * Forget the current cart by deleting its cookie. Used after checkout

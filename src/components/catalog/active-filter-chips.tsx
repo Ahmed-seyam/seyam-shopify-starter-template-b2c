@@ -2,7 +2,7 @@
 
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { CatalogParams } from "./catalog-params";
+import type { CatalogParams } from "@/lib/client/catalog/params";
 import { useCatalogUrl } from "./use-catalog-url";
 
 export function ActiveFilterChips({ params }: { params: CatalogParams }) {

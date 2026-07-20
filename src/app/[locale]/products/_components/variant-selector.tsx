@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import type { ProductOption, ProductVariant } from "../_types";
+import type { ProductOption, ProductVariant } from "@/types/product";
 import { OptionPill } from "./option-pill";
 
 /**

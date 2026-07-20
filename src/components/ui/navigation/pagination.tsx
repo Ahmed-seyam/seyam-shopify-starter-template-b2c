@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Link } from "@/i18n/navigation";
 
 type PageLink = { page: number; href: string };

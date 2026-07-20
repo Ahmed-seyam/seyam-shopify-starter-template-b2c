@@ -1,15 +1,13 @@
 "use server";
 
-import { z } from "zod";
+import { reviewSchema, type ReviewInput } from "@/validation/product";
 
-export type ReviewState = { status: "idle" | "success" | "error" };
-
-const reviewSchema = z.object({
-  rating: z.coerce.number().int().min(1).max(5),
-  title: z.string().min(1).max(120),
-  body: z.string().min(10).max(2000),
-  name: z.string().min(1).max(80),
-});
+export type ReviewFieldErrors = Partial<Record<keyof ReviewInput, string>>;
+export type ReviewState = {
+  status: "idle" | "success" | "error";
+  /** Per-field messages, populated by the client-side pre-validation. */
+  fieldErrors?: ReviewFieldErrors;
+};
 
 /**
  * Review submission stub — validates and accepts. Wire to a reviews app

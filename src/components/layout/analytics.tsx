@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { captureUtmParams, initCleverTap, initGtm, track } from "@/lib/tracking";
+import { captureUtmParams, initCleverTap, initGtm, track } from "@/plugins/client/tracking";
 
 /**
  * Analytics bootstrap, mounted once in the root layout. Captures UTM params

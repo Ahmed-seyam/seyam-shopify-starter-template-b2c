@@ -7,13 +7,20 @@ import {
   subscribeNewsletter,
   type SubscribeState,
 } from "@/app/[locale]/pages/_actions/subscribe-newsletter";
+import { newsletterSchema } from "@/validation/marketing";
 
 const initialState: SubscribeState = { status: "idle" };
 
 export function Newsletter() {
   const t = useTranslations("home.newsletter");
+  // Same shared schema the action + API validate against — checked here first
+  // so an invalid email fails instantly without a server round-trip.
   const [state, action, pending] = useActionState(
-    subscribeNewsletter,
+    async (prev: SubscribeState, formData: FormData): Promise<SubscribeState> => {
+      const parsed = newsletterSchema.safeParse({ email: formData.get("email") });
+      if (!parsed.success) return { status: "error" };
+      return subscribeNewsletter(prev, formData);
+    },
     initialState
   );
 

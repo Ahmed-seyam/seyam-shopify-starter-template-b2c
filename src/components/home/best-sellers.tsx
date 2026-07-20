@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Container, SectionHeader } from "@/components/ui";
 import { ProductCard } from "@/app/[locale]/products";
-import type { ProductCard as ProductCardData } from "@/app/[locale]/products/_types";
+import type { ProductCard as ProductCardData } from "@/types/product";
 
 export function BestSellers({ products }: { products: ProductCardData[] }) {
   const t = useTranslations("home");

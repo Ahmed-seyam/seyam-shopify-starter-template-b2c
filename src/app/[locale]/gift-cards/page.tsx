@@ -14,6 +14,10 @@ import {
 import { GiftCardForm } from "@/components/gift-cards/gift-card-form";
 import { getProduct } from "@/app/[locale]/products/_actions/get-product";
 
+// Rendered on demand: the gift-card product is fetched through the internal
+// /api layer (a Server Component can't fetch a Route Handler while prerendering).
+export const dynamic = "force-dynamic";
+
 // Shopify's built-in gift card product ships with this handle.
 const GIFT_CARD_HANDLE = "gift-card";
 

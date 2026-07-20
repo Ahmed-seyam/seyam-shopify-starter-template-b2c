@@ -4,7 +4,7 @@ import * as React from "react";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const sizes = {
   sm: "h-8 [&_button]:w-7 [&_span]:min-w-7 text-xs",

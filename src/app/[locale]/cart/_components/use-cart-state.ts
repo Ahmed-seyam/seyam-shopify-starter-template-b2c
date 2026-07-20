@@ -2,11 +2,11 @@
 
 import { useLocale } from "next-intl";
 import { useOptimistic, useState, useTransition } from "react";
-import type { Money } from "@/lib/shopify/types";
+import type { Money } from "@/types/shopify";
 // Direct imports from the 'use server' files — the domain barrel re-exports
 // server-only queries that must not enter this client bundle.
 import { removeLine } from "../_actions/remove-line";
-import { itemFromCartLine, track } from "@/lib/tracking";
+import { itemFromCartLine, track } from "@/plugins/client/tracking";
 import { updateLineQuantity } from "../_actions/update-line-quantity";
 import type { Cart, CartLine } from "../_types";
 

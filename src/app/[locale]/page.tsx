@@ -8,6 +8,12 @@ import { ValueProps } from "@/components/home/value-props";
 import { getCollections } from "@/app/[locale]/collections";
 import { getProducts } from "@/app/[locale]/products";
 
+// Storefront data is fetched through the internal /api HTTP layer, so this page
+// renders on demand (a Server Component can't fetch a Route Handler while being
+// prerendered at build). Data-layer caching + webhook freshness are preserved
+// by the cache tags on the underlying /api handlers.
+export const dynamic = "force-dynamic";
+
 export default async function HomePage({
   params,
 }: {

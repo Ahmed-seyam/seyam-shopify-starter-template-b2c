@@ -1,15 +1,13 @@
 "use server";
 
 import { getTranslations } from "next-intl/server";
-import { z } from "zod";
-import { ShopifyUserError, storefrontMutation } from "@/lib/shopify/client";
+import { callApi } from "@/lib/server/api/http";
+import { ShopifyUserError } from "@/plugins/server/shopify/client";
 import { syncCartBuyerIdentity } from "@/app/[locale]/cart";
 import { redirect } from "@/i18n/navigation";
-import { CUSTOMER_RESET_MUTATION } from "../_mutations/customer-reset";
+import { resetSchema } from "@/validation/auth";
 import type { AuthState } from "../_types";
-import { persistToken, safeLocale, type TokenPayload } from "./shared";
-
-const schema = z.object({ password: z.string().min(8) });
+import { safeLocale } from "@/app/[locale]/_utils";
 
 export async function reset(
   _prev: AuthState,
@@ -24,25 +22,23 @@ export async function reset(
     return { error: t("resetLinkInvalid") };
   }
 
-  const parsed = schema.safeParse({ password: formData.get("password") });
+  const parsed = resetSchema.safeParse({ password: formData.get("password") });
   if (!parsed.success) return { error: t("passwordTooShort") };
 
   try {
-    const payload = await storefrontMutation<TokenPayload>(
-      "customerReset",
-      CUSTOMER_RESET_MUTATION,
+    const { authenticated } = await callApi<{ authenticated: boolean }>(
+      "/api/account/reset",
       {
-        variables: {
-          id: `gid://shopify/Customer/${id}`,
-          input: { resetToken: token, password: parsed.data.password },
-        },
-        locale,
+        method: "POST",
+        auth: true,
+        body: { id, token, password: parsed.data.password, locale },
       },
     );
-    if (!payload.customerAccessToken) return { error: t("resetLinkInvalid") };
-    await persistToken(payload.customerAccessToken);
+    if (!authenticated) return { error: t("resetLinkInvalid") };
   } catch (error) {
-    if (error instanceof ShopifyUserError) return { error: t("resetLinkInvalid") };
+    if (error instanceof ShopifyUserError) {
+      return { error: t("resetLinkInvalid") };
+    }
     throw error;
   }
 

@@ -2,16 +2,29 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { Button } from "@/components/ui";
-import { Input } from "@/components/ui";
-import { Label } from "@/components/ui";
+import { Button, FieldError, Input, Label } from "@/components/ui";
 import { recover } from "../_actions/recover";
-import { idleAuthState } from "../_types";
+import { idleAuthState, type AuthState } from "../_types";
+import { erroredFields } from "@/app/[locale]/_utils";
+import { recoverSchema } from "@/validation/auth";
 
 export function RecoverForm() {
   const t = useTranslations("account");
   const locale = useLocale();
-  const [state, action, pending] = useActionState(recover, idleAuthState);
+  const [state, action, pending] = useActionState(
+    async (prev: AuthState, formData: FormData): Promise<AuthState> => {
+      const parsed = recoverSchema.safeParse({ email: formData.get("email") });
+      if (!parsed.success) {
+        const fieldErrors: Record<string, string> = {};
+        for (const f of erroredFields(parsed.error)) {
+          fieldErrors[f] = t("errors.emailInvalid");
+        }
+        return { error: null, fieldErrors };
+      }
+      return recover(prev, formData);
+    },
+    idleAuthState,
+  );
 
   if (state.ok) {
     return (
@@ -33,7 +46,9 @@ export function RecoverForm() {
           type="email"
           autoComplete="email"
           required
+          aria-invalid={state.fieldErrors?.email ? true : undefined}
         />
+        <FieldError>{state.fieldErrors?.email}</FieldError>
       </div>
 
       {state.error && (

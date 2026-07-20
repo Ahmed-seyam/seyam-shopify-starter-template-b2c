@@ -1,33 +1,11 @@
 import "server-only";
-import { storefrontFetch } from "@/lib/shopify/client";
-import { getCustomerToken } from "@/lib/shopify/customer-session";
-import { GET_CUSTOMER_QUERY } from "../_queries/get-customer";
+import { callApi } from "@/lib/server/api/http";
 import type { Customer } from "../_types";
 
-type RawCustomer = {
-  firstName: string | null;
-  lastName: string | null;
-  displayName: string;
-  email: string | null;
-  acceptsMarketing: boolean;
-};
-
-/** Null = signed out (no/expired token or accounts disabled) — never throws. */
+/** Null = signed out. Server-side client for /api/account/customer. */
 export async function getCustomer(locale?: string): Promise<Customer | null> {
-  const token = await getCustomerToken();
-  if (!token) return null;
-
-  const data = await storefrontFetch<{ customer: RawCustomer | null }>(
-    GET_CUSTOMER_QUERY,
-    { variables: { customerAccessToken: token }, cache: "no-store", locale },
-  );
-  if (!data.customer) return null;
-
-  return {
-    firstName: data.customer.firstName,
-    lastName: data.customer.lastName,
-    displayName: data.customer.displayName,
-    email: data.customer.email,
-    acceptsMarketing: data.customer.acceptsMarketing,
-  };
+  return callApi<Customer | null>("/api/account/customer", {
+    searchParams: { locale },
+    auth: true,
+  });
 }

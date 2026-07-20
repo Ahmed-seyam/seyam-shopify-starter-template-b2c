@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { Button, Field, formatMoney, Input, Textarea, toast } from "@/components/ui";
 import { addToCart } from "@/app/[locale]/cart/_actions/add-to-cart";
 import { OptionPill } from "@/app/[locale]/products/_components/option-pill";
-import type { Product } from "@/app/[locale]/products/_types";
+import type { Product } from "@/types/product";
 
 /**
  * Amount picker + recipient details for the store's gift-card product.

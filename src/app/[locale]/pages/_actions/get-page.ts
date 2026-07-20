@@ -1,18 +1,19 @@
 import "server-only";
-import { pageTag, TAGS } from "@/lib/cache/tags";
-import { storefrontFetch } from "@/lib/shopify/client";
-import { GET_PAGE_QUERY } from "../_queries/get-page";
+import { callApi } from "@/lib/server/api/http";
+import { pageTag, TAGS } from "@/lib/server/cache/tags";
 import type { Page } from "../_types";
 
+/**
+ * Server-side client for the page-content endpoint (/api/page/get-page).
+ * Shopify + GraphQL live behind the route.
+ */
 export async function getPage(
   handle: string,
   locale: string,
 ): Promise<Page | null> {
-  const data = await storefrontFetch<{ page: Page | null }>(GET_PAGE_QUERY, {
-    variables: { handle },
-    locale,
+  return callApi<Page | null>("/api/page/get-page", {
+    searchParams: { handle, locale },
     tags: [TAGS.pages, pageTag(handle)],
+    revalidate: 60 * 60 * 24,
   });
-
-  return data.page;
 }

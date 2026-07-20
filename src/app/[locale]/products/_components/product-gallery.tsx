@@ -3,8 +3,8 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { IconButton, ImageFrame } from "@/components/ui";
-import type { ShopifyImage } from "@/lib/shopify/types";
-import { cn } from "@/lib/utils";
+import type { ShopifyImage } from "@/types/shopify";
+import { cn } from "@/utils";
 
 /**
  * PDP gallery — vertical thumbnail rail beside the main frame on desktop,

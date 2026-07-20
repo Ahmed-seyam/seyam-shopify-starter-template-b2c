@@ -15,7 +15,7 @@ import {
   Separator,
 } from "@/components/ui";
 import { CheckoutButton } from "@/app/[locale]/checkout";
-import { cartSummary, track } from "@/lib/tracking";
+import { cartSummary, track } from "@/plugins/client/tracking";
 import { Link } from "@/i18n/navigation";
 // Direct 'use server' imports — never the barrel (server-only queries).
 import { applyDiscount } from "../_actions/apply-discount";

@@ -1,32 +1,15 @@
 "use server";
 
-import { storefrontMutation } from "@/lib/shopify/client";
-import { getSession } from "@/lib/shopify/session";
-import { CART_LINES_REMOVE_MUTATION } from "../_mutations/cart-lines-remove";
+import { callApi } from "@/lib/server/api/http";
 import type { Cart } from "../_types";
-import {
-  CART_SESSION,
-  isMissingLine,
-  toCart,
-  type CartPayload,
-} from "./shared";
 
 export async function removeLine(
   lineId: string,
   locale?: string,
 ): Promise<Cart | null> {
-  const cartId = await getSession("cart");
-  if (!cartId) return null;
-
-  const payload = await storefrontMutation<CartPayload>(
-    "cartLinesRemove",
-    CART_LINES_REMOVE_MUTATION,
-    {
-      variables: { cartId, lineIds: [lineId] },
-      locale,
-      tolerate: isMissingLine,
-      session: CART_SESSION,
-    },
-  );
-  return toCart(payload);
+  return callApi<Cart | null>("/api/cart/remove-line", {
+    method: "POST",
+    auth: true,
+    body: { lineId, locale },
+  });
 }

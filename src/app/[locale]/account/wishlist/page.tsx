@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { customerAccountsEnabled } from "@/lib/shopify/customer-session";
+import { customerAccountsEnabled } from "@/plugins/server/shopify/customer-session";
 import { Container, Heading } from "@/components/ui";
 import { getCustomer } from "@/app/[locale]/account";
 import { AccountShell } from "@/app/[locale]/account/_components/account-shell";

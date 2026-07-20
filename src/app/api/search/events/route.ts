@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { env } from "@/lib/config/env";
-import { checkRateLimit, clientIp } from "@/lib/security/rate-limit";
+import { env } from "@/config/env";
+import { checkRateLimit, clientIp } from "@/plugins/server/security/rate-limit";
 
 /**
  * Server relay for Algolia Insights events (click/conversion/view analytics

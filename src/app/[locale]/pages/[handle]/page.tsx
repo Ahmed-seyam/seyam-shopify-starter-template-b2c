@@ -7,11 +7,10 @@ type PageProps = {
   params: Promise<{ locale: string; handle: string }>;
 };
 
-// No build-time params: pages materialize via ISR on first request and stay
-// fresh through the pages/* webhook topics.
-export function generateStaticParams(): Array<{ handle: string }> {
-  return [];
-}
+// Rendered on demand: content is fetched through the internal /api layer (a
+// Server Component can't fetch a Route Handler while prerendering). The pages/*
+// webhook topics still keep the data fresh via cache tags on /api/page/get-page.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   customerAccountsEnabled,
   getCustomerToken,
-} from "@/lib/shopify/customer-session";
+} from "@/plugins/server/shopify/customer-session";
 import { AuthLayout, LoginForm } from "@/app/[locale]/account";
 import { Link, redirect } from "@/i18n/navigation";
 

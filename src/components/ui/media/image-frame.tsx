@@ -2,7 +2,7 @@ import * as React from "react";
 import Image from "next/image";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const imageFrameVariants = cva(
   "relative isolate block w-full overflow-hidden bg-muted",
