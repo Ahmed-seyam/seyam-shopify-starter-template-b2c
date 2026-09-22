@@ -46,15 +46,20 @@ if (!args.store || !storefront) {
 
 const auth = ["--store", args.store, ...(args.password ? ["--password", args.password] : [])];
 
+// npx is a .cmd on Windows, which Node only spawns through a shell — so
+// arguments with spaces (the theme name, paths) must be quoted there.
+const isWindows = process.platform === "win32";
+const quote = (arg) => (isWindows && /[\s"&|<>^]/.test(arg) ? `"${arg.replace(/"/g, '""')}"` : arg);
+
 /** Runs `shopify <args>`; with json: true, returns parsed stdout. */
 function shopify(cliArgs, { json = false } = {}) {
   const result = spawnSync(
     "npx",
-    ["-y", "@shopify/cli@latest", ...cliArgs, ...auth, ...(json ? ["--json"] : [])],
+    ["-y", "@shopify/cli@latest", ...cliArgs, ...auth, ...(json ? ["--json"] : [])].map(quote),
     {
       stdio: ["inherit", json ? "pipe" : "inherit", "inherit"],
       encoding: "utf8",
-      shell: process.platform === "win32",
+      shell: isWindows,
     },
   );
   if (result.status !== 0) {
@@ -80,8 +85,9 @@ try {
   console.log(`Themes on ${args.store}:`);
   shopify(["theme", "list"]);
 
-  const existing = shopify(["theme", "list", "--name", THEME_NAME], { json: true });
-  const match = Array.isArray(existing) ? existing[0] : null;
+  // `theme list --name` errors when nothing matches, so filter here instead.
+  const themes = shopify(["theme", "list"], { json: true });
+  const match = themes.find((t) => t.name === THEME_NAME) ?? null;
 
   const pushed = shopify(
     [
