@@ -42,3 +42,5 @@ next-env.d.ts
 
 ARCHITECTURE.md
 .claude
+# Shopify notification templates (rewrite-notifications input/output)
+/notifications/

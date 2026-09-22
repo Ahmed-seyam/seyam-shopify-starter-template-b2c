@@ -187,6 +187,10 @@ Shopify admin and that the app cannot create for you. Do them once per store.
       the "Reset your password" button `href` from `{{ customer.reset_password_url }}`
       to `https://<your-site>/account/reset?reset_url={{ customer.reset_password_url | url_encode }}`.
       Without this the link opens the Online Store's reset page, not the app.
+      To repoint every email at once (reset link + all `{{ shop.url }}` links),
+      paste the templates into `notifications/<name>.liquid`, run
+      `npm run rewrite-notifications -- https://<your-site>`, and paste the
+      files from `notifications/out/` back — Shopify has no API for templates.
 
 ### Going headless (optional — §6)
 
