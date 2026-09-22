@@ -8,8 +8,8 @@ import { idleAuthState, type AuthState } from "../_types";
 import { erroredFields } from "@/app/[locale]/_utils";
 import { resetSchema } from "@/validation/auth";
 
-/** `id` + `token` come from the emailed /account/reset/[id]/[token] link. */
-export function ResetForm({ id, token }: { id: string; token: string }) {
+/** `resetUrl` is Shopify's reset_password_url, forwarded by the emailed link. */
+export function ResetForm({ resetUrl }: { resetUrl: string }) {
   const t = useTranslations("account");
   const locale = useLocale();
   const [state, action, pending] = useActionState(
@@ -32,8 +32,7 @@ export function ResetForm({ id, token }: { id: string; token: string }) {
   return (
     <form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="locale" value={locale} />
-      <input type="hidden" name="id" value={id} />
-      <input type="hidden" name="token" value={token} />
+      <input type="hidden" name="resetUrl" value={resetUrl} />
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="password">{t("newPassword")}</Label>

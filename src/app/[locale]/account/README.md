@@ -43,12 +43,14 @@ Supporting piece outside the domain:
   written from Server Actions. No silent renew-on-render.
 
 Pages: `/[locale]/account` (profile + orders + sign-out), `/account/login`,
-`/account/register`, `/account/recover`, `/account/reset/[id]/[token]`.
+`/account/register`, `/account/recover`, `/account/reset?reset_url=…`.
 
 Enable by setting `SESSION_SECRET` (≥ 32 chars) in `.env` — the classic
 Storefront API needs no other credentials. Until then the account pages show a
-"not configured" notice. Point Shopify's customer "reset password" notification
-at `${SITE_URL}/account/reset/{{ customer.id }}/{{ token }}` for the reset link.
+"not configured" notice. In **Settings → Notifications → Customer account
+password reset**, point the reset link at
+`${SITE_URL}/account/reset?reset_url={{ customer.reset_password_url | url_encode }}`
+— the page forwards that URL to `customerResetByUrl`, which signs the customer in.
 
 Future mutations: add a Route Handler under `app/api/account/` (GraphQL in
 `_mutations/`, `storefrontMutation` in the handler), then a thin `_actions`

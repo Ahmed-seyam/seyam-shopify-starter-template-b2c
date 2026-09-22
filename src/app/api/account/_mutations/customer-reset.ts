@@ -1,13 +1,14 @@
-// Completes a password reset with the id + token from the emailed link, and
-// returns a fresh access token so the customer is signed in immediately.
-export const CUSTOMER_RESET_MUTATION = /* GraphQL */ `
-  mutation customerReset(
-    $id: ID!
-    $input: CustomerResetInput!
+// Completes a password reset from the full reset URL Shopify put in the email
+// ({{ customer.reset_password_url }}, forwarded to /account/reset?reset_url=…),
+// and returns a fresh access token so the customer is signed in immediately.
+export const CUSTOMER_RESET_BY_URL_MUTATION = /* GraphQL */ `
+  mutation customerResetByUrl(
+    $resetUrl: URL!
+    $password: String!
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
-    customerReset(id: $id, input: $input) {
+    customerResetByUrl(resetUrl: $resetUrl, password: $password) {
       customerAccessToken {
         accessToken
         expiresAt

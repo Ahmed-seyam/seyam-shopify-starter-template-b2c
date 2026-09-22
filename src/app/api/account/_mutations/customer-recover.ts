@@ -1,5 +1,5 @@
-// Triggers Shopify's password-reset email. The reset link points at
-// /account/reset/[id]/[token] (configure the notification to this domain).
+// Triggers Shopify's password-reset email. The notification template must link
+// to /account/reset?reset_url={{ customer.reset_password_url | url_encode }}.
 export const CUSTOMER_RECOVER_MUTATION = /* GraphQL */ `
   mutation customerRecover(
     $email: String!

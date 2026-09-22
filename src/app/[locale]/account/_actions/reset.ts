@@ -5,7 +5,7 @@ import { callApi } from "@/lib/server/api/http";
 import { ShopifyUserError } from "@/plugins/server/shopify/client";
 import { syncCartBuyerIdentity } from "@/app/[locale]/cart";
 import { redirect } from "@/i18n/navigation";
-import { resetSchema } from "@/validation/auth";
+import { resetSchema, resetUrlSchema } from "@/validation/auth";
 import type { AuthState } from "../_types";
 import { safeLocale } from "@/app/[locale]/_utils";
 
@@ -16,11 +16,8 @@ export async function reset(
   const locale = safeLocale(formData.get("locale"));
   const t = await getTranslations({ locale, namespace: "account.errors" });
 
-  const id = formData.get("id");
-  const token = formData.get("token");
-  if (typeof id !== "string" || typeof token !== "string" || !id || !token) {
-    return { error: t("resetLinkInvalid") };
-  }
+  const resetUrl = resetUrlSchema.safeParse(formData.get("resetUrl"));
+  if (!resetUrl.success) return { error: t("resetLinkInvalid") };
 
   const parsed = resetSchema.safeParse({ password: formData.get("password") });
   if (!parsed.success) return { error: t("passwordTooShort") };
@@ -31,7 +28,11 @@ export async function reset(
       {
         method: "POST",
         auth: true,
-        body: { id, token, password: parsed.data.password, locale },
+        body: {
+          resetUrl: resetUrl.data,
+          password: parsed.data.password,
+          locale,
+        },
       },
     );
     if (!authenticated) return { error: t("resetLinkInvalid") };

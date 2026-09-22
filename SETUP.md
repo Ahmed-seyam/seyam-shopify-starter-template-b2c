@@ -183,9 +183,10 @@ Shopify admin and that the app cannot create for you. Do them once per store.
       `unauthenticated_*_customers` scopes above and a generated `SESSION_SECRET`
       in `.env` — **no** Customer Account API / OAuth app config. If unset, the
       account UI degrades to a "not configured" notice.
-- [ ] **Settings → Notifications** — the password-reset email uses Shopify's
-      "Customer account password reset" template; customize branding there if you
-      want. Reset links land back on the app's `/account/reset/...` route.
+- [ ] **Settings → Notifications → Customer account password reset** — change
+      the "Reset your password" button `href` from `{{ customer.reset_password_url }}`
+      to `https://<your-site>/account/reset?reset_url={{ customer.reset_password_url | url_encode }}`.
+      Without this the link opens the Online Store's reset page, not the app.
 
 ### Going headless (optional — §6)
 

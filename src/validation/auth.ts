@@ -24,3 +24,10 @@ export type RecoverInput = z.infer<typeof recoverSchema>;
 /** New password on the reset-link page. */
 export const resetSchema = z.object({ password: z.string().min(8) });
 export type ResetInput = z.infer<typeof resetSchema>;
+
+/** The `reset_url` query param on /account/reset: Shopify's
+ *  {{ customer.reset_password_url }} (…/account/reset/{id}/{token}). Shopify
+ *  verifies the token itself; this only rejects obviously malformed links. */
+export const resetUrlSchema = z
+  .url({ protocol: /^https?$/ })
+  .refine((url) => /\/account\/reset\/\d+\/[^/]+\/?$/.test(new URL(url).pathname));
