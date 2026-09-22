@@ -1,0 +1,21 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Headless redirect",
+    "theme_version": "1.0.0",
+    "theme_author": "Seyam",
+    "theme_documentation_url": "https://github.com/Ahmed-seyam/seyam-shopify-starter-template-b2c",
+    "theme_support_url": "https://github.com/Ahmed-seyam/seyam-shopify-starter-template-b2c"
+  },
+  {
+    "name": "Headless storefront",
+    "settings": [
+      {
+        "type": "text",
+        "id": "storefront_url",
+        "label": "Storefront URL",
+        "info": "Every Online Store page redirects here, e.g. https://my-store.vercel.app"
+      }
+    ]
+  }
+]

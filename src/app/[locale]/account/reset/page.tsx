@@ -5,8 +5,8 @@ import { AuthLayout, ResetForm } from "@/app/[locale]/account";
 import { Link } from "@/i18n/navigation";
 import { resetUrlSchema } from "@/validation/auth";
 
-// Reached from Shopify's password-reset email, whose link must be
-// /account/reset?reset_url={{ customer.reset_password_url | url_encode }}.
+// Reached from Shopify's password-reset email: the redirect theme (redirect-theme/)
+// forwards the Online Store link here as ?reset_url=<full reset URL>.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {

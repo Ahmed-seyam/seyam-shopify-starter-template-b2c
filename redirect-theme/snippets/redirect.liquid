@@ -1,0 +1,41 @@
+{%- comment -%}
+  Sends the visitor to the same page on the headless storefront. Runs in the
+  browser because Liquid can't issue HTTP redirects. Skipped in the theme
+  editor so the theme stays previewable.
+
+  Shopify's password-reset email links to /account/reset/{id}/{token}; that
+  full URL is forwarded as ?reset_url= for the app's customerResetByUrl flow.
+  Paths the app has no page for fall back to its home page.
+{%- endcomment -%}
+{%- unless request.design_mode or settings.storefront_url == blank -%}
+  <script>
+    (function () {
+      var base = {{ settings.storefront_url | json }}.replace(/\/+$/, "");
+      var path = location.pathname;
+      var target;
+
+      if (/\/account\/reset\/\d+\/[^/]+\/?$/.test(path)) {
+        target =
+          base +
+          "/account/reset?reset_url=" +
+          encodeURIComponent(location.origin + path);
+      } else {
+        // Drop an Online Store locale prefix (/fr, /en-ca); the app picks its own.
+        path = path.replace(/^\/[a-z]{2}(?:-[a-z]{2})?(?=\/|$)/i, "") || "/";
+        path = path
+          .replace(/^\/collections\/[^/]+(?=\/products\/)/, "")
+          .replace(/^\/account\/orders\/.*$/, "/account");
+        var known =
+          /^\/(?:|products\/[^/]+|collections\/[^/]+|pages\/[^/]+|cart|search|account(?:\/(?:login|register|addresses))?)\/?$/;
+        target = known.test(path)
+          ? base + path + (/^\/search/.test(path) ? location.search : "")
+          : base + "/";
+      }
+
+      location.replace(target);
+    })();
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url={{ settings.storefront_url | escape }}">
+  </noscript>
+{%- endunless -%}

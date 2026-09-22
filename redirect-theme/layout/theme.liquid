@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>{{ shop.name }}</title>
+    {%- comment -%}
+      Customer account activation (invite email) has no headless page, so it
+      renders here; every other template redirects.
+    {%- endcomment -%}
+    {%- unless template == 'customers/activate_account' -%}
+      {% render 'redirect' %}
+    {%- endunless -%}
+    {{ content_for_header }}
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 26rem; margin: 4rem auto; padding: 0 1rem; color: #111; }
+      form { display: grid; gap: 0.75rem; }
+      input { padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; font: inherit; }
+      button { padding: 0.7rem; border: 0; border-radius: 6px; background: #111; color: #fff; font: inherit; cursor: pointer; }
+      button[name="decline"] { background: transparent; color: #111; text-decoration: underline; }
+      .errors { color: #b00020; }
+    </style>
+  </head>
+  <body>
+    {{ content_for_layout }}
+  </body>
+</html>

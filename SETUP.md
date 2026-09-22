@@ -183,14 +183,14 @@ Shopify admin and that the app cannot create for you. Do them once per store.
       `unauthenticated_*_customers` scopes above and a generated `SESSION_SECRET`
       in `.env` — **no** Customer Account API / OAuth app config. If unset, the
       account UI degrades to a "not configured" notice.
-- [ ] **Settings → Notifications → Customer account password reset** — change
-      the "Reset your password" button `href` from `{{ customer.reset_password_url }}`
-      to `https://<your-site>/account/reset?reset_url={{ customer.reset_password_url | url_encode }}`.
-      Without this the link opens the Online Store's reset page, not the app.
-      To repoint every email at once (reset link + all `{{ shop.url }}` links),
-      paste the templates into `notifications/<name>.liquid`, run
-      `npm run rewrite-notifications -- https://<your-site>`, and paste the
-      files from `notifications/out/` back — Shopify has no API for templates.
+- [ ] **Redirect the Online Store to the app** — Shopify's emails link to the
+      Online Store (password reset, "Visit our store", …). Install the bundled
+      redirect theme so those links land on the app — no email template edits:
+      `npm run install-redirect-theme -- --store <shop>.myshopify.com --storefront https://<your-site> --publish`
+      (drop `--publish` to upload it unpublished and preview first). It sends
+      `/account/reset/{id}/{token}` to `/account/reset?reset_url=…` and other
+      pages to the same path on the app; gift card pages and account
+      activation (invite emails) still render on Shopify.
 
 ### Going headless (optional — §6)
 

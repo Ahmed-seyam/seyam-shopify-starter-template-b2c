@@ -10,7 +10,7 @@
     "seed": "node --env-file=.env scripts/seed.mjs",
     "sync-locales": "node --env-file=.env scripts/sync-locales.mjs",
     "register-webhooks": "node --env-file=.env scripts/register-webhooks.mjs",
-    "rewrite-notifications": "node scripts/rewrite-notifications.mjs"
+    "install-redirect-theme": "node scripts/install-redirect-theme.mjs"
   },
   "dependencies": {
     "@shopify/checkout-kit": "^4.0.0-alpha.2",
